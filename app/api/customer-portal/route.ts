@@ -1,8 +1,32 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { stripe, ensureStripeConfigured } from "@/lib/stripe";
 import { createClient } from "@/lib/supabase/server";
 
-export async function POST() {
+// Get base URL with fallback
+function getBaseUrl(req: NextRequest): string {
+  // Try NEXT_PUBLIC_APP_URL first
+  if (process.env.NEXT_PUBLIC_APP_URL) {
+    return process.env.NEXT_PUBLIC_APP_URL;
+  }
+
+  // Try NEXT_PUBLIC_URL
+  if (process.env.NEXT_PUBLIC_URL) {
+    return process.env.NEXT_PUBLIC_URL;
+  }
+
+  // Fallback to request origin
+  const origin = req.headers.get('origin') || req.headers.get('referer');
+  if (origin) {
+    return origin.replace(/\/$/, ''); // Remove trailing slash
+  }
+
+  // Last resort - construct from host header
+  const host = req.headers.get('host');
+  const protocol = host?.includes('localhost') ? 'http' : 'https';
+  return `${protocol}://${host}`;
+}
+
+export async function POST(req: NextRequest) {
   try {
     ensureStripeConfigured();
 
@@ -29,10 +53,13 @@ export async function POST() {
       );
     }
 
+    // Get base URL for return redirect
+    const baseUrl = getBaseUrl(req);
+
     // Create portal session
     const session = await stripe.billingPortal.sessions.create({
       customer: subscription.stripe_customer_id,
-      return_url: `${process.env.NEXT_PUBLIC_APP_URL}/profile`,
+      return_url: `${baseUrl}/profile`,
     });
 
     return NextResponse.json({ url: session.url });

@@ -2,6 +2,30 @@ import { NextRequest, NextResponse } from "next/server";
 import { stripe, ensureStripeConfigured } from "@/lib/stripe";
 import { createClient } from "@/lib/supabase/server";
 
+// Get base URL with fallback
+function getBaseUrl(req: NextRequest): string {
+  // Try NEXT_PUBLIC_APP_URL first
+  if (process.env.NEXT_PUBLIC_APP_URL) {
+    return process.env.NEXT_PUBLIC_APP_URL;
+  }
+
+  // Try NEXT_PUBLIC_URL
+  if (process.env.NEXT_PUBLIC_URL) {
+    return process.env.NEXT_PUBLIC_URL;
+  }
+
+  // Fallback to request origin
+  const origin = req.headers.get('origin') || req.headers.get('referer');
+  if (origin) {
+    return origin.replace(/\/$/, ''); // Remove trailing slash
+  }
+
+  // Last resort - construct from host header
+  const host = req.headers.get('host');
+  const protocol = host?.includes('localhost') ? 'http' : 'https';
+  return `${protocol}://${host}`;
+}
+
 export async function POST(req: NextRequest) {
   try {
     ensureStripeConfigured();
@@ -70,6 +94,9 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Get base URL for redirects
+    const baseUrl = getBaseUrl(req);
+
     // Create Checkout Session
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
@@ -81,8 +108,8 @@ export async function POST(req: NextRequest) {
           quantity: 1,
         },
       ],
-      success_url: `${process.env.NEXT_PUBLIC_APP_URL}/subscription/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/pricing`,
+      success_url: `${baseUrl}/subscription/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${baseUrl}/pricing`,
       metadata: {
         user_id: user.id,
         plan_type: priceId,
