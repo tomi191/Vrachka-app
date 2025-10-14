@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import { zodiacSigns } from "@/lib/zodiac";
+import { zodiacSigns, type ZodiacSign } from "@/lib/zodiac";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { User, Settings, LogOut, Crown, Flame } from "lucide-react";
 import { signOut } from "@/app/actions/auth";
@@ -24,7 +24,7 @@ export default async function ProfilePage() {
     .eq("user_id", user!.id)
     .single();
 
-  const zodiac = profile ? zodiacSigns[profile.zodiac_sign] : null;
+  const zodiac = profile ? zodiacSigns[profile.zodiac_sign as ZodiacSign] : null;
   const isPremium = subscription?.plan_type !== "free";
 
   return (

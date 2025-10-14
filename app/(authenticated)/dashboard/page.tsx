@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { getGreeting, getDayOfWeek, formatDate } from "@/lib/utils";
-import { zodiacSigns } from "@/lib/zodiac";
+import { zodiacSigns, type ZodiacSign } from "@/lib/zodiac";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Heart, Briefcase, Activity, Sparkles, CreditCard } from "lucide-react";
 
@@ -16,7 +16,7 @@ export default async function DashboardPage() {
     .eq("id", user!.id)
     .single();
 
-  const zodiac = profile ? zodiacSigns[profile.zodiac_sign] : null;
+  const zodiac = profile ? zodiacSigns[profile.zodiac_sign as ZodiacSign] : null;
   const greeting = getGreeting();
   const dayOfWeek = getDayOfWeek();
 
