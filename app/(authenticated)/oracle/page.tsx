@@ -47,7 +47,7 @@ export default function OraclePage() {
                   key={i}
                   className="px-4 py-3 bg-zinc-950/50 border border-zinc-800 rounded-lg text-sm text-zinc-300"
                 >
-                  "{question}"
+                  {question}
                 </div>
               ))}
             </div>
