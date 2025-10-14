@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { stripe } from "@/lib/stripe";
+import { stripe, ensureStripeConfigured } from "@/lib/stripe";
 import { createClient } from "@/lib/supabase/server";
 
 export async function POST(req: NextRequest) {
   try {
+    ensureStripeConfigured();
+
     const supabase = await createClient();
     const {
       data: { user },

@@ -1,13 +1,18 @@
 import Stripe from "stripe";
 
-if (!process.env.STRIPE_SECRET_KEY) {
-  throw new Error("STRIPE_SECRET_KEY is not set");
-}
+// Use placeholder for build time, but will check at runtime in API routes
+const stripeKey = process.env.STRIPE_SECRET_KEY || "sk_test_placeholder_for_build";
 
-export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+export const stripe = new Stripe(stripeKey, {
   apiVersion: "2025-02-24.acacia",
   typescript: true,
 });
+
+export function ensureStripeConfigured() {
+  if (!process.env.STRIPE_SECRET_KEY) {
+    throw new Error("STRIPE_SECRET_KEY is not configured in environment variables");
+  }
+}
 
 // Price IDs - ще ги добавиш след като създадеш products в Stripe
 export const STRIPE_PRICES = {
