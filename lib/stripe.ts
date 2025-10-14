@@ -4,7 +4,7 @@ import Stripe from "stripe";
 const stripeKey = process.env.STRIPE_SECRET_KEY || "sk_test_placeholder_for_build";
 
 export const stripe = new Stripe(stripeKey, {
-  apiVersion: "2024-11-20.acacia", // Stable version (was beta 2025-02-24)
+  apiVersion: "2025-02-24.acacia",
   typescript: true,
 });
 
