@@ -31,7 +31,7 @@ export const PLAN_LIMITS: Record<PlanType, SubscriptionLimits> = {
   },
   basic: {
     dailyOracleQuestions: 3,
-    dailyTarotReadings: 5,
+    dailyTarotReadings: 3, // Matches package: 3 readings/day
     canAccessWeeklyHoroscope: true,
     canAccessMonthlyHoroscope: true,
     canAccessThreeCardSpread: true,
@@ -41,7 +41,7 @@ export const PLAN_LIMITS: Record<PlanType, SubscriptionLimits> = {
   },
   ultimate: {
     dailyOracleQuestions: 10,
-    dailyTarotReadings: 20,
+    dailyTarotReadings: 999, // Unlimited tarot readings (practical limit)
     canAccessWeeklyHoroscope: true,
     canAccessMonthlyHoroscope: true,
     canAccessThreeCardSpread: true,
