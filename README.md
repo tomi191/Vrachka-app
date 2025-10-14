@@ -1,30 +1,33 @@
-# Vrachka - Твоят Духовен Гид 🔮
+# Vrachka - Твоят Духовен Гид
 
-Modern PWA приложение за персонализирани хороскопи, таро четения и AI оракул.
+Modern PWA приложение за персонализирани хороскопи, таро четения и AI оракул с GPT-4.
 
-## 📋 Текущ Статус
+## Status: MVP Ready for Production
 
-### ✅ Завършено
-- [x] Next.js 15 setup (TypeScript + Tailwind CSS + App Router)
-- [x] Професионален dark mode UI дизайн (zinc/slate палитра)
-- [x] Supabase database schema (7 tables)
-- [x] Mobile-first layout с bottom navigation
-- [x] Пълен authentication flow (Login, Register, Logout)
-- [x] Onboarding процес (име, рожденна дата, зодия)
-- [x] Admin dashboard с analytics
-- [x] Stripe integration (checkout, webhooks, customer portal)
-- [x] Pricing page (Free, Basic 9.99 лв, Ultimate 19.99 лв)
-- [x] Profile page със subscription management
-- [x] Environment configuration
-- [x] Ready for deployment
+### Core Features - Fully Functional
 
-### 🚧 В процес на разработка
-- [ ] Daily horoscope интеграция (OpenAI API)
-- [ ] Card of the Day с flip анимация
-- [ ] 3-card Tarot reading (Premium)
-- [ ] Digital Oracle Q&A (Premium)
-- [ ] Streak система и gamification
-- [ ] PWA setup (manifest, service worker)
+- **AI Horoscopes** - Дневни хороскопи генерирани с GPT-4 (Susan Miller + Chani Nicholas стил)
+- **Tarot Readings** - Работещи таро четения с AI интерпретации (Rachel Pollack + Arthur Waite)
+- **Digital Oracle** - Premium AI асистент за духовни въпроси (Jung + Stoicism + Daoism)
+- **Authentication** - Пълен auth flow (Email/Password + OAuth)
+- **Payments** - Stripe integration (Checkout + Webhooks + Customer Portal)
+- **Subscription Tiers** - Free / Basic (9.99 лв) / Ultimate (19.99 лв)
+- **Admin Dashboard** - Content management, users, subscriptions
+- **Mobile-First UI** - Professional dark mode дизайн с bottom navigation
+
+### Documentation
+
+- **[DEPLOYMENT.md](./DEPLOYMENT.md)** - Complete deployment checklist and post-deployment steps
+- **[ENV_VARIABLES.md](./ENV_VARIABLES.md)** - Detailed guide for all environment variables
+- **[STRIPE_SETUP.md](./STRIPE_SETUP.md)** - Stripe integration guide
+
+### What's Not Included in MVP
+
+- Natal chart calculator (Phase 2)
+- Minor Arcana tarot cards (only 22 Major Arcana)
+- Push notifications
+- Email campaigns
+- Referral rewards system
 
 ## 🛠 Tech Stack
 
@@ -65,68 +68,57 @@ vrachka/
     └── seed.sql              # Seed data (tarot cards)
 ```
 
-## 🚀 Getting Started
+## Quick Start
 
 ### Prerequisites
 - Node.js 18+
-- npm or yarn
 - Supabase account
-- OpenAI API key (upcoming)
-- Stripe account (upcoming)
+- OpenAI API key (with billing setup)
+- Stripe account
+- Vercel account (for deployment)
 
-### Installation
+### Local Development
 
-1. **Clone the repository**
+1. **Clone and install**
 ```bash
-git clone <repository-url>
+git clone https://github.com/tomi191/Vrachka-app.git
 cd vrachka
-```
-
-2. **Install dependencies**
-```bash
 npm install
 ```
 
-3. **Setup Supabase**
-- Create project at [supabase.com](https://supabase.com)
-- Run migrations from `supabase/migrations/001_initial_schema.sql`
-- Run seed data from `supabase/seed.sql`
-- See `supabase/README.md` for detailed instructions
-
-4. **Configure environment variables**
+2. **Setup environment variables**
 ```bash
-cp .env.local.example .env.local
+cp .env.example .env.local
 ```
 
-Fill in (виж `.env.local.example` за пълен пример):
-```env
-# Supabase
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
+Fill in all required variables. See **[ENV_VARIABLES.md](./ENV_VARIABLES.md)** for detailed guide.
 
-# Stripe
-STRIPE_SECRET_KEY=sk_test_your_stripe_secret_key
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_your_publishable_key
-STRIPE_WEBHOOK_SECRET=whsec_your_webhook_secret
-STRIPE_BASIC_PRICE_ID=price_your_basic_price_id
-STRIPE_ULTIMATE_PRICE_ID=price_your_ultimate_price_id
+3. **Setup Supabase database**
+- Create project at supabase.com
+- Run migration: `supabase/migrations/001_initial_schema.sql`
+- Copy API keys to `.env.local`
 
-# OpenAI
-OPENAI_API_KEY=sk-your_openai_api_key
+4. **Setup Stripe products**
+- Create two products: Basic (9.99 лв) and Ultimate (19.99 лв)
+- Copy price IDs to `.env.local`
+- See **[STRIPE_SETUP.md](./STRIPE_SETUP.md)** for details
 
-# App URL
-NEXT_PUBLIC_APP_URL=http://localhost:3000
-```
-
-**ВАЖНО**: Виж [STRIPE_SETUP.md](./STRIPE_SETUP.md) за детайлни Stripe инструкции.
-
-5. **Run development server**
+5. **Run dev server**
 ```bash
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000)
+Open http://localhost:3000
+
+### Production Deployment
+
+See **[DEPLOYMENT.md](./DEPLOYMENT.md)** for complete deployment checklist.
+
+**Critical Post-Deployment Step:**
+```bash
+# Seed Tarot cards (one-time operation)
+curl -X POST https://your-domain.vercel.app/api/admin/seed-tarot
+```
 
 ## 🎨 Design System
 
@@ -191,18 +183,43 @@ All components follow Shadcn/UI patterns with custom mystic theme.
 
 See `supabase/migrations/` for full schema.
 
-## 🔮 AI Integration (Upcoming)
+## AI Integration (GPT-4)
 
-### OpenAI Prompts
-- Daily horoscope generation
-- Tarot card interpretations
-- Oracle Q&A responses
-- Numerology reports
+### Professional Prompts Based on World-Class Astrologers
 
-### Caching Strategy
-- Daily horoscopes: 24 hours per zodiac
-- Tarot meanings: Per card per day
-- Oracle answers: Stored for history
+**Horoscopes** (Susan Miller + Chani Nicholas methodology)
+- Персонален, окуражаващ тон
+- Конкретни съвети (не генерични фрази)
+- Love/Career/Health breakdown
+- Lucky numbers
+
+**Tarot** (Rachel Pollack + Arthur Waite)
+- Класически + психологически интерпретации
+- Spread types: Single, 3-Card, Love, Career
+- Reversed card logic
+- Практични съвети
+
+**Oracle** (Carl Jung + Stoicism + Daoism)
+- Философска мъдрост
+- Не дава готови решения - дава перспектива
+- Насочва към собствена мъдрост
+- Метафори от природата
+
+### API Routes
+
+- `GET /api/horoscope` - Generate daily/weekly/monthly horoscopes
+- `POST /api/oracle` - AI conversations (Premium)
+- `GET /api/oracle` - Conversation history
+- `POST /api/tarot` - Tarot readings with AI interpretations
+- `GET /api/tarot` - Available spreads and limits
+- `POST /api/admin/seed-tarot` - Seed tarot cards (one-time)
+
+### Caching & Rate Limiting
+
+- **Horoscopes**: Cached 24h per zodiac sign
+- **Tarot**: Rate limited by subscription (1/day free, 5/day basic, 20/day ultimate)
+- **Oracle**: Rate limited (3/day basic, 10/day ultimate)
+- **Usage tracking**: Stored in `api_usage_limits` table
 
 ## 🚀 Deployment към Vercel
 
@@ -319,40 +336,39 @@ Vercel автоматично ще deploy-не новата версия!
 4. **Промени** `NEXT_PUBLIC_APP_URL` в environment variables
 5. **Промени** Stripe webhook URL към новия домейн
 
-## 📈 Roadmap
+## Roadmap
 
-### Phase 2 (Current Sprint)
-- [ ] Complete authentication
-- [ ] Onboarding flow
-- [ ] Real horoscope generation (OpenAI)
-- [ ] Card of the Day functionality
+### Phase 1 - MVP (COMPLETED)
+- [x] Authentication + Onboarding
+- [x] AI Horoscopes (GPT-4)
+- [x] Tarot Readings
+- [x] Digital Oracle
+- [x] Stripe Payments
+- [x] Admin Dashboard
+- [x] Subscription Management
 
-### Phase 3
-- [ ] Premium features
-- [ ] Stripe integration
-- [ ] 3-card tarot reading
-- [ ] Digital Oracle Q&A
-
-### Phase 4
-- [ ] Numerology
-- [ ] Compatibility
-- [ ] Natal chart
-- [ ] Streak rewards
+### Phase 2 - Enhancements (Next)
+- [ ] Weekly/Monthly horoscopes optimization
+- [ ] Minor Arcana tarot cards (56 more cards)
+- [ ] Natal chart calculator
+- [ ] Numerology reports
+- [ ] Compatibility checker
+- [ ] Streak rewards system
 - [ ] Referral program
 
-### Phase 5 (Future)
+### Phase 3 - Growth
 - [ ] Push notifications
 - [ ] Email campaigns
 - [ ] Social sharing
-- [ ] Admin dashboard
+- [ ] Analytics dashboard
+- [ ] A/B testing
+- [ ] SEO optimization
+
+### Phase 4 - Scaling
 - [ ] Mobile apps (React Native)
-
-## 🐛 Known Issues
-
-- Daily horoscope използва placeholder data (OpenAI интеграция в процес)
-- Card of the Day без flip анимация (предстои)
-- Tarot readings и Oracle функционалности (предстоят)
-- Stripe е тестван само локално (production webhook след deploy)
+- [ ] Multi-language support
+- [ ] API for third-party integration
+- [ ] White-label solution
 
 ## 📝 Contributing
 
