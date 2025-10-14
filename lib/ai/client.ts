@@ -1,16 +1,22 @@
 /**
- * OpenAI Client and AI utilities
+ * OpenRouter AI Client
+ * Using OpenRouter as a cost-effective alternative to OpenAI
  */
 
 import OpenAI from 'openai';
 
-// Initialize OpenAI client
+// Initialize OpenRouter client (OpenAI-compatible API)
 export const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+  apiKey: process.env.OPENROUTER_API_KEY,
+  baseURL: 'https://openrouter.ai/api/v1',
+  defaultHeaders: {
+    'HTTP-Referer': process.env.NEXT_PUBLIC_APP_URL || 'https://vrachka-app.vercel.app',
+    'X-Title': 'Vrachka',
+  },
 });
 
-// Default model for all AI operations
-export const DEFAULT_MODEL = 'gpt-4-turbo-preview';
+// Default model for all AI operations (OpenRouter model)
+export const DEFAULT_MODEL = 'openai/gpt-4.1-mini';
 
 /**
  * Generate AI completion with system prompt
@@ -61,10 +67,10 @@ export function parseAIJsonResponse<T>(response: string): T | null {
 }
 
 /**
- * Ensure OpenAI is configured
+ * Ensure OpenRouter is configured
  */
 export function ensureOpenAIConfigured(): void {
-  if (!process.env.OPENAI_API_KEY) {
-    throw new Error('OpenAI API key is not configured');
+  if (!process.env.OPENROUTER_API_KEY) {
+    throw new Error('OpenRouter API key is not configured');
   }
 }

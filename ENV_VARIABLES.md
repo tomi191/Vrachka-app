@@ -71,32 +71,38 @@
 
 ---
 
-## OpenAI Configuration
+## AI Provider Configuration (OpenRouter)
 
-### `OPENAI_API_KEY`
+### `OPENROUTER_API_KEY`
 
-**Описание:** API key за OpenAI GPT-4
+**Описание:** API key за OpenRouter (cost-effective AI aggregator)
 **Тип:** **SECRET**
-**Пример:** `sk-proj-xxxxxxxxxxxxxxxxxxxxxxxx`
+**Пример:** `sk-or-v1-xxxxxxxxxxxxxxxxxxxxxxxx`
 **Къде да го вземеш:**
-1. Отвори https://platform.openai.com/api-keys
-2. Create new secret key
-3. Copy key (показва се само веднъж!)
+1. Отвори https://openrouter.ai
+2. Sign up / Login
+3. Go to Keys → Create new API key
+4. Copy key
 
 **Използва се за:**
 - Horoscope generation (`/api/horoscope`)
 - Oracle AI responses (`/api/oracle`)
 - Tarot interpretations (`/api/tarot`)
 
+**Model:** `openai/gpt-4.1-mini`
+
 **Cost & Billing:**
-- Model: GPT-4 Turbo
-- Average cost: ~$0.01-0.03 per request
-- Set usage limits в OpenAI Dashboard!
+- OpenRouter е много по-евтин от директно OpenAI
+- No upfront payment needed
+- Pay only for what you use
+- Average cost: ~$0.001-0.003 per request (10x по-евтино!)
+- $5 credit е достатъчно за 1500+ requests
 
 **Важно:**
-- Настрой billing в OpenAI (минимум $5)
-- Настрой usage limits (препоръчвам $50/месец за начало)
-- Monitor usage в OpenAI Dashboard
+- Много по-евтино от директно OpenAI API
+- Същото качество на GPT-4
+- Automatic failover between providers
+- Monitor usage в https://openrouter.ai/activity
 
 ---
 
@@ -245,8 +251,8 @@ NEXT_PUBLIC_SUPABASE_URL=https://xxxxx.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJxxxx...
 SUPABASE_SERVICE_ROLE_KEY=eyJxxxx...
 
-# OpenAI
-OPENAI_API_KEY=sk-proj-xxxx
+# OpenRouter (AI Provider)
+OPENROUTER_API_KEY=sk-or-v1-xxxx
 
 # Stripe (use TEST keys!)
 STRIPE_SECRET_KEY=sk_test_xxxx
@@ -297,7 +303,7 @@ NEXT_PUBLIC_APP_URL = https://vrachka-app.vercel.app
 - Keep SECRET keys в `.env.local` (gitignored)
 - Use test keys в development
 - Rotate keys периодично
-- Set OpenAI usage limits
+- Monitor OpenRouter usage
 - Monitor Stripe webhooks
 
 ### DON'T:
@@ -315,7 +321,7 @@ NEXT_PUBLIC_APP_URL = https://vrachka-app.vercel.app
 
 - [ ] `npm run dev` стартира без errors
 - [ ] Login работи (Supabase auth)
-- [ ] Dashboard показва horoscope (OpenAI)
+- [ ] Dashboard показва horoscope (OpenRouter AI)
 - [ ] Checkout работи (Stripe)
 - [ ] Webhooks получават events (Stripe dashboard)
 - [ ] No console errors
@@ -325,9 +331,9 @@ NEXT_PUBLIC_APP_URL = https://vrachka-app.vercel.app
 
 ## Troubleshooting
 
-### "OpenAI API key not configured"
-**Problem:** OPENAI_API_KEY липсва или е грешен
-**Solution:** Check `.env.local` или Vercel environment variables
+### "OpenRouter API key not configured"
+**Problem:** OPENROUTER_API_KEY липсва или е грешен
+**Solution:** Check `.env.local` или Vercel environment variables. Get key from https://openrouter.ai
 
 ### "Failed to create checkout session"
 **Problem:** Stripe keys или price IDs са грешни
