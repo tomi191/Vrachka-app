@@ -107,25 +107,18 @@ export async function POST(req: NextRequest) {
     await incrementOracleUsage(user.id);
 
     // Update profile total questions asked
-    await supabase.rpc('increment', {
-      table_name: 'profiles',
-      column_name: 'total_oracle_questions_asked',
-      row_id: user.id
-    }).catch(async () => {
-      // Fallback if RPC doesn't exist
-      const { data: currentProfile } = await supabase
-        .from('profiles')
-        .select('total_oracle_questions_asked')
-        .eq('id', user.id)
-        .single();
+    const { data: currentProfile } = await supabase
+      .from('profiles')
+      .select('total_oracle_questions_asked')
+      .eq('id', user.id)
+      .single();
 
-      await supabase
-        .from('profiles')
-        .update({
-          total_oracle_questions_asked: (currentProfile?.total_oracle_questions_asked || 0) + 1
-        })
-        .eq('id', user.id);
-    });
+    await supabase
+      .from('profiles')
+      .update({
+        total_oracle_questions_asked: (currentProfile?.total_oracle_questions_asked || 0) + 1
+      })
+      .eq('id', user.id);
 
     return NextResponse.json({
       id: conversation?.id,
