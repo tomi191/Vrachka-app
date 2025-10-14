@@ -1,11 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { createClient as createServiceClient } from "@supabase/supabase-js";
 import { ensureOpenAIConfigured, generateCompletion, parseAIJsonResponse } from "@/lib/ai/client";
 import { TAROT_SYSTEM_PROMPT, getTarotPrompt } from "@/lib/ai/prompts";
 import { canReadTarot, incrementTarotUsage, checkFeatureAccess } from "@/lib/subscription";
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
+
+// Service client to bypass RLS for reading public tarot cards
+function getSupabaseService() {
+  return createServiceClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  );
+}
 
 type SpreadType = 'single' | 'three-card' | 'love' | 'career';
 
@@ -109,12 +118,14 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Get random tarot cards
-    const { data: allCards, error: cardsError } = await supabase
+    // Get random tarot cards (use service client to bypass RLS)
+    const supabaseService = getSupabaseService();
+    const { data: allCards, error: cardsError } = await supabaseService
       .from('tarot_cards')
       .select('*');
 
     if (cardsError || !allCards || allCards.length === 0) {
+      console.error("Tarot cards error:", cardsError);
       return NextResponse.json(
         { error: "Failed to load tarot cards. Please ensure cards are seeded in the database." },
         { status: 500 }

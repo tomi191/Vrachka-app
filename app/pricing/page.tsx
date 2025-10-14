@@ -92,7 +92,7 @@ export default async function PricingPage() {
                 <Feature text="Приоритетна поддръжка" included />
               </ul>
               {user ? (
-                <form action="/api/checkout">
+                <form action="/api/checkout" method="POST">
                   <input type="hidden" name="priceId" value="basic" />
                   <button
                     type="submit"
@@ -145,7 +145,7 @@ export default async function PricingPage() {
                 <Feature text="VIP поддръжка" included />
               </ul>
               {user ? (
-                <form action="/api/checkout">
+                <form action="/api/checkout" method="POST">
                   <input type="hidden" name="priceId" value="ultimate" />
                   <button
                     type="submit"
