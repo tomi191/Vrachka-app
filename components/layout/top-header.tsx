@@ -1,7 +1,6 @@
 "use client";
 
 import { Flame, Bell } from "lucide-react";
-import Image from "next/image";
 
 interface TopHeaderProps {
   streak?: number;

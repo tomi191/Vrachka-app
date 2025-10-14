@@ -4,7 +4,6 @@ import {
   Users,
   Crown,
   Activity,
-  TrendingUp,
   CreditCard,
   MessageSquare,
   FileText,

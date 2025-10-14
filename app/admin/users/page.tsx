@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Users, Search, ArrowLeft, Crown, Flame } from "lucide-react";
+import { Users, ArrowLeft, Crown, Flame } from "lucide-react";
 import Link from "next/link";
 
 export default async function AdminUsersPage() {

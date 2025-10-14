@@ -2,7 +2,6 @@ import { createClient } from "@/lib/supabase/server";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Check, X, Crown, Sparkles } from "lucide-react";
 import Link from "next/link";
-import { redirect } from "next/navigation";
 
 export default async function PricingPage() {
   const supabase = await createClient();
