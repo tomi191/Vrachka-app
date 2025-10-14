@@ -184,7 +184,7 @@ export async function POST(req: NextRequest) {
 }
 
 // GET endpoint to retrieve available spreads and limits
-export async function GET(req: NextRequest) {
+export async function GET() {
   try {
     const supabase = await createClient();
     const {

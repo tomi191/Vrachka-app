@@ -26,7 +26,7 @@ export default function PrivacyPage() {
             <section>
               <h2 className="text-2xl font-semibold text-zinc-50 mb-3">1. Обща информация</h2>
               <p className="text-zinc-300 leading-relaxed">
-                Vrachka ("ние", "нас", "нашия") се ангажира да защитава поверителността на вашата лична информация.
+                Vrachka (&quot;ние&quot;, &quot;нас&quot;, &quot;нашия&quot;) се ангажира да защитава поверителността на вашата лична информация.
                 Тази политика за поверителност обяснява как събираме, използваме и защитаваме вашите данни.
               </p>
             </section>
