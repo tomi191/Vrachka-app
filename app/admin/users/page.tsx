@@ -50,7 +50,7 @@ export default async function AdminUsersPage() {
           <CardContent>
             <div className="space-y-2">
               {profiles && profiles.length > 0 ? (
-                profiles.map((profile: any) => {
+                profiles.map((profile) => {
                   const subscription = profile.subscriptions?.[0];
                   const isPremium = subscription?.plan_type !== "free";
 

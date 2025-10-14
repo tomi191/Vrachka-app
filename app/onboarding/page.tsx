@@ -78,9 +78,9 @@ export default function OnboardingPage() {
       // Redirect to dashboard
       router.push("/dashboard");
       router.refresh();
-    } catch (error: any) {
+    } catch (error) {
       console.error("Onboarding error:", error);
-      setError(error.message || "Грешка при запазване");
+      setError(error instanceof Error ? error.message : "Грешка при запазване");
     } finally {
       setLoading(false);
     }

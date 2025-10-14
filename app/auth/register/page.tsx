@@ -49,8 +49,8 @@ export default function RegisterPage() {
       // Success - redirect to onboarding
       router.push("/onboarding");
       router.refresh();
-    } catch (error: any) {
-      setError(error.message || "Грешка при регистрация");
+    } catch (error) {
+      setError(error instanceof Error ? error.message : "Грешка при регистрация");
     } finally {
       setLoading(false);
     }
@@ -67,8 +67,8 @@ export default function RegisterPage() {
       });
 
       if (error) throw error;
-    } catch (error: any) {
-      setError(error.message || "Грешка при регистрация с Google");
+    } catch (error) {
+      setError(error instanceof Error ? error.message : "Грешка при регистрация с Google");
       setLoading(false);
     }
   };
@@ -84,8 +84,8 @@ export default function RegisterPage() {
       });
 
       if (error) throw error;
-    } catch (error: any) {
-      setError(error.message || "Грешка при регистрация с Facebook");
+    } catch (error) {
+      setError(error instanceof Error ? error.message : "Грешка при регистрация с Facebook");
       setLoading(false);
     }
   };

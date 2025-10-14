@@ -90,7 +90,7 @@ export default async function AdminContentPage() {
           <CardContent>
             <div className="space-y-2">
               {dailyContent && dailyContent.length > 0 ? (
-                dailyContent.map((content: any) => (
+                dailyContent.map((content) => (
                   <div
                     key={content.id}
                     className="p-4 bg-zinc-950/50 border border-zinc-800 rounded-lg"
@@ -132,7 +132,7 @@ export default async function AdminContentPage() {
           <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
               {tarotCards && tarotCards.length > 0 ? (
-                tarotCards.map((card: any) => (
+                tarotCards.map((card) => (
                   <div
                     key={card.id}
                     className="p-3 bg-zinc-950/50 border border-zinc-800 rounded-lg text-center"
@@ -164,7 +164,7 @@ export default async function AdminContentPage() {
           <CardContent>
             <div className="space-y-2">
               {tarotReadings && tarotReadings.length > 0 ? (
-                tarotReadings.map((reading: any) => (
+                tarotReadings.map((reading) => (
                   <div
                     key={reading.id}
                     className="p-4 bg-zinc-950/50 border border-zinc-800 rounded-lg"
@@ -204,7 +204,7 @@ export default async function AdminContentPage() {
           <CardContent>
             <div className="space-y-2">
               {oracleConversations && oracleConversations.length > 0 ? (
-                oracleConversations.map((conv: any) => (
+                oracleConversations.map((conv) => (
                   <div
                     key={conv.id}
                     className="p-4 bg-zinc-950/50 border border-zinc-800 rounded-lg"

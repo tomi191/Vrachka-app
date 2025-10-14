@@ -90,10 +90,10 @@ export async function POST(req: NextRequest) {
     });
 
     return NextResponse.redirect(session.url!);
-  } catch (error: any) {
+  } catch (error) {
     console.error("Checkout error:", error);
     return NextResponse.json(
-      { error: error.message },
+      { error: error instanceof Error ? error.message : "Checkout failed" },
       { status: 500 }
     );
   }

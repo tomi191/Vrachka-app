@@ -60,7 +60,7 @@ export default async function AdminSubscriptionsPage() {
                 <div>
                   <p className="text-sm text-zinc-400">Free</p>
                   <p className="text-2xl font-bold text-zinc-50 mt-1">
-                    {subscriptions?.filter((s: any) => s.plan_type === "free")
+                    {subscriptions?.filter((s) => s.plan_type === "free")
                       .length || 0}
                   </p>
                 </div>
@@ -74,7 +74,7 @@ export default async function AdminSubscriptionsPage() {
                 <div>
                   <p className="text-sm text-zinc-400">Basic</p>
                   <p className="text-2xl font-bold text-zinc-50 mt-1">
-                    {subscriptions?.filter((s: any) => s.plan_type === "basic")
+                    {subscriptions?.filter((s) => s.plan_type === "basic")
                       .length || 0}
                   </p>
                 </div>
@@ -89,7 +89,7 @@ export default async function AdminSubscriptionsPage() {
                   <p className="text-sm text-zinc-400">Ultimate</p>
                   <p className="text-2xl font-bold text-zinc-50 mt-1">
                     {subscriptions?.filter(
-                      (s: any) => s.plan_type === "ultimate"
+                      (s) => s.plan_type === "ultimate"
                     ).length || 0}
                   </p>
                 </div>
@@ -110,7 +110,7 @@ export default async function AdminSubscriptionsPage() {
           <CardContent>
             <div className="space-y-2">
               {subscriptions && subscriptions.length > 0 ? (
-                subscriptions.map((sub: any) => (
+                subscriptions.map((sub) => (
                   <div
                     key={sub.id}
                     className="flex flex-col md:flex-row md:items-center justify-between p-4 bg-zinc-950/50 border border-zinc-800 rounded-lg"

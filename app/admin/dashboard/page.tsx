@@ -100,7 +100,7 @@ export default async function AdminDashboardPage() {
           <CardContent>
             <div className="space-y-3">
               {recentProfiles && recentProfiles.length > 0 ? (
-                recentProfiles.map((profile: any) => (
+                recentProfiles.map((profile) => (
                   <div
                     key={profile.id}
                     className="flex items-center justify-between p-3 bg-zinc-950/50 border border-zinc-800 rounded-lg"
@@ -136,7 +136,7 @@ export default async function AdminDashboardPage() {
           <CardContent>
             <div className="space-y-3">
               {recentSubscriptions && recentSubscriptions.length > 0 ? (
-                recentSubscriptions.map((sub: any) => (
+                recentSubscriptions.map((sub) => (
                   <div
                     key={sub.id}
                     className="flex items-center justify-between p-3 bg-zinc-950/50 border border-zinc-800 rounded-lg"
@@ -186,7 +186,7 @@ export default async function AdminDashboardPage() {
           <CardContent>
             <div className="space-y-3">
               {recentReadings && recentReadings.length > 0 ? (
-                recentReadings.map((reading: any) => (
+                recentReadings.map((reading) => (
                   <div
                     key={reading.id}
                     className="flex items-center justify-between p-3 bg-zinc-950/50 border border-zinc-800 rounded-lg"

@@ -32,8 +32,8 @@ export default function LoginPage() {
 
       router.push("/dashboard");
       router.refresh();
-    } catch (error: any) {
-      setError(error.message || "Грешка при влизане");
+    } catch (error) {
+      setError(error instanceof Error ? error.message : "Грешка при влизане");
     } finally {
       setLoading(false);
     }
@@ -50,8 +50,8 @@ export default function LoginPage() {
       });
 
       if (error) throw error;
-    } catch (error: any) {
-      setError(error.message || "Грешка при влизане с Google");
+    } catch (error) {
+      setError(error instanceof Error ? error.message : "Грешка при влизане с Google");
       setLoading(false);
     }
   };
@@ -67,8 +67,8 @@ export default function LoginPage() {
       });
 
       if (error) throw error;
-    } catch (error: any) {
-      setError(error.message || "Грешка при влизане с Facebook");
+    } catch (error) {
+      setError(error instanceof Error ? error.message : "Грешка при влизане с Facebook");
       setLoading(false);
     }
   };

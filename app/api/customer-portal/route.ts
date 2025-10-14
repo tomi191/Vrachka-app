@@ -36,8 +36,8 @@ export async function POST() {
     });
 
     return NextResponse.json({ url: session.url });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Customer portal error:", error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: error instanceof Error ? error.message : "Portal creation failed" }, { status: 500 });
   }
 }
