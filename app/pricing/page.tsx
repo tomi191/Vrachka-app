@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Check, X, Crown, Sparkles } from "lucide-react";
 import Link from "next/link";
+import { CheckoutButton } from "./CheckoutButton";
 
 export default async function PricingPage() {
   const supabase = await createClient();
@@ -92,15 +93,10 @@ export default async function PricingPage() {
                 <Feature text="Приоритетна поддръжка" included />
               </ul>
               {user ? (
-                <form action="/api/checkout" method="POST">
-                  <input type="hidden" name="priceId" value="basic" />
-                  <button
-                    type="submit"
-                    className="w-full px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-semibold"
-                  >
-                    Абонирай се
-                  </button>
-                </form>
+                <CheckoutButton
+                  priceId="basic"
+                  className="w-full px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-semibold"
+                />
               ) : (
                 <Link
                   href="/auth/register"
@@ -145,15 +141,10 @@ export default async function PricingPage() {
                 <Feature text="VIP поддръжка" included />
               </ul>
               {user ? (
-                <form action="/api/checkout" method="POST">
-                  <input type="hidden" name="priceId" value="ultimate" />
-                  <button
-                    type="submit"
-                    className="w-full px-4 py-3 bg-accent-600 hover:bg-accent-700 text-white rounded-lg transition-colors font-semibold"
-                  >
-                    Абонирай се
-                  </button>
-                </form>
+                <CheckoutButton
+                  priceId="ultimate"
+                  className="w-full px-4 py-3 bg-accent-600 hover:bg-accent-700 text-white rounded-lg transition-colors font-semibold"
+                />
               ) : (
                 <Link
                   href="/auth/register"

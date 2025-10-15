@@ -116,7 +116,9 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    return NextResponse.redirect(session.url!);
+    // Return JSON with checkout URL instead of server-side redirect
+    // Client-side will handle the redirect to Stripe Checkout
+    return NextResponse.json({ url: session.url });
   } catch (error) {
     console.error("Checkout error:", error);
     return NextResponse.json(
