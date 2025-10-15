@@ -64,26 +64,38 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Get user profile for context
+    // Get user profile and subscription for context
     const { data: profile } = await supabase
       .from('profiles')
       .select('full_name, zodiac_sign')
       .eq('id', user.id)
       .single();
 
-    // Generate Oracle response with AI
+    const { data: subscription } = await supabase
+      .from('subscriptions')
+      .select('plan_type')
+      .eq('user_id', user.id)
+      .single();
+
+    const planType = (subscription?.plan_type === 'ultimate' ? 'ultimate' : 'basic') as 'basic' | 'ultimate';
+
+    // Generate Oracle response with AI (Врачката)
     const prompt = getOraclePrompt(
       question,
       profile?.zodiac_sign,
-      profile?.full_name
+      profile?.full_name,
+      planType
     );
+
+    // Adjust max tokens based on plan (Ultimate gets deeper answers)
+    const maxTokens = planType === 'ultimate' ? 1500 : 800;
 
     const answer = await generateCompletion(
       ORACLE_SYSTEM_PROMPT,
       prompt,
       {
-        temperature: 0.9, // Higher temperature for more creative/varied responses
-        maxTokens: 1000,
+        temperature: 0.9, // Higher temperature for more creative/varied human responses
+        maxTokens,
       }
     );
 

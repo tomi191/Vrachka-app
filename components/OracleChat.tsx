@@ -85,10 +85,10 @@ export function OracleChat({ isPremium }: OracleChatProps) {
       <div className="space-y-6 animate-fade-in">
         <div className="text-center space-y-2">
           <h1 className="text-3xl font-bold gradient-text">
-            Дигитален Оракул
+            🔮 Врачката
           </h1>
           <p className="text-zinc-400">
-            Задай въпрос и получи духовен съвет
+            Старата Мъдрост Познава Твоята Душа
           </p>
         </div>
 
@@ -101,22 +101,24 @@ export function OracleChat({ isPremium }: OracleChatProps) {
 
               <div className="space-y-3">
                 <h2 className="text-2xl font-bold text-zinc-100">
-                  AI Асистент за Духовни Въпроси
+                  Мъдра Българска Врачка
                 </h2>
-                <p className="text-zinc-300 max-w-md mx-auto">
-                  Попитай Дигиталния Оракул за любов, кариера, здраве или личностно
-                  развитие. Получи мъдри съвети, базирани на твоята зодия и енергия.
+                <p className="text-zinc-300 max-w-md mx-auto leading-relaxed">
+                  Дете, виждам че душата ти търси отговори. Това е добре.
+                  <br /><br />
+                  Врачката отваря врати само на тези, които са готови да влязат.
+                  Безплатното пътешествие показва само пътя - да видиш дали искаш да вървиш.
                 </p>
               </div>
 
               <div className="space-y-2 text-left max-w-sm mx-auto">
                 <p className="text-sm text-zinc-400 font-semibold mb-3">
-                  Примерни въпроси:
+                  Какво питат хората:
                 </p>
                 {[
                   "Да приема ли новата работа?",
-                  "Какво ме очаква в любовта?",
-                  "Как да подобря енергията си?",
+                  "Обича ли ме наистина?",
+                  "Какво трябва да променя в живота си?",
                 ].map((q, i) => (
                   <div
                     key={i}
@@ -129,7 +131,7 @@ export function OracleChat({ isPremium }: OracleChatProps) {
 
               <div className="flex items-center justify-center gap-2 text-accent-400">
                 <Lock className="w-4 h-4" />
-                <span className="text-sm font-semibold">Премиум функция</span>
+                <span className="text-sm font-semibold">Само за готовите</span>
               </div>
 
               <div className="space-y-3">
@@ -137,10 +139,10 @@ export function OracleChat({ isPremium }: OracleChatProps) {
                   href="/pricing"
                   className="block w-full px-6 py-4 bg-accent-600 hover:bg-accent-700 text-white rounded-lg transition-all font-semibold text-lg shadow-lg text-center"
                 >
-                  Отключи за 9.99 лв./месец
+                  Влез при Врачката
                 </Link>
                 <p className="text-xs text-zinc-500">
-                  Basic: 3 въпроса/ден • Ultimate: 10 въпроса/ден
+                  Basic: 3 въпроса/ден • Ultimate: 10 въпроса/ден + дълбоки прозрения
                 </p>
               </div>
             </div>
@@ -154,16 +156,22 @@ export function OracleChat({ isPremium }: OracleChatProps) {
     <div className="space-y-6 animate-fade-in max-w-3xl mx-auto">
       <div className="text-center space-y-2">
         <h1 className="text-3xl font-bold gradient-text flex items-center justify-center gap-2">
-          <Sparkles className="w-8 h-8 text-accent-400" />
-          Дигитален Оракул
+          🔮 Врачката
         </h1>
         <p className="text-zinc-400">
-          Задай въпрос и получи мъдър отговор
+          Старата Мъдрост Познава Твоята Душа
         </p>
-        {usage && (
+        {usage && usage.allowed && (
           <p className="text-sm text-zinc-500">
-            Днес можеш да зададеш още {usage.remaining} от {usage.limit} въпроса
+            Днес можеш да питаш още {usage.remaining} {usage.remaining === 1 ? 'път' : 'пъти'}
           </p>
+        )}
+        {usage && !usage.allowed && (
+          <div className="inline-block px-4 py-2 bg-accent-950/30 border border-accent-600/50 rounded-lg">
+            <p className="text-sm text-accent-300">
+              🌙 Днес говорихме достатъчно, дете
+            </p>
+          </div>
         )}
       </div>
 
@@ -173,35 +181,84 @@ export function OracleChat({ isPremium }: OracleChatProps) {
         </div>
       )}
 
-      <Card className="glass-card">
-        <CardHeader>
-          <CardTitle className="text-zinc-50 flex items-center gap-2">
-            <MessageCircle className="w-5 h-5 text-accent-400" />
-            Задай въпрос
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
+      {/* Compassionate closure when no questions left */}
+      {usage && !usage.allowed && (
+        <Card className="glass-card border-accent-500/30">
+          <CardContent className="pt-8 pb-8">
+            <div className="text-center space-y-6">
+              <div className="text-6xl">🌙</div>
+              <div className="space-y-3">
+                <h3 className="text-xl font-bold text-zinc-100">
+                  Днес говорихме достатъчно, дете
+                </h3>
+                <p className="text-zinc-300 max-w-md mx-auto leading-relaxed">
+                  Дадох ти {usage.limit} {usage.limit === 1 ? 'отговор' : 'отговора'}. Сега е време да
+                  ги преживееш, не да търсиш още думи.
+                  <br /><br />
+                  Утре, когато се събудиш, ще те чакам с нови прозрения.
+                </p>
+              </div>
+
+              <div className="space-y-3">
+                {messages.length > 0 && (
+                  <button
+                    onClick={() => {
+                      const historySection = document.getElementById('oracle-history');
+                      historySection?.scrollIntoView({ behavior: 'smooth' });
+                    }}
+                    className="w-full px-6 py-3 border border-accent-600 text-accent-300 rounded-lg hover:bg-accent-900/20 transition-colors"
+                  >
+                    Прегледай днешните разговори
+                  </button>
+                )}
+                <div className="pt-4 border-t border-zinc-800">
+                  <p className="text-sm text-zinc-500 mb-3">
+                    ~ За неограничена мъдрост ~
+                  </p>
+                  <Link
+                    href="/pricing"
+                    className="block w-full px-6 py-3 bg-accent-600 hover:bg-accent-700 text-white rounded-lg transition-colors font-semibold"
+                  >
+                    {usage.limit === 3 ? 'Ultimate планът отваря вратата' : 'Виж Premium плановете'}
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Question form - only show if has remaining questions */}
+      {usage && usage.allowed && (
+        <Card className="glass-card">
+          <CardHeader>
+            <CardTitle className="text-zinc-50 flex items-center gap-2">
+              <MessageCircle className="w-5 h-5 text-accent-400" />
+              Задай въпрос на Врачката
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
           <form onSubmit={askOracle} className="space-y-4">
             <textarea
               value={question}
               onChange={(e) => setQuestion(e.target.value)}
-              placeholder="Какво те тревожи? Задай въпроса си..."
+              placeholder="Какво те тревожи? Задай въпроса си към Врачката..."
               rows={4}
               maxLength={500}
-              disabled={loading || (usage ? !usage.allowed : false)}
+              disabled={loading}
               className="w-full px-4 py-3 bg-zinc-950/50 border border-zinc-800 rounded-lg text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:ring-2 focus:ring-accent-600 resize-none disabled:opacity-50"
             />
             <div className="flex items-center justify-between">
               <span className="text-xs text-zinc-500">{question.length} / 500</span>
               <button
                 type="submit"
-                disabled={loading || !question.trim() || (usage ? !usage.allowed : false)}
+                disabled={loading || !question.trim()}
                 className="px-6 py-3 bg-accent-600 hover:bg-accent-700 disabled:bg-zinc-700 disabled:cursor-not-allowed text-white rounded-lg transition-colors font-semibold flex items-center gap-2"
               >
                 {loading ? (
                   <>
                     <Loader2 className="w-5 h-5 animate-spin" />
-                    Питам Оракула...
+                    Питам Врачката...
                   </>
                 ) : (
                   <>
@@ -216,8 +273,8 @@ export function OracleChat({ isPremium }: OracleChatProps) {
       </Card>
 
       {messages.length > 0 && (
-        <div className="space-y-4">
-          <h2 className="text-xl font-bold text-zinc-200">Твоите разговори</h2>
+        <div id="oracle-history" className="space-y-4">
+          <h2 className="text-xl font-bold text-zinc-200">Твоите разговори с Врачката</h2>
           {messages.map((msg, index) => (
             <Card key={msg.id || index} className="glass-card">
               <CardContent className="pt-6 space-y-4">
@@ -228,7 +285,7 @@ export function OracleChat({ isPremium }: OracleChatProps) {
                 <div className="p-4 bg-accent-950/30 rounded-lg border-l-4 border-accent-400">
                   <p className="text-sm text-accent-300 mb-2 font-semibold flex items-center gap-2">
                     <Sparkles className="w-4 h-4" />
-                    Мъдростта на Оракула:
+                    Врачката казва:
                   </p>
                   <p className="text-zinc-200 leading-relaxed whitespace-pre-wrap">{msg.answer}</p>
                 </div>
@@ -249,12 +306,12 @@ export function OracleChat({ isPremium }: OracleChatProps) {
         </div>
       )}
 
-      {messages.length === 0 && !loading && (
+      {messages.length === 0 && !loading && usage && usage.allowed && (
         <Card className="glass-card">
           <CardContent className="pt-8 pb-8 text-center">
-            <Sparkles className="w-12 h-12 text-zinc-700 mx-auto mb-4" />
-            <p className="text-zinc-400">Още нямаш разговори с Оракула</p>
-            <p className="text-sm text-zinc-500 mt-2">Задай първия си въпрос горе</p>
+            <div className="text-6xl mb-4">🔮</div>
+            <p className="text-zinc-400">Още нямаш разговори с Врачката</p>
+            <p className="text-sm text-zinc-500 mt-2">Задай първия си въпрос горе и тя ще ти отговори</p>
           </CardContent>
         </Card>
       )}
