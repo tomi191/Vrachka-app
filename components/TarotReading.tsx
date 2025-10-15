@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Lock, Sparkles, Heart, Briefcase, Loader2 } from "lucide-react";
+import { Lock, Sparkles, Heart, Briefcase, Loader2, Crown } from "lucide-react";
 import Link from "next/link";
 import { playShuffleSound, playFlipSound, playRevealSound } from "@/lib/sounds";
 
@@ -28,7 +28,9 @@ interface TarotReadingData {
   limit: number;
 }
 
-export function TarotReading() {
+type PlanType = 'free' | 'basic' | 'ultimate';
+
+export function TarotReading({ planType = 'free' }: { planType?: PlanType }) {
   const [reading, setReading] = useState<TarotReadingData | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -287,20 +289,25 @@ export function TarotReading() {
           title="Гадане с 3 карти"
           description="Минало, настояще, бъдеще"
           icon={<Sparkles className="w-8 h-8 text-accent-400" />}
+          planType={planType}
+          requiredPlan="basic"
           href="/tarot/three-card"
-          available={true}
         />
         <PremiumFeatureCard
           title="Любовно четене"
-          description="5 карти за твоята връзка"
+          description="5 карти за твоята връзка и любовен живот"
           icon={<Heart className="w-8 h-8 text-red-400" />}
-          available={false}
+          planType={planType}
+          requiredPlan="ultimate"
+          href="/tarot/love"
         />
         <PremiumFeatureCard
           title="Кариерно четене"
           description="5 карти за професионалното ти развитие"
           icon={<Briefcase className="w-8 h-8 text-blue-400" />}
-          available={false}
+          planType={planType}
+          requiredPlan="ultimate"
+          href="/tarot/career"
         />
       </div>
     </div>
@@ -311,31 +318,60 @@ function PremiumFeatureCard({
   title,
   description,
   icon,
+  planType,
+  requiredPlan,
   href,
-  available = false,
 }: {
   title: string;
   description: string;
   icon: React.ReactNode;
-  href?: string;
-  available?: boolean;
+  planType: PlanType;
+  requiredPlan: PlanType;
+  href: string;
 }) {
+  const hasAccess =
+    (requiredPlan === 'basic' && (planType === 'basic' || planType === 'ultimate')) ||
+    (requiredPlan === 'ultimate' && planType === 'ultimate');
+
+  const getBadge = () => {
+    if (requiredPlan === 'ultimate') {
+      return (
+        <div className="flex items-center gap-1 text-xs px-2 py-1 bg-accent-600/20 text-accent-300 rounded-full border border-accent-500/30">
+          <Sparkles className="w-3 h-3" />
+          Ultimate
+        </div>
+      );
+    }
+    if (requiredPlan === 'basic') {
+      return (
+        <div className="flex items-center gap-1 text-xs px-2 py-1 bg-blue-600/20 text-blue-300 rounded-full border border-blue-500/30">
+          <Crown className="w-3 h-3" />
+          Basic
+        </div>
+      );
+    }
+    return null;
+  };
+
   return (
     <Card className="glass-card relative overflow-hidden">
-      {!available && (
+      {!hasAccess && (
         <div className="absolute top-3 right-3">
           <Lock className="w-5 h-5 text-zinc-500" />
         </div>
       )}
       <CardContent className="pt-6">
-        <div className="flex items-center gap-4">
-          <div>{icon}</div>
+        <div className="flex items-start gap-4">
+          <div className="flex-shrink-0">{icon}</div>
           <div className="flex-1">
-            <h3 className="font-semibold text-zinc-100 mb-1">{title}</h3>
+            <div className="flex items-center gap-2 mb-1">
+              <h3 className="font-semibold text-zinc-100">{title}</h3>
+              {getBadge()}
+            </div>
             <p className="text-sm text-zinc-400">{description}</p>
           </div>
         </div>
-        {available && href ? (
+        {hasAccess ? (
           <Link
             href={href}
             className="block mt-4 w-full px-4 py-2 bg-accent-600 hover:bg-accent-700 text-white rounded-lg transition-colors text-sm text-center font-semibold"
@@ -347,7 +383,7 @@ function PremiumFeatureCard({
             href="/pricing"
             className="block mt-4 w-full px-4 py-2 border border-accent-600 text-accent-300 rounded-lg hover:bg-accent-900/20 transition-colors text-sm text-center"
           >
-            Отключи Премиум
+            {requiredPlan === 'ultimate' ? 'Upgrade до Ultimate' : 'Upgrade до Basic'}
           </Link>
         )}
       </CardContent>

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2, Lock, ArrowLeft } from "lucide-react";
+import { Loader2, Lock, ArrowLeft, Heart, Briefcase, Crown, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { playShuffleSound, playFlipSound, playRevealSound } from "@/lib/sounds";
 
@@ -28,7 +28,9 @@ interface ThreeCardReadingData {
   limit: number;
 }
 
-export function ThreeCardSpread({ isPremium }: { isPremium: boolean }) {
+type PlanType = 'free' | 'basic' | 'ultimate';
+
+export function ThreeCardSpread({ isPremium, planType }: { isPremium: boolean; planType: PlanType }) {
   const [reading, setReading] = useState<ThreeCardReadingData | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -384,6 +386,104 @@ export function ThreeCardSpread({ isPremium }: { isPremium: boolean }) {
           <li>• <strong>Бъдеще:</strong> Какво те очаква напред</li>
         </ul>
       </div>
+
+      {/* Other reading types */}
+      <div className="space-y-4 mt-6">
+        <h3 className="text-lg font-semibold text-zinc-200">Други видове четене</h3>
+        <PremiumFeatureCard
+          title="Любовно четене"
+          description="5 карти за твоята връзка и любовен живот"
+          icon={<Heart className="w-8 h-8 text-red-400" />}
+          planType={planType}
+          requiredPlan="ultimate"
+          href="/tarot/love"
+        />
+        <PremiumFeatureCard
+          title="Кариерно четене"
+          description="5 карти за професионалното ти развитие"
+          icon={<Briefcase className="w-8 h-8 text-blue-400" />}
+          planType={planType}
+          requiredPlan="ultimate"
+          href="/tarot/career"
+        />
+      </div>
     </div>
+  );
+}
+
+function PremiumFeatureCard({
+  title,
+  description,
+  icon,
+  planType,
+  requiredPlan,
+  href,
+}: {
+  title: string;
+  description: string;
+  icon: React.ReactNode;
+  planType: PlanType;
+  requiredPlan: PlanType;
+  href: string;
+}) {
+  const hasAccess =
+    (requiredPlan === 'basic' && (planType === 'basic' || planType === 'ultimate')) ||
+    (requiredPlan === 'ultimate' && planType === 'ultimate');
+
+  const getBadge = () => {
+    if (requiredPlan === 'ultimate') {
+      return (
+        <div className="flex items-center gap-1 text-xs px-2 py-1 bg-accent-600/20 text-accent-300 rounded-full border border-accent-500/30">
+          <Sparkles className="w-3 h-3" />
+          Ultimate
+        </div>
+      );
+    }
+    if (requiredPlan === 'basic') {
+      return (
+        <div className="flex items-center gap-1 text-xs px-2 py-1 bg-blue-600/20 text-blue-300 rounded-full border border-blue-500/30">
+          <Crown className="w-3 h-3" />
+          Basic
+        </div>
+      );
+    }
+    return null;
+  };
+
+  return (
+    <Card className="glass-card relative overflow-hidden">
+      {!hasAccess && (
+        <div className="absolute top-3 right-3">
+          <Lock className="w-5 h-5 text-zinc-500" />
+        </div>
+      )}
+      <CardContent className="pt-6">
+        <div className="flex items-start gap-4">
+          <div className="flex-shrink-0">{icon}</div>
+          <div className="flex-1">
+            <div className="flex items-center gap-2 mb-1">
+              <h3 className="font-semibold text-zinc-100">{title}</h3>
+              {getBadge()}
+            </div>
+            <p className="text-sm text-zinc-400">{description}</p>
+          </div>
+        </div>
+        {hasAccess ? (
+          <Link
+            href={href}
+            className="block mt-4 w-full px-4 py-2 bg-accent-600 hover:bg-accent-700 text-white rounded-lg transition-colors text-sm text-center font-semibold"
+          >
+            Започни четене
+          </Link>
+        ) : (
+          <Link
+            href="/pricing"
+            className="block mt-4 w-full px-4 py-2 border border-accent-600 text-accent-300 rounded-lg hover:bg-accent-900/20 transition-colors text-sm text-center"
+          >
+            {requiredPlan === 'ultimate' ? 'Upgrade до Ultimate' : 'Upgrade до Basic'}
+          </Link>
+        )}
+      </CardContent>
+    </Card>
   );
 }

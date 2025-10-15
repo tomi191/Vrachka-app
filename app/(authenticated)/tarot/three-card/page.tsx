@@ -14,10 +14,11 @@ export default async function ThreeCardPage() {
     .single();
 
   const isPremium = subscription?.plan_type !== "free";
+  const planType = (subscription?.plan_type || "free") as "free" | "basic" | "ultimate";
 
   return (
     <div className="container max-w-4xl mx-auto px-4 py-8">
-      <ThreeCardSpread isPremium={isPremium} />
+      <ThreeCardSpread isPremium={isPremium} planType={planType} />
     </div>
   );
 }
