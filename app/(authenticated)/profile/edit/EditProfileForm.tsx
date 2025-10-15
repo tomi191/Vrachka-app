@@ -3,10 +3,15 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2, AlertTriangle } from "lucide-react";
-import { calculateZodiacSign } from "@/lib/zodiac";
+import { getZodiacSign } from "@/lib/zodiac";
 
 interface EditProfileFormProps {
-  profile: any;
+  profile: {
+    full_name: string;
+    birth_date: string;
+    birth_time?: string;
+    birth_place?: string;
+  } | null;
 }
 
 export function EditProfileForm({ profile }: EditProfileFormProps) {
@@ -29,7 +34,7 @@ export function EditProfileForm({ profile }: EditProfileFormProps) {
 
     try {
       // Calculate new zodiac sign if birth date changed
-      const zodiac_sign = calculateZodiacSign(new Date(formData.birth_date));
+      const zodiac_sign = getZodiacSign(new Date(formData.birth_date));
 
       const response = await fetch("/api/profile/update", {
         method: "POST",
