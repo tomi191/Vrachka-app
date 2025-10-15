@@ -157,9 +157,29 @@ export function ThreeCardSpread({ isPremium }: { isPremium: boolean }) {
 
             {reading.cards.map((card, index) => (
               <div key={index} className="p-4 bg-zinc-950/50 rounded-lg border border-zinc-800">
-                <h4 className="text-sm font-semibold text-accent-300 mb-2">
-                  {card.position}: {card.name_bg}
-                </h4>
+                <div className="flex items-start gap-3 mb-3">
+                  {/* Card thumbnail */}
+                  <div
+                    className="flex-shrink-0 w-16 h-24 rounded overflow-hidden shadow-lg"
+                    style={{
+                      transform: card.reversed ? 'rotate(180deg)' : 'none'
+                    }}
+                  >
+                    <img
+                      src={card.image_url}
+                      alt={card.name_bg}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h4 className="text-sm font-semibold text-accent-300 mb-1">
+                      {card.position}
+                    </h4>
+                    <p className="text-xs text-zinc-400">
+                      {card.name_bg} {card.reversed && <span className="text-red-400">(Обърната)</span>}
+                    </p>
+                  </div>
+                </div>
                 <p className="text-zinc-300 text-sm mb-3">
                   {card.interpretation}
                 </p>
@@ -266,6 +286,20 @@ export function ThreeCardSpread({ isPremium }: { isPremium: boolean }) {
                               />
                             </div>
                           ))}
+                          <style jsx>{`
+                            @keyframes shuffle-0 {
+                              0%, 100% { transform: translate(0, 0) rotate(0deg); }
+                              25% { transform: translate(-20px, -15px) rotate(-10deg); }
+                              50% { transform: translate(20px, 10px) rotate(8deg); }
+                              75% { transform: translate(-15px, 12px) rotate(-6deg); }
+                            }
+                            @keyframes shuffle-1 {
+                              0%, 100% { transform: translate(0, 0) rotate(0deg); }
+                              25% { transform: translate(18px, -12px) rotate(9deg); }
+                              50% { transform: translate(-22px, 8px) rotate(-8deg); }
+                              75% { transform: translate(12px, 15px) rotate(5deg); }
+                            }
+                          `}</style>
                         </div>
                       ) : isRevealed && card ? (
                         // Revealed card

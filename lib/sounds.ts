@@ -8,9 +8,9 @@ class SoundManager {
   constructor() {
     if (typeof window !== 'undefined') {
       this.audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-      // Get saved preference
+      // Get saved preference - DISABLED by default
       const saved = localStorage.getItem('sounds_enabled');
-      this.enabled = saved === null ? true : saved === 'true';
+      this.enabled = saved === null ? false : saved === 'true';
     }
   }
 
@@ -126,4 +126,4 @@ export const toggleSounds = () => {
   }
   return false;
 };
-export const isSoundsEnabled = () => getSoundManager()?.isEnabled() ?? true;
+export const isSoundsEnabled = () => getSoundManager()?.isEnabled() ?? false;
