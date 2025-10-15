@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Lock, CreditCard, Sparkles, Heart, Briefcase, Loader2 } from "lucide-react";
+import { Lock, Sparkles, Heart, Briefcase, Loader2 } from "lucide-react";
 import Link from "next/link";
 
 interface TarotCard {
@@ -72,20 +72,24 @@ export function TarotReading() {
 
         <Card className="glass-card">
           <CardContent className="pt-6">
-            <div className="aspect-[2/3] max-w-[250px] mx-auto mb-6 bg-gradient-to-br from-accent-900 to-accent-950 border-2 border-accent-500/30 rounded-lg flex items-center justify-center relative overflow-hidden">
-              <div className="absolute inset-0 bg-[url('/tarot-pattern.png')] opacity-10"></div>
-              <div className="text-center z-10 p-6">
-                <CreditCard className="w-20 h-20 text-accent-300 mx-auto mb-4" />
-                <h3 className="text-xl font-bold text-zinc-100 mb-2">
-                  {card.name_bg}
-                </h3>
-                <p className="text-sm text-zinc-400">
-                  {card.name}
-                </p>
-                {card.reversed && (
-                  <p className="text-xs text-red-400 mt-2 font-semibold">REVERSED</p>
-                )}
-              </div>
+            <div className="aspect-[2/3] max-w-[250px] mx-auto mb-6 rounded-lg relative overflow-hidden shadow-2xl">
+              <img
+                src={card.image_url}
+                alt={card.name_bg}
+                className={`w-full h-full object-cover ${card.reversed ? 'rotate-180' : ''}`}
+              />
+            </div>
+
+            <div className="text-center mb-4">
+              <h3 className="text-xl font-bold text-zinc-100 mb-1">
+                {card.name_bg}
+              </h3>
+              <p className="text-sm text-zinc-400">
+                {card.name}
+              </p>
+              {card.reversed && (
+                <p className="text-xs text-red-400 mt-2 font-semibold">ОБЪРНАТА</p>
+              )}
             </div>
 
             <div className="space-y-4">
@@ -145,8 +149,13 @@ export function TarotReading() {
           <CardTitle className="text-zinc-50">Карта на деня</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="aspect-[2/3] max-w-[200px] mx-auto mb-4 bg-zinc-800 border border-zinc-700 rounded-lg flex items-center justify-center">
-            <CreditCard className="w-16 h-16 text-accent-400" />
+          <div className="aspect-[2/3] max-w-[200px] mx-auto mb-4 rounded-lg overflow-hidden shadow-xl cursor-pointer hover:scale-105 transition-transform"
+               onClick={!loading ? pullCard : undefined}>
+            <img
+              src="/Tarot/back.webp"
+              alt="Гръб на карта"
+              className="w-full h-full object-cover"
+            />
           </div>
           <button
             onClick={pullCard}
