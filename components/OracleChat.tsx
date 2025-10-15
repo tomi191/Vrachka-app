@@ -271,6 +271,7 @@ export function OracleChat({ isPremium }: OracleChatProps) {
           </form>
         </CardContent>
       </Card>
+      )}
 
       {messages.length > 0 && (
         <div id="oracle-history" className="space-y-4">
