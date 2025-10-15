@@ -111,9 +111,9 @@ export default async function ProfilePage() {
 
       {/* Menu Items */}
       <div className="space-y-2">
-        <MenuButton icon={<User />} label="Редакция на профила" />
-        <MenuButton icon={<Settings />} label="Настройки" />
-        <MenuButton icon={<Crown />} label="Покани приятел" />
+        <MenuButton icon={<User />} label="Редакция на профила" href="/profile/edit" />
+        <MenuButton icon={<Settings />} label="Настройки" href="/profile/settings" />
+        <MenuButton icon={<Crown />} label="Покани приятел" href="/profile/referral" />
       </div>
 
       {/* Logout */}
@@ -130,11 +130,11 @@ export default async function ProfilePage() {
   );
 }
 
-function MenuButton({ icon, label }: { icon: React.ReactNode; label: string }) {
+function MenuButton({ icon, label, href }: { icon: React.ReactNode; label: string; href: string }) {
   return (
-    <button className="w-full px-4 py-3 glass-card rounded-lg transition-colors flex items-center gap-3 text-left hover:bg-zinc-800/50">
+    <Link href={href} className="block w-full px-4 py-3 glass-card rounded-lg transition-colors flex items-center gap-3 text-left hover:bg-zinc-800/50">
       <div className="text-zinc-400">{icon}</div>
       <span className="text-zinc-200">{label}</span>
-    </button>
+    </Link>
   );
 }
