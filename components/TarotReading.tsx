@@ -287,16 +287,20 @@ export function TarotReading() {
           title="Гадане с 3 карти"
           description="Минало, настояще, бъдеще"
           icon={<Sparkles className="w-8 h-8 text-accent-400" />}
+          href="/tarot/three-card"
+          available={true}
         />
         <PremiumFeatureCard
           title="Любовно четене"
           description="5 карти за твоята връзка"
           icon={<Heart className="w-8 h-8 text-red-400" />}
+          available={false}
         />
         <PremiumFeatureCard
           title="Кариерно четене"
           description="5 карти за професионалното ти развитие"
           icon={<Briefcase className="w-8 h-8 text-blue-400" />}
+          available={false}
         />
       </div>
     </div>
@@ -307,16 +311,22 @@ function PremiumFeatureCard({
   title,
   description,
   icon,
+  href,
+  available = false,
 }: {
   title: string;
   description: string;
   icon: React.ReactNode;
+  href?: string;
+  available?: boolean;
 }) {
   return (
     <Card className="glass-card relative overflow-hidden">
-      <div className="absolute top-3 right-3">
-        <Lock className="w-5 h-5 text-zinc-500" />
-      </div>
+      {!available && (
+        <div className="absolute top-3 right-3">
+          <Lock className="w-5 h-5 text-zinc-500" />
+        </div>
+      )}
       <CardContent className="pt-6">
         <div className="flex items-center gap-4">
           <div>{icon}</div>
@@ -325,12 +335,21 @@ function PremiumFeatureCard({
             <p className="text-sm text-zinc-400">{description}</p>
           </div>
         </div>
-        <Link
-          href="/pricing"
-          className="block mt-4 w-full px-4 py-2 border border-accent-600 text-accent-300 rounded-lg hover:bg-accent-900/20 transition-colors text-sm text-center"
-        >
-          Отключи Премиум
-        </Link>
+        {available && href ? (
+          <Link
+            href={href}
+            className="block mt-4 w-full px-4 py-2 bg-accent-600 hover:bg-accent-700 text-white rounded-lg transition-colors text-sm text-center font-semibold"
+          >
+            Започни четене
+          </Link>
+        ) : (
+          <Link
+            href="/pricing"
+            className="block mt-4 w-full px-4 py-2 border border-accent-600 text-accent-300 rounded-lg hover:bg-accent-900/20 transition-colors text-sm text-center"
+          >
+            Отключи Премиум
+          </Link>
+        )}
       </CardContent>
     </Card>
   );
