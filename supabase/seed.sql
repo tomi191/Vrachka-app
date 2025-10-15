@@ -2,6 +2,9 @@
 -- SEED DATA - ALL 78 TAROT CARDS
 -- =============================================
 
+-- Clear existing tarot cards first
+DELETE FROM tarot_cards;
+
 INSERT INTO tarot_cards (name, name_bg, card_type, image_url, upright_meaning) VALUES
 -- =============================================
 -- MAJOR ARCANA (Cards 1-22)
