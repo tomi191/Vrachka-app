@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { zodiacSigns, type ZodiacSign } from "@/lib/zodiac";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { User, Settings, LogOut, Crown, Flame } from "lucide-react";
+import { User, Settings, LogOut, Crown, Flame, History } from "lucide-react";
 import { signOut } from "@/app/actions/auth";
 import { ManageSubscriptionButton } from "@/components/ManageSubscriptionButton";
 import Link from "next/link";
@@ -111,6 +111,7 @@ export default async function ProfilePage() {
 
       {/* Menu Items */}
       <div className="space-y-2">
+        <MenuButton icon={<History />} label="История на четенията" href="/profile/history" />
         <MenuButton icon={<User />} label="Редакция на профила" href="/profile/edit" />
         <MenuButton icon={<Settings />} label="Настройки" href="/profile/settings" />
         <MenuButton icon={<Crown />} label="Покани приятел" href="/profile/referral" />

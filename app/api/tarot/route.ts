@@ -161,6 +161,26 @@ export async function POST(req: NextRequest) {
     // Increment usage
     await incrementTarotUsage(user.id);
 
+    // Save reading to history (only for single card readings for now)
+    if (spreadType === 'single' && selectedCards.length > 0) {
+      const card = selectedCards[0];
+      try {
+        await supabase.from('tarot_readings').insert({
+          user_id: user.id,
+          card_id: card.id,
+          card_name: card.name,
+          card_name_bg: card.name_bg,
+          card_image_url: card.image_url,
+          is_reversed: card.reversed,
+          interpretation: reading.cards[0]?.interpretation || '',
+          advice: reading.cards[0]?.advice || '',
+        });
+      } catch (historyError) {
+        // Don't fail the request if history saving fails
+        console.error('Failed to save reading history:', historyError);
+      }
+    }
+
     // Prepare response
     const cardsWithInterpretations = selectedCards.map((card, index) => ({
       id: card.id,
