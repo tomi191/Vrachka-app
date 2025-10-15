@@ -31,6 +31,7 @@ export function TarotReading() {
   const [reading, setReading] = useState<TarotReadingData | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isFlipping, setIsFlipping] = useState(false);
 
   async function pullCard() {
     try {
@@ -49,10 +50,19 @@ export function TarotReading() {
       }
 
       const data = await response.json();
-      setReading(data);
+
+      // Start flip animation
+      setIsFlipping(true);
+
+      // Show card after flip animation completes
+      setTimeout(() => {
+        setReading(data);
+        setIsFlipping(false);
+      }, 600);
     } catch (err) {
       console.error('Tarot error:', err);
       setError(err instanceof Error ? err.message : 'Грешка при теглене на карта');
+      setIsFlipping(false);
     } finally {
       setLoading(false);
     }
@@ -72,7 +82,12 @@ export function TarotReading() {
 
         <Card className="glass-card">
           <CardContent className="pt-6">
-            <div className="aspect-[2/3] max-w-[250px] mx-auto mb-6 rounded-lg relative overflow-hidden shadow-2xl">
+            <div
+              className="aspect-[2/3] max-w-[250px] mx-auto mb-6 rounded-lg relative overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-700"
+              style={{
+                animationDelay: '100ms'
+              }}
+            >
               <img
                 src={card.image_url}
                 alt={card.name_bg}
@@ -149,13 +164,28 @@ export function TarotReading() {
           <CardTitle className="text-zinc-50">Карта на деня</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="aspect-[2/3] max-w-[200px] mx-auto mb-4 rounded-lg overflow-hidden shadow-xl cursor-pointer hover:scale-105 transition-transform"
-               onClick={!loading ? pullCard : undefined}>
-            <img
-              src="/Tarot/back.webp"
-              alt="Гръб на карта"
-              className="w-full h-full object-cover"
-            />
+          <div
+            className="aspect-[2/3] max-w-[200px] mx-auto mb-4 rounded-lg overflow-hidden shadow-xl cursor-pointer transition-all duration-300"
+            style={{
+              perspective: '1000px',
+              transform: loading && !isFlipping ? 'scale(1.05)' : 'scale(1)'
+            }}
+            onClick={!loading ? pullCard : undefined}
+          >
+            <div
+              className="relative w-full h-full transition-transform duration-600"
+              style={{
+                transformStyle: 'preserve-3d',
+                transform: isFlipping ? 'rotateY(180deg)' : 'rotateY(0deg)',
+                animation: loading && !isFlipping ? 'pulse 1s ease-in-out infinite' : 'none'
+              }}
+            >
+              <img
+                src="/Tarot/back.webp"
+                alt="Гръб на карта"
+                className="w-full h-full object-cover"
+              />
+            </div>
           </div>
           <button
             onClick={pullCard}
