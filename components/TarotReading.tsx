@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Lock, Sparkles, Heart, Briefcase, Loader2 } from "lucide-react";
 import Link from "next/link";
+import { playShuffleSound, playFlipSound, playRevealSound } from "@/lib/sounds";
 
 interface TarotCard {
   id: number;
@@ -40,6 +41,9 @@ export function TarotReading() {
       setError(null);
       setIsShuffling(true);
 
+      // Play shuffle sound
+      playShuffleSound();
+
       const response = await fetch('/api/tarot', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -58,10 +62,18 @@ export function TarotReading() {
         setIsShuffling(false);
         setIsFlipping(true);
 
+        // Play flip sound
+        playFlipSound();
+
         // Show card after flip animation completes
         setTimeout(() => {
           setReading(data);
           setIsFlipping(false);
+
+          // Play reveal sound
+          setTimeout(() => {
+            playRevealSound();
+          }, 200);
         }, 600);
       }, 1500);
     } catch (err) {
