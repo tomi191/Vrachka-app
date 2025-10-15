@@ -31,12 +31,14 @@ export function TarotReading() {
   const [reading, setReading] = useState<TarotReadingData | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isShuffling, setIsShuffling] = useState(false);
   const [isFlipping, setIsFlipping] = useState(false);
 
   async function pullCard() {
     try {
       setLoading(true);
       setError(null);
+      setIsShuffling(true);
 
       const response = await fetch('/api/tarot', {
         method: 'POST',
@@ -51,17 +53,21 @@ export function TarotReading() {
 
       const data = await response.json();
 
-      // Start flip animation
-      setIsFlipping(true);
-
-      // Show card after flip animation completes
+      // Shuffle animation duration
       setTimeout(() => {
-        setReading(data);
-        setIsFlipping(false);
-      }, 600);
+        setIsShuffling(false);
+        setIsFlipping(true);
+
+        // Show card after flip animation completes
+        setTimeout(() => {
+          setReading(data);
+          setIsFlipping(false);
+        }, 600);
+      }, 1500);
     } catch (err) {
       console.error('Tarot error:', err);
       setError(err instanceof Error ? err.message : 'Грешка при теглене на карта');
+      setIsShuffling(false);
       setIsFlipping(false);
     } finally {
       setLoading(false);
@@ -165,27 +171,87 @@ export function TarotReading() {
         </CardHeader>
         <CardContent>
           <div
-            className="aspect-[2/3] max-w-[200px] mx-auto mb-4 rounded-lg overflow-hidden shadow-xl cursor-pointer transition-all duration-300"
-            style={{
-              perspective: '1000px',
-              transform: loading && !isFlipping ? 'scale(1.05)' : 'scale(1)'
-            }}
-            onClick={!loading ? pullCard : undefined}
+            className="relative aspect-[2/3] max-w-[200px] mx-auto mb-4"
+            style={{ height: '300px' }}
           >
-            <div
-              className="relative w-full h-full transition-transform duration-600"
-              style={{
-                transformStyle: 'preserve-3d',
-                transform: isFlipping ? 'rotateY(180deg)' : 'rotateY(0deg)',
-                animation: loading && !isFlipping ? 'pulse 1s ease-in-out infinite' : 'none'
-              }}
-            >
-              <img
-                src="/Tarot/back.webp"
-                alt="Гръб на карта"
-                className="w-full h-full object-cover"
-              />
-            </div>
+            {isShuffling ? (
+              // Shuffle animation - multiple cards moving
+              <div className="absolute inset-0">
+                {[...Array(5)].map((_, i) => (
+                  <div
+                    key={i}
+                    className="absolute inset-0 rounded-lg overflow-hidden shadow-xl"
+                    style={{
+                      animation: `shuffle-${i} 1.5s ease-in-out infinite`,
+                      animationDelay: `${i * 0.1}s`,
+                      zIndex: 5 - i
+                    }}
+                  >
+                    <img
+                      src="/Tarot/back.webp"
+                      alt="Shuffle"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                ))}
+                <style jsx>{`
+                  @keyframes shuffle-0 {
+                    0%, 100% { transform: translate(0, 0) rotate(0deg); }
+                    25% { transform: translate(-30px, -20px) rotate(-15deg); }
+                    50% { transform: translate(30px, 10px) rotate(10deg); }
+                    75% { transform: translate(-20px, 15px) rotate(-8deg); }
+                  }
+                  @keyframes shuffle-1 {
+                    0%, 100% { transform: translate(0, 0) rotate(0deg); }
+                    25% { transform: translate(25px, -15px) rotate(12deg); }
+                    50% { transform: translate(-35px, 5px) rotate(-10deg); }
+                    75% { transform: translate(15px, 20px) rotate(7deg); }
+                  }
+                  @keyframes shuffle-2 {
+                    0%, 100% { transform: translate(0, 0) rotate(0deg); }
+                    25% { transform: translate(-20px, 10px) rotate(-8deg); }
+                    50% { transform: translate(20px, -15px) rotate(15deg); }
+                    75% { transform: translate(-10px, 5px) rotate(-5deg); }
+                  }
+                  @keyframes shuffle-3 {
+                    0%, 100% { transform: translate(0, 0) rotate(0deg); }
+                    25% { transform: translate(35px, 15px) rotate(10deg); }
+                    50% { transform: translate(-25px, -10px) rotate(-12deg); }
+                    75% { transform: translate(20px, -5px) rotate(6deg); }
+                  }
+                  @keyframes shuffle-4 {
+                    0%, 100% { transform: translate(0, 0) rotate(0deg); }
+                    25% { transform: translate(-15px, 20px) rotate(-10deg); }
+                    50% { transform: translate(30px, -20px) rotate(8deg); }
+                    75% { transform: translate(-25px, 10px) rotate(-7deg); }
+                  }
+                `}</style>
+              </div>
+            ) : (
+              // Single card - flip or static
+              <div
+                className="absolute inset-0 rounded-lg overflow-hidden shadow-xl cursor-pointer transition-all duration-300"
+                style={{
+                  perspective: '1000px',
+                  transform: !reading && !loading ? 'scale(1)' : 'scale(1.05)'
+                }}
+                onClick={!loading ? pullCard : undefined}
+              >
+                <div
+                  className="relative w-full h-full transition-transform duration-600"
+                  style={{
+                    transformStyle: 'preserve-3d',
+                    transform: isFlipping ? 'rotateY(180deg)' : 'rotateY(0deg)'
+                  }}
+                >
+                  <img
+                    src="/Tarot/back.webp"
+                    alt="Гръб на карта"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              </div>
+            )}
           </div>
           <button
             onClick={pullCard}
@@ -195,7 +261,7 @@ export function TarotReading() {
             {loading ? (
               <>
                 <Loader2 className="w-5 h-5 animate-spin" />
-                Тегли карта...
+                {isShuffling ? 'Размесване...' : 'Теглене...'}
               </>
             ) : (
               'Разкрий картата'
