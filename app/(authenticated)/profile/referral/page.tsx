@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { generateReferralCode } from "@/lib/referrals";
 import { ReferralCard } from "./ReferralCard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, Gift } from "lucide-react";
@@ -130,11 +131,4 @@ function Step({
       </div>
     </div>
   );
-}
-
-// Generate unique referral code from email
-function generateReferralCode(email: string): string {
-  const username = email.split("@")[0].toUpperCase();
-  const randomNum = Math.floor(Math.random() * 10000);
-  return `${username}${randomNum}`;
 }

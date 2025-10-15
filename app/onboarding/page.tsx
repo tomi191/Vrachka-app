@@ -75,6 +75,30 @@ export default function OnboardingPage() {
 
       if (profileError) throw profileError;
 
+      // Check for referral code and redeem it
+      const referralCode = sessionStorage.getItem('referral_code');
+      if (referralCode) {
+        try {
+          const response = await fetch('/api/referrals/redeem', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ code: referralCode }),
+          });
+
+          if (response.ok) {
+            console.log('Referral code redeemed successfully');
+          } else {
+            const data = await response.json();
+            console.warn('Failed to redeem referral code:', data.error);
+          }
+        } catch (err) {
+          console.error('Error redeeming referral code:', err);
+        } finally {
+          // Clear the referral code from sessionStorage
+          sessionStorage.removeItem('referral_code');
+        }
+      }
+
       // Redirect to dashboard
       router.push("/dashboard");
       router.refresh();

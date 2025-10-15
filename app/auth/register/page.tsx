@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -16,7 +16,19 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
+  const searchParams = useSearchParams();
   const supabase = createClient();
+
+  // Capture referral code from URL and store in sessionStorage
+  const [referralCode, setReferralCode] = useState<string | null>(null);
+
+  useEffect(() => {
+    const refCode = searchParams.get('ref');
+    if (refCode) {
+      sessionStorage.setItem('referral_code', refCode);
+      setReferralCode(refCode);
+    }
+  }, [searchParams]);
 
   const handleEmailRegister = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -98,6 +110,19 @@ export default function RegisterPage() {
           <h1 className="text-4xl font-bold gradient-text">Vrachka</h1>
           <p className="text-zinc-400">Създай своя профил</p>
         </div>
+
+        {/* Referral Code Indicator */}
+        {referralCode && (
+          <div className="p-4 bg-accent-900/20 border border-accent-600/50 rounded-lg text-center space-y-1">
+            <p className="text-sm text-accent-300">
+              🎁 Използваш референтен код
+            </p>
+            <p className="text-lg font-bold text-accent-400">{referralCode}</p>
+            <p className="text-xs text-zinc-400">
+              Ще получиш специална награда при регистрация!
+            </p>
+          </div>
+        )}
 
         <Card className="glass-card">
           <CardHeader>
