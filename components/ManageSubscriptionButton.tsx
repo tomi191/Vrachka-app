@@ -2,9 +2,11 @@
 
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 export function ManageSubscriptionButton() {
   const [loading, setLoading] = useState(false);
+  const { toast } = useToast();
 
   const handleManage = async () => {
     setLoading(true);
@@ -17,18 +19,30 @@ export function ManageSubscriptionButton() {
 
       if (!response.ok) {
         console.error("Customer portal error:", data);
-        alert(`Грешка: ${data.error || 'Неуспешно отваряне на портала'}`);
+        toast({
+          variant: "destructive",
+          title: "Грешка",
+          description: data.error || 'Неуспешно отваряне на портала',
+        });
         return;
       }
 
       if (data.url) {
         window.location.href = data.url;
       } else {
-        alert("Грешка: Липсва URL за портала");
+        toast({
+          variant: "destructive",
+          title: "Грешка",
+          description: "Липсва URL за портала",
+        });
       }
     } catch (error) {
       console.error("Error opening customer portal:", error);
-      alert("Грешка при отваряне на портала. Моля, опитайте отново.");
+      toast({
+        variant: "destructive",
+        title: "Грешка",
+        description: "Грешка при отваряне на портала. Моля, опитайте отново.",
+      });
     } finally {
       setLoading(false);
     }
