@@ -13,14 +13,22 @@ export function ManageSubscriptionButton() {
         method: "POST",
       });
 
-      const { url } = await response.json();
+      const data = await response.json();
 
-      if (url) {
-        window.location.href = url;
+      if (!response.ok) {
+        console.error("Customer portal error:", data);
+        alert(`Грешка: ${data.error || 'Неуспешно отваряне на портала'}`);
+        return;
+      }
+
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        alert("Грешка: Липсва URL за портала");
       }
     } catch (error) {
       console.error("Error opening customer portal:", error);
-      alert("Грешка при отваряне на портала");
+      alert("Грешка при отваряне на портала. Моля, опитайте отново.");
     } finally {
       setLoading(false);
     }

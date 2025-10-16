@@ -3,6 +3,21 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Check, X, Crown, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { CheckoutButton } from "./CheckoutButton";
+import { Metadata } from "next";
+import { StructuredData, getSubscriptionSchema } from "@/components/StructuredData";
+
+export const metadata: Metadata = {
+  title: 'Цени',
+  description: 'Избери най-подходящия план за теб. Безплатен план, Basic (9.99 лв/месец) или Ultimate (19.99 лв/месец). Дневни хороскопи, таро четения и AI оракул за духовно развитие.',
+  openGraph: {
+    title: 'Цени | Vrachka',
+    description: 'Избери най-подходящия план за теб. От безплатен до Ultimate план с неограничени таро четения и AI консултации.',
+    url: '/pricing',
+  },
+  alternates: {
+    canonical: '/pricing',
+  },
+};
 
 export default async function PricingPage() {
   const supabase = await createClient();
@@ -11,7 +26,10 @@ export default async function PricingPage() {
   } = await supabase.auth.getUser();
 
   return (
-    <div className="min-h-screen bg-brand-950">
+    <>
+      <StructuredData data={getSubscriptionSchema('basic')} />
+      <StructuredData data={getSubscriptionSchema('ultimate')} />
+      <div className="min-h-screen bg-brand-950">
       <div className="max-w-7xl mx-auto px-4 py-16">
         {/* Header */}
         <div className="text-center space-y-4 mb-12">
@@ -189,6 +207,7 @@ export default async function PricingPage() {
         </div>
       </div>
     </div>
+    </>
   );
 }
 

@@ -1,10 +1,15 @@
 import Link from "next/link";
 import { ArrowRight, Sparkles, Shield, Zap, Calendar, Star, TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { StructuredData, organizationSchema, webApplicationSchema, faqSchema } from "@/components/StructuredData";
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-gradient-dark">
+    <>
+      <StructuredData data={organizationSchema} />
+      <StructuredData data={webApplicationSchema} />
+      <StructuredData data={faqSchema} />
+      <div className="min-h-screen bg-gradient-dark">
       {/* Navigation */}
       <nav className="fixed top-0 w-full z-50 border-b border-zinc-800/50 bg-brand-950/80 backdrop-blur-xl">
         <div className="container mx-auto px-6 h-16 flex items-center justify-between">
@@ -366,5 +371,6 @@ export default function LandingPage() {
         </div>
       </footer>
     </div>
+    </>
   );
 }

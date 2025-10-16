@@ -40,15 +40,24 @@ export async function POST(req: NextRequest) {
     }
 
     // Get Stripe customer ID
-    const { data: subscription } = await supabase
+    const { data: subscription, error: subError } = await supabase
       .from("subscriptions")
-      .select("stripe_customer_id")
+      .select("stripe_customer_id, plan_type")
       .eq("user_id", user.id)
       .single();
 
-    if (!subscription?.stripe_customer_id) {
+    if (subError || !subscription) {
+      console.error("Subscription query error:", subError);
       return NextResponse.json(
-        { error: "No subscription found" },
+        { error: "Нямате активен абонамент" },
+        { status: 404 }
+      );
+    }
+
+    if (!subscription.stripe_customer_id) {
+      console.error("Missing Stripe customer ID for user:", user.id);
+      return NextResponse.json(
+        { error: "Абонаментът не е свързан със Stripe. Моля, свържете се с поддръжката." },
         { status: 404 }
       );
     }
@@ -62,9 +71,14 @@ export async function POST(req: NextRequest) {
       return_url: `${baseUrl}/profile`,
     });
 
+    console.log("Created billing portal session for customer:", subscription.stripe_customer_id);
     return NextResponse.json({ url: session.url });
   } catch (error) {
     console.error("Customer portal error:", error);
-    return NextResponse.json({ error: error instanceof Error ? error.message : "Portal creation failed" }, { status: 500 });
+    const errorMessage = error instanceof Error ? error.message : "Неуспешно създаване на портала";
+    return NextResponse.json({
+      error: errorMessage,
+      details: error instanceof Error ? error.stack : undefined
+    }, { status: 500 });
   }
 }

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { stripe, ensureStripeConfigured } from "@/lib/stripe";
 import { createClient } from "@supabase/supabase-js";
 import Stripe from "stripe";
+import { sendPaymentConfirmationEmail } from "@/lib/email/send";
 
 // Lazy initialize Supabase client to avoid build-time errors
 function getSupabaseAdmin() {
@@ -117,6 +118,39 @@ async function handleCheckoutSessionCompleted(
     .eq("user_id", userId);
 
   console.log(`Subscription activated for user ${userId}`);
+
+  // Send payment confirmation email
+  try {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("full_name")
+      .eq("id", userId)
+      .single();
+
+    const { data: user } = await supabase.auth.admin.getUserById(userId);
+
+    if (user?.user?.email) {
+      const planName = planType === 'basic' ? 'Basic' : 'Ultimate';
+      const amount = planType === 'basic' ? '9.99' : '19.99';
+      const nextBillingDate = new Date(stripeSubscription.current_period_end * 1000).toLocaleDateString('bg-BG', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+      });
+
+      await sendPaymentConfirmationEmail(user.user.email, {
+        firstName: profile?.full_name?.split(' ')[0] || '',
+        plan: planName as 'Basic' | 'Ultimate',
+        amount,
+        nextBillingDate,
+      });
+
+      console.log(`Payment confirmation email sent to ${user.user.email}`);
+    }
+  } catch (emailError) {
+    console.error('Error sending payment confirmation email:', emailError);
+    // Don't fail the webhook if email fails
+  }
 }
 
 async function handleSubscriptionUpdated(
@@ -197,7 +231,8 @@ async function handleSubscriptionDeleted(
 
 async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
   console.log(`Payment succeeded for invoice ${invoice.id}`);
-  // Optionally send confirmation email or update payment records
+  // This handles recurring payments (renewal)
+  // First payment is handled in checkout.session.completed
 }
 
 async function handleInvoicePaymentFailed(

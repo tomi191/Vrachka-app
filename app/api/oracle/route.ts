@@ -1,15 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { ensureOpenAIConfigured, generateCompletion } from "@/lib/ai/client";
-import { ORACLE_SYSTEM_PROMPT, getOraclePrompt } from "@/lib/ai/prompts";
 import { canAskOracle, incrementOracleUsage, isPremiumUser } from "@/lib/subscription";
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
+const ORACLE_FUNCTION_URL = process.env.NEXT_PUBLIC_SUPABASE_URL
+  ? `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/oracle-chat`
+  : undefined;
+
 export async function POST(req: NextRequest) {
   try {
-    ensureOpenAIConfigured();
+    if (!ORACLE_FUNCTION_URL) {
+      throw new Error("Oracle Function URL not configured");
+    }
 
     const supabase = await createClient();
     const {
@@ -64,56 +68,31 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Get user profile and subscription for context
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('full_name, zodiac_sign')
-      .eq('id', user.id)
-      .single();
+    // Call Supabase Edge Function
+    const { data: session } = await supabase.auth.getSession();
 
-    const { data: subscription } = await supabase
-      .from('subscriptions')
-      .select('plan_type')
-      .eq('user_id', user.id)
-      .single();
+    const functionResponse = await fetch(ORACLE_FUNCTION_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${session.session?.access_token}`,
+      },
+      body: JSON.stringify({
+        question: question.trim(),
+        userId: user.id,
+      }),
+    });
 
-    const planType = (subscription?.plan_type === 'ultimate' ? 'ultimate' : 'basic') as 'basic' | 'ultimate';
+    if (!functionResponse.ok) {
+      const errorData = await functionResponse.json();
+      throw new Error(errorData.error || 'Edge Function error');
+    }
 
-    // Generate Oracle response with AI (Врачката)
-    const prompt = getOraclePrompt(
-      question,
-      profile?.zodiac_sign,
-      profile?.full_name,
-      planType
-    );
-
-    // Adjust max tokens based on plan (Ultimate gets deeper answers)
-    const maxTokens = planType === 'ultimate' ? 1500 : 800;
-
-    const answer = await generateCompletion(
-      ORACLE_SYSTEM_PROMPT,
-      prompt,
-      {
-        temperature: 0.9, // Higher temperature for more creative/varied human responses
-        maxTokens,
-      }
-    );
+    const { answer } = await functionResponse.json();
 
     if (!answer || answer.trim().length === 0) {
       throw new Error('AI generated empty response');
     }
-
-    // Save conversation to database
-    const { data: conversation } = await supabase
-      .from('oracle_conversations')
-      .insert({
-        user_id: user.id,
-        question: question.trim(),
-        answer: answer.trim(),
-        tokens_used: Math.ceil(answer.length / 4), // Rough estimate
-      })
-      .select()
-      .single();
 
     // Increment usage
     await incrementOracleUsage(user.id);
@@ -133,7 +112,6 @@ export async function POST(req: NextRequest) {
       .eq('id', user.id);
 
     return NextResponse.json({
-      id: conversation?.id,
       question: question.trim(),
       answer: answer.trim(),
       remaining: remaining - 1,

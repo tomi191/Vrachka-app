@@ -75,6 +75,11 @@ export default function OnboardingPage() {
 
       if (profileError) throw profileError;
 
+      // Send welcome email (don't wait for it, fire and forget)
+      fetch('/api/email/welcome', {
+        method: 'POST',
+      }).catch(err => console.error('Failed to send welcome email:', err));
+
       // Check for referral code and redeem it
       const referralCode = sessionStorage.getItem('referral_code');
       if (referralCode) {
