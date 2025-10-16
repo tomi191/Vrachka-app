@@ -57,22 +57,6 @@ export function PushNotificationPrompt() {
     }
   }
 
-  const handleUnsubscribe = async () => {
-    setLoading(true)
-    setError('')
-
-    try {
-      await unsubscribeFromPush()
-      setIsSubscribed(false)
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to unsubscribe'
-      setError(message)
-      console.error('Push unsubscribe error:', err)
-    } finally {
-      setLoading(false)
-    }
-  }
-
   // Don't render if not supported
   if (!isSupported) return null
 

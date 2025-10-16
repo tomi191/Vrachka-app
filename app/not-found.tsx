@@ -47,7 +47,7 @@ export default function NotFound() {
         {/* Fun fact */}
         <div className="pt-8 border-t border-zinc-800">
           <p className="text-sm text-zinc-500 italic">
-            "Понякога се изгубваме, за да намерим нещо ново." ✨
+            &ldquo;Понякога се изгубваме, за да намерим нещо ново.&rdquo; ✨
           </p>
         </div>
       </div>
