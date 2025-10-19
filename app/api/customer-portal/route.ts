@@ -75,7 +75,17 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ url: session.url });
   } catch (error) {
     console.error("Customer portal error:", error);
+
+    // Check if it's a Stripe configuration error
     const errorMessage = error instanceof Error ? error.message : "Неуспешно създаване на портала";
+
+    if (errorMessage.includes("No configuration provided") || errorMessage.includes("test mode default is disabled")) {
+      return NextResponse.json({
+        error: "Customer Portal не е конфигуриран в Stripe. Моля, активирайте го в Stripe Dashboard → Settings → Customer Portal.",
+        userMessage: "Портала за управление на абонамента временно не е наличен. Моля, свържете се с поддръжката.",
+      }, { status: 503 });
+    }
+
     return NextResponse.json({
       error: errorMessage,
       details: error instanceof Error ? error.stack : undefined

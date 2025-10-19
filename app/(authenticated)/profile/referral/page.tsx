@@ -11,35 +11,53 @@ export default async function ReferralPage() {
     data: { user },
   } = await supabase.auth.getUser();
 
+  if (!user) {
+    throw new Error("User not authenticated");
+  }
+
   // Get or create referral code
-  let { data: referralCode } = await supabase
+  let { data: referralCode, error: fetchError } = await supabase
     .from("referral_codes")
     .select("*")
-    .eq("referrer_user_id", user!.id)
-    .single();
+    .eq("referrer_user_id", user.id)
+    .maybeSingle(); // Use maybeSingle() instead of single() to avoid error if not found
 
   // If no code exists, create one
-  if (!referralCode) {
-    const code = generateReferralCode(user!.email!);
+  if (!referralCode && !fetchError) {
+    const code = generateReferralCode(user.email!);
 
-    const { data: newCode } = await supabase
+    const { data: newCode, error: insertError } = await supabase
       .from("referral_codes")
       .insert({
-        referrer_user_id: user!.id,
+        referrer_user_id: user.id,
         code: code,
         uses_count: 0,
       })
       .select()
       .single();
 
+    if (insertError) {
+      console.error("Error creating referral code:", insertError);
+      throw new Error("Failed to create referral code");
+    }
+
     referralCode = newCode;
   }
 
+  if (fetchError) {
+    console.error("Error fetching referral code:", fetchError);
+    throw new Error("Failed to fetch referral code");
+  }
+
   // Get referral redemptions count
-  const { count } = await supabase
+  const { count, error: countError } = await supabase
     .from("referral_redemptions")
     .select("*", { count: "exact", head: true })
-    .eq("referrer_user_id", user!.id);
+    .eq("referrer_user_id", user.id);
+
+  if (countError) {
+    console.error("Error counting referrals:", countError);
+  }
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -61,10 +79,16 @@ export default async function ReferralPage() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <ReferralCard
-            code={referralCode?.code || ""}
-            usesCount={count || 0}
-          />
+          {referralCode ? (
+            <ReferralCard
+              code={referralCode.code}
+              usesCount={count || 0}
+            />
+          ) : (
+            <div className="text-center py-8">
+              <p className="text-zinc-400">Грешка при зареждане на кода. Моля, опитайте отново.</p>
+            </div>
+          )}
         </CardContent>
       </Card>
 
