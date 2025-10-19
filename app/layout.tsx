@@ -51,9 +51,9 @@ export const metadata: Metadata = {
     description: 'Персонализирани дневни хороскопи, таро четения и духовни консултации с AI Врачката. Присъедини се към 10,000+ потребители в тяхното духовно пътуване.',
     images: [
       {
-        url: '/og-image.png',
-        width: 1200,
-        height: 630,
+        url: '/icon-512.png', // TODO: Create proper OG image (1200x630)
+        width: 512,
+        height: 512,
         alt: 'Vrachka - Твоят Духовен Гид',
       }
     ],
@@ -62,7 +62,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Vrachka - AI Хороскопи и Таро Четения',
     description: 'Персонализирани дневни хороскопи, таро четения и духовни консултации с AI.',
-    images: ['/og-image.png'],
+    images: ['/icon-512.png'], // TODO: Create proper OG image (1200x630)
   },
   robots: {
     index: true,

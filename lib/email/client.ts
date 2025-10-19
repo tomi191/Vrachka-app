@@ -7,5 +7,6 @@ if (!process.env.RESEND_API_KEY) {
 export const resend = new Resend(process.env.RESEND_API_KEY);
 
 // Email sender configuration
-export const FROM_EMAIL = 'Vrachka <noreply@vrachka.app>';
-export const REPLY_TO_EMAIL = 'support@vrachka.app';
+// Domain verified in Resend ✅
+export const FROM_EMAIL = 'Vrachka <noreply@vrachka.eu>';
+export const REPLY_TO_EMAIL = 'support@vrachka.eu';

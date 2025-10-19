@@ -1,0 +1,16 @@
+OG Image needed: 1200x630px
+
+Create a beautiful OG image for social sharing with:
+- Vrachka logo/branding
+- Dark purple/indigo gradient background
+- Text: "Vrachka - Твоят Духовен Гид"
+- Subtitle: "AI Хороскопи, Таро Четения, Духовни Насоки"
+
+Save as: public/og-image.png
+
+Tool suggestions:
+- Canva (free templates)
+- Figma (custom design)
+- Photoshop/GIMP
+
+For now, using icon-512.png as fallback in layout.tsx

@@ -3,6 +3,7 @@ import { stripe, ensureStripeConfigured } from "@/lib/stripe";
 import { createClient } from "@supabase/supabase-js";
 import Stripe from "stripe";
 import { sendPaymentConfirmationEmail } from "@/lib/email/send";
+import { grantReferrerReward } from "@/lib/referrals";
 
 // Lazy initialize Supabase client to avoid build-time errors
 function getSupabaseAdmin() {
@@ -150,6 +151,17 @@ async function handleCheckoutSessionCompleted(
   } catch (emailError) {
     console.error('Error sending payment confirmation email:', emailError);
     // Don't fail the webhook if email fails
+  }
+
+  // Grant referral reward if this user was referred
+  try {
+    const rewardResult = await grantReferrerReward(supabase, userId);
+    if (rewardResult.success) {
+      console.log(`Referral reward granted for user ${userId}`);
+    }
+  } catch (referralError) {
+    console.error('Error granting referral reward:', referralError);
+    // Don't fail the webhook if referral reward fails
   }
 }
 

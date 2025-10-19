@@ -456,3 +456,156 @@ export const UpsellEmail = ({ firstName }: { firstName: string }) => (
     <EmailFooter />
   </EmailWrapper>
 );
+
+// Email Verification Template (for Supabase Auth)
+export const EmailVerificationTemplate = ({ confirmationUrl }: { confirmationUrl: string }) => (
+  <EmailWrapper>
+    <EmailHeader />
+    <tr>
+      <td style={{
+        backgroundColor: '#18181b',
+        padding: '40px 30px',
+        borderRadius: '12px',
+      }}>
+        <h1 style={{
+          margin: '0 0 20px 0',
+          fontSize: '28px',
+          fontWeight: 'bold',
+          color: '#ffffff',
+        }}>
+          Потвърди имейл адреса си 📧
+        </h1>
+        <p style={{
+          margin: '0 0 16px 0',
+          fontSize: '16px',
+          lineHeight: '24px',
+          color: '#d4d4d8',
+        }}>
+          Здравей!
+        </p>
+        <p style={{
+          margin: '0 0 24px 0',
+          fontSize: '16px',
+          lineHeight: '24px',
+          color: '#d4d4d8',
+        }}>
+          Благодарим ти, че се регистрира във Vrachka! Моля, кликни на бутона по-долу, за да потвърдиш имейл адреса си и да активираш акаунта си.
+        </p>
+
+        <div style={{ textAlign: 'center', margin: '30px 0' }}>
+          <Button href={confirmationUrl}>
+            Потвърди имейл адреса →
+          </Button>
+        </div>
+
+        <p style={{
+          margin: '24px 0 0 0',
+          padding: '16px',
+          backgroundColor: '#27272a',
+          borderRadius: '8px',
+          fontSize: '14px',
+          lineHeight: '20px',
+          color: '#a1a1aa',
+        }}>
+          💡 Ако не си създавал акаунт във Vrachka, можеш спокойно да игнорираш този имейл.
+        </p>
+
+        <p style={{
+          margin: '16px 0 0 0',
+          fontSize: '12px',
+          lineHeight: '18px',
+          color: '#71717a',
+        }}>
+          Или копирай и постави този линк в браузъра си:<br />
+          <a href={confirmationUrl} style={{ color: '#8b5cf6', wordBreak: 'break-all' }}>
+            {confirmationUrl}
+          </a>
+        </p>
+      </td>
+    </tr>
+    <EmailFooter />
+  </EmailWrapper>
+);
+
+// Password Reset Template (for Supabase Auth)
+export const PasswordResetTemplate = ({ resetUrl }: { resetUrl: string }) => (
+  <EmailWrapper>
+    <EmailHeader />
+    <tr>
+      <td style={{
+        backgroundColor: '#18181b',
+        padding: '40px 30px',
+        borderRadius: '12px',
+      }}>
+        <h1 style={{
+          margin: '0 0 20px 0',
+          fontSize: '28px',
+          fontWeight: 'bold',
+          color: '#ffffff',
+        }}>
+          Нулиране на парола 🔐
+        </h1>
+        <p style={{
+          margin: '0 0 16px 0',
+          fontSize: '16px',
+          lineHeight: '24px',
+          color: '#d4d4d8',
+        }}>
+          Здравей!
+        </p>
+        <p style={{
+          margin: '0 0 24px 0',
+          fontSize: '16px',
+          lineHeight: '24px',
+          color: '#d4d4d8',
+        }}>
+          Получихме заявка за нулиране на паролата за твоя Vrachka акаунт. Кликни на бутона по-долу, за да създадеш нова парола.
+        </p>
+
+        <div style={{ textAlign: 'center', margin: '30px 0' }}>
+          <Button href={resetUrl}>
+            Нулирай паролата →
+          </Button>
+        </div>
+
+        <p style={{
+          margin: '24px 0 0 0',
+          padding: '16px',
+          backgroundColor: '#27272a',
+          borderRadius: '8px',
+          fontSize: '14px',
+          lineHeight: '20px',
+          color: '#a1a1aa',
+        }}>
+          💡 Ако не си заявявал нулиране на парола, можеш спокойно да игнорираш този имейл. Паролата ти остава непроменена.
+        </p>
+
+        <p style={{
+          margin: '16px 0 0 0',
+          padding: '16px',
+          backgroundColor: '#451a03',
+          borderRadius: '8px',
+          fontSize: '14px',
+          lineHeight: '20px',
+          color: '#fdba74',
+          borderLeft: '4px solid #f97316',
+        }}>
+          ⚠️ Този линк е валиден само 1 час. Ако изтече, ще трябва да заявиш ново нулиране.
+        </p>
+
+        <p style={{
+          margin: '16px 0 0 0',
+          fontSize: '12px',
+          lineHeight: '18px',
+          color: '#71717a',
+        }}>
+          Или копирай и постави този линк в браузъра си:<br />
+          <a href={resetUrl} style={{ color: '#8b5cf6', wordBreak: 'break-all' }}>
+            {resetUrl}
+          </a>
+        </p>
+      </td>
+    </tr>
+    <EmailFooter />
+  </EmailWrapper>
+);

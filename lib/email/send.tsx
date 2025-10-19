@@ -5,6 +5,8 @@ import {
   SubscriptionRenewalEmail,
   WeeklyDigestEmail,
   UpsellEmail,
+  EmailVerificationTemplate,
+  PasswordResetTemplate,
 } from './templates';
 
 export async function sendWelcomeEmail(to: string, firstName?: string) {
@@ -159,6 +161,48 @@ export async function sendUpsellEmail(to: string, firstName?: string) {
     return { success: true, data };
   } catch (error) {
     console.error('Error sending upsell email:', error);
+    return { success: false, error };
+  }
+}
+
+export async function sendVerificationEmail(to: string, confirmationUrl: string) {
+  try {
+    const { data, error } = await resend.emails.send({
+      from: FROM_EMAIL,
+      to,
+      subject: 'Потвърди имейл адреса си във Vrachka 📧',
+      react: EmailVerificationTemplate({ confirmationUrl }),
+    });
+
+    if (error) {
+      console.error('Error sending verification email:', error);
+      return { success: false, error };
+    }
+
+    return { success: true, data };
+  } catch (error) {
+    console.error('Error sending verification email:', error);
+    return { success: false, error };
+  }
+}
+
+export async function sendPasswordResetEmail(to: string, resetUrl: string) {
+  try {
+    const { data, error } = await resend.emails.send({
+      from: FROM_EMAIL,
+      to,
+      subject: 'Нулиране на парола - Vrachka 🔐',
+      react: PasswordResetTemplate({ resetUrl }),
+    });
+
+    if (error) {
+      console.error('Error sending password reset email:', error);
+      return { success: false, error };
+    }
+
+    return { success: true, data };
+  } catch (error) {
+    console.error('Error sending password reset email:', error);
     return { success: false, error };
   }
 }
