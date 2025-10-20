@@ -16,11 +16,13 @@ export default async function ReferralPage() {
   }
 
   // Get or create referral code
-  let { data: referralCode, error: fetchError } = await supabase
+  const { data: fetchedCode, error: fetchError } = await supabase
     .from("referral_codes")
     .select("*")
     .eq("referrer_user_id", user.id)
     .maybeSingle(); // Use maybeSingle() instead of single() to avoid error if not found
+
+  let referralCode = fetchedCode;
 
   // If no code exists, create one
   if (!referralCode && !fetchError) {
