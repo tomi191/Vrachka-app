@@ -1,10 +1,18 @@
 "use client";
 
-import { useState } from "react";
-import { Bell, Mail, Moon, Check } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Bell, Mail, Moon, Check, Loader2 } from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
 
 interface SettingsFormProps {
   userEmail: string;
+}
+
+interface UserPreferences {
+  email_notifications: boolean;
+  push_notifications: boolean;
+  daily_reminders: boolean;
+  weekly_digest: boolean;
 }
 
 export function SettingsForm({ userEmail }: SettingsFormProps) {
@@ -16,20 +24,111 @@ export function SettingsForm({ userEmail }: SettingsFormProps) {
   });
 
   const [saved, setSaved] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  const supabase = createClient();
+
+  // Load preferences from database
+  useEffect(() => {
+    async function loadPreferences() {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+
+        // Get or create preferences
+        const { data, error } = await supabase
+          .from('user_preferences')
+          .select('*')
+          .eq('user_id', user.id)
+          .maybeSingle();
+
+        if (error) {
+          console.error('Error loading preferences:', error);
+          return;
+        }
+
+        // If preferences exist, load them
+        if (data) {
+          setSettings({
+            emailNotifications: data.email_notifications,
+            pushNotifications: data.push_notifications,
+            dailyReminders: data.daily_reminders,
+            weeklyDigest: data.weekly_digest,
+          });
+        } else {
+          // Create default preferences
+          await supabase
+            .from('user_preferences')
+            .insert({
+              user_id: user.id,
+              email_notifications: true,
+              push_notifications: false,
+              daily_reminders: true,
+              weekly_digest: false,
+            });
+        }
+      } catch (err) {
+        console.error('Failed to load preferences:', err);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadPreferences();
+  }, []);
 
   const handleToggle = async (key: keyof typeof settings) => {
+    const newValue = !settings[key];
+
+    // Optimistically update UI
     setSettings((prev) => ({
       ...prev,
-      [key]: !prev[key],
+      [key]: newValue,
     }));
 
-    // Show saved indicator
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2000);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        throw new Error('Not authenticated');
+      }
 
-    // TODO: Save to database when preferences table is created
-    console.log("Settings updated:", { ...settings, [key]: !settings[key] });
+      // Map camelCase to snake_case
+      const dbKey = key.replace(/([A-Z])/g, '_$1').toLowerCase() as keyof UserPreferences;
+
+      // Update in database
+      const { error } = await supabase
+        .from('user_preferences')
+        .update({ [dbKey]: newValue })
+        .eq('user_id', user.id);
+
+      if (error) throw error;
+
+      // Show saved indicator
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2000);
+    } catch (err) {
+      console.error('Failed to save preference:', err);
+      setError('Грешка при запазване на настройките');
+
+      // Revert optimistic update
+      setSettings((prev) => ({
+        ...prev,
+        [key]: !newValue,
+      }));
+
+      setTimeout(() => setError(''), 3000);
+    }
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-8">
+        <Loader2 className="w-6 h-6 text-accent-400 animate-spin" />
+        <span className="ml-2 text-zinc-400">Зареждане на настройки...</span>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -38,6 +137,13 @@ export function SettingsForm({ userEmail }: SettingsFormProps) {
         <div className="fixed top-4 right-4 z-50 p-3 bg-green-900/90 border border-green-600/50 rounded-lg shadow-lg animate-fade-in flex items-center gap-2">
           <Check className="w-4 h-4 text-green-400" />
           <span className="text-sm text-green-100">Запазено</span>
+        </div>
+      )}
+
+      {/* Error Indicator */}
+      {error && (
+        <div className="fixed top-4 right-4 z-50 p-3 bg-red-900/90 border border-red-600/50 rounded-lg shadow-lg animate-fade-in">
+          <span className="text-sm text-red-100">{error}</span>
         </div>
       )}
 
