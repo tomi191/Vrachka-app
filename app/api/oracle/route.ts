@@ -3,12 +3,33 @@ import { createClient } from "@/lib/supabase/server";
 import { canAskOracle, incrementOracleUsage, isPremiumUser } from "@/lib/subscription";
 import { ensureOpenAIConfigured, generateCompletion } from "@/lib/ai/client";
 import { ORACLE_SYSTEM_PROMPT, getOraclePrompt } from "@/lib/ai/prompts";
+import { rateLimit, RATE_LIMITS, getClientIp, getRateLimitHeaders } from "@/lib/rate-limit";
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 export async function POST(req: NextRequest) {
   try {
+    // IP-based rate limiting (protection against abuse)
+    const clientIp = getClientIp(req);
+    const ipRateLimit = rateLimit(
+      `oracle:${clientIp}`,
+      RATE_LIMITS.oracle
+    );
+
+    if (!ipRateLimit.allowed) {
+      return NextResponse.json(
+        {
+          error: "Too many requests. Please try again later.",
+          rate_limit_exceeded: true,
+        },
+        {
+          status: 429,
+          headers: getRateLimitHeaders(ipRateLimit.remaining, ipRateLimit.resetAt),
+        }
+      );
+    }
+
     ensureOpenAIConfigured();
 
     const supabase = await createClient();

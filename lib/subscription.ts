@@ -3,53 +3,11 @@
  */
 
 import { createClient } from "@/lib/supabase/server";
-
-export type PlanType = 'free' | 'basic' | 'ultimate';
-
-export interface SubscriptionLimits {
-  dailyOracleQuestions: number;
-  dailyTarotReadings: number;
-  canAccessWeeklyHoroscope: boolean;
-  canAccessMonthlyHoroscope: boolean;
-  canAccessThreeCardSpread: boolean;
-  canAccessLoveReading: boolean;
-  canAccessCareerReading: boolean;
-  canAccessNatalChart: boolean;
-}
-
-// Define limits for each plan
-export const PLAN_LIMITS: Record<PlanType, SubscriptionLimits> = {
-  free: {
-    dailyOracleQuestions: 0, // Oracle is premium only
-    dailyTarotReadings: 1, // Card of the day only
-    canAccessWeeklyHoroscope: false,
-    canAccessMonthlyHoroscope: false,
-    canAccessThreeCardSpread: false,
-    canAccessLoveReading: false,
-    canAccessCareerReading: false,
-    canAccessNatalChart: false,
-  },
-  basic: {
-    dailyOracleQuestions: 3,
-    dailyTarotReadings: 3, // Matches package: 3 readings/day
-    canAccessWeeklyHoroscope: true,
-    canAccessMonthlyHoroscope: true,
-    canAccessThreeCardSpread: true,
-    canAccessLoveReading: false,
-    canAccessCareerReading: false,
-    canAccessNatalChart: false,
-  },
-  ultimate: {
-    dailyOracleQuestions: 10,
-    dailyTarotReadings: 999, // Unlimited tarot readings (practical limit)
-    canAccessWeeklyHoroscope: true,
-    canAccessMonthlyHoroscope: true,
-    canAccessThreeCardSpread: true,
-    canAccessLoveReading: true,
-    canAccessCareerReading: true,
-    canAccessNatalChart: true,
-  },
-};
+import {
+  PLAN_LIMITS,
+  type PlanType,
+  type SubscriptionLimits
+} from "@/lib/config/plans";
 
 /**
  * Get user's current subscription

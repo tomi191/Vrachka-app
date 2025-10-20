@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2, Lock, ArrowLeft, Heart, Briefcase, Crown, Sparkles } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { playShuffleSound, playFlipSound, playRevealSound } from "@/lib/sounds";
 
 interface TarotCard {
@@ -122,15 +123,17 @@ export function ThreeCardSpread({ isPremium, planType }: { isPremium: boolean; p
           {reading.cards.map((card, index) => (
             <div key={index} className="space-y-2">
               <div
-                className="aspect-[2/3] rounded-lg overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-700"
+                className="relative aspect-[2/3] rounded-lg overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-700"
                 style={{
                   animationDelay: `${index * 100}ms`,
                 }}
               >
-                <img
+                <Image
                   src={card.image_url}
                   alt={card.name_bg}
-                  className={`w-full h-full object-cover ${
+                  fill
+                  sizes="(max-width: 768px) 250px, 250px"
+                  className={`object-cover ${
                     card.reversed ? "rotate-180" : ""
                   }`}
                 />
@@ -162,15 +165,17 @@ export function ThreeCardSpread({ isPremium, planType }: { isPremium: boolean; p
                 <div className="flex items-start gap-3 mb-3">
                   {/* Card thumbnail */}
                   <div
-                    className="flex-shrink-0 w-16 h-24 rounded overflow-hidden shadow-lg"
+                    className="relative flex-shrink-0 w-16 h-24 rounded overflow-hidden shadow-lg"
                     style={{
                       transform: card.reversed ? 'rotate(180deg)' : 'none'
                     }}
                   >
-                    <img
+                    <Image
                       src={card.image_url}
                       alt={card.name_bg}
-                      className="w-full h-full object-cover"
+                      fill
+                      sizes="(max-width: 768px) 250px, 250px"
+                      className="object-cover"
                     />
                   </div>
                   <div className="flex-1 min-w-0">
@@ -281,10 +286,12 @@ export function ThreeCardSpread({ isPremium, planType }: { isPremium: boolean; p
                                 zIndex: 3 - i,
                               }}
                             >
-                              <img
+                              <Image
                                 src="/Tarot/back.webp"
                                 alt="Shuffle"
-                                className="w-full h-full object-cover"
+                                fill
+                                sizes="250px"
+                                className="object-cover"
                               />
                             </div>
                           ))}
@@ -306,10 +313,12 @@ export function ThreeCardSpread({ isPremium, planType }: { isPremium: boolean; p
                       ) : isRevealed && card ? (
                         // Revealed card
                         <div className="absolute inset-0 rounded-lg overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-700">
-                          <img
+                          <Image
                             src={card.image_url}
                             alt={card.name_bg}
-                            className={`w-full h-full object-cover ${
+                            fill
+                            sizes="(max-width: 768px) 250px, 250px"
+                            className={`object-cover ${
                               card.reversed ? "rotate-180" : ""
                             }`}
                           />
@@ -317,10 +326,12 @@ export function ThreeCardSpread({ isPremium, planType }: { isPremium: boolean; p
                       ) : (
                         // Face down card
                         <div className="absolute inset-0 rounded-lg overflow-hidden shadow-xl">
-                          <img
+                          <Image
                             src="/Tarot/back.webp"
                             alt="Card back"
-                            className="w-full h-full object-cover"
+                            fill
+                            sizes="250px"
+                            className="object-cover"
                           />
                         </div>
                       )}
@@ -339,15 +350,18 @@ export function ThreeCardSpread({ isPremium, planType }: { isPremium: boolean; p
             <>
               <div className="grid grid-cols-3 gap-4 mb-6">
                 {["Минало", "Настояще", "Бъдеще"].map((label, index) => (
-                  <div
-                    key={index}
-                    className="aspect-[2/3] rounded-lg overflow-hidden shadow-xl cursor-pointer hover:scale-105 transition-transform"
-                  >
-                    <img
-                      src="/Tarot/back.webp"
-                      alt={label}
-                      className="w-full h-full object-cover"
-                    />
+                  <div key={index}>
+                    <div
+                      className="relative aspect-[2/3] rounded-lg overflow-hidden shadow-xl cursor-pointer hover:scale-105 transition-transform"
+                    >
+                      <Image
+                        src="/Tarot/back.webp"
+                        alt={label}
+                        fill
+                        sizes="250px"
+                        className="object-cover"
+                      />
+                    </div>
                     <div className="text-center mt-2">
                       <p className="text-sm font-semibold text-accent-300">
                         {label}

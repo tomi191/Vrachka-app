@@ -7,7 +7,8 @@ class SoundManager {
 
   constructor() {
     if (typeof window !== 'undefined') {
-      this.audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const AudioContextClass = window.AudioContext || (window as typeof window & { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+      this.audioContext = new AudioContextClass();
       // Get saved preference - DISABLED by default
       const saved = localStorage.getItem('sounds_enabled');
       this.enabled = saved === null ? false : saved === 'true';

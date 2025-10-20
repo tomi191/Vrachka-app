@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2, Lock, ArrowLeft, Heart } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { playShuffleSound, playFlipSound, playRevealSound } from "@/lib/sounds";
 
 interface TarotCard {
@@ -114,13 +115,15 @@ export function LoveReading({ hasAccess }: { hasAccess: boolean }) {
           {reading.cards.map((card, index) => (
             <div key={index} className="space-y-2">
               <div
-                className="aspect-[2/3] rounded-lg overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-700"
+                className="relative aspect-[2/3] rounded-lg overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-700"
                 style={{ animationDelay: `${index * 100}ms` }}
               >
-                <img
+                <Image
                   src={card.image_url}
                   alt={card.name_bg}
-                  className={`w-full h-full object-cover ${
+                  fill
+                  sizes="(max-width: 768px) 250px, 250px"
+                  className={`object-cover ${
                     card.reversed ? "rotate-180" : ""
                   }`}
                 />
@@ -151,13 +154,15 @@ export function LoveReading({ hasAccess }: { hasAccess: boolean }) {
               <div key={index} className="p-4 bg-zinc-950/50 rounded-lg border border-zinc-800">
                 <div className="flex items-start gap-3 mb-3">
                   <div
-                    className="flex-shrink-0 w-16 h-24 rounded overflow-hidden shadow-lg"
+                    className="relative flex-shrink-0 w-16 h-24 rounded overflow-hidden shadow-lg"
                     style={{ transform: card.reversed ? 'rotate(180deg)' : 'none' }}
                   >
-                    <img
+                    <Image
                       src={card.image_url}
                       alt={card.name_bg}
-                      className="w-full h-full object-cover"
+                      fill
+                      sizes="(max-width: 768px) 250px, 250px"
+                      className="object-cover"
                     />
                   </div>
                   <div className="flex-1 min-w-0">
@@ -266,10 +271,12 @@ export function LoveReading({ hasAccess }: { hasAccess: boolean }) {
                                 zIndex: 3 - i,
                               }}
                             >
-                              <img
+                              <Image
                                 src="/Tarot/back.webp"
                                 alt="Shuffle"
-                                className="w-full h-full object-cover"
+                                fill
+                                sizes="250px"
+                                className="object-cover"
                               />
                             </div>
                           ))}
@@ -290,20 +297,24 @@ export function LoveReading({ hasAccess }: { hasAccess: boolean }) {
                         </div>
                       ) : isRevealed && card ? (
                         <div className="absolute inset-0 rounded-lg overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-700">
-                          <img
+                          <Image
                             src={card.image_url}
                             alt={card.name_bg}
-                            className={`w-full h-full object-cover ${
+                            fill
+                            sizes="(max-width: 768px) 250px, 250px"
+                            className={`object-cover ${
                               card.reversed ? "rotate-180" : ""
                             }`}
                           />
                         </div>
                       ) : (
                         <div className="absolute inset-0 rounded-lg overflow-hidden shadow-xl">
-                          <img
+                          <Image
                             src="/Tarot/back.webp"
                             alt="Card back"
-                            className="w-full h-full object-cover"
+                            fill
+                            sizes="250px"
+                            className="object-cover"
                           />
                         </div>
                       )}
@@ -323,11 +334,13 @@ export function LoveReading({ hasAccess }: { hasAccess: boolean }) {
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-6">
                 {["Ти", "Партньорът", "Връзката", "Предизвикателства", "Потенциал"].map((label, index) => (
                   <div key={index} className="space-y-2">
-                    <div className="aspect-[2/3] rounded-lg overflow-hidden shadow-xl">
-                      <img
+                    <div className="relative aspect-[2/3] rounded-lg overflow-hidden shadow-xl">
+                      <Image
                         src="/Tarot/back.webp"
                         alt={label}
-                        className="w-full h-full object-cover"
+                        fill
+                        sizes="250px"
+                        className="object-cover"
                       />
                     </div>
                     <p className="text-xs text-center font-semibold text-red-300">

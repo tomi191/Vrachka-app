@@ -1,4 +1,5 @@
 import Stripe from "stripe";
+import { PLAN_CONFIGS, validateStripePriceIds, type PlanType } from "@/lib/config/plans";
 
 // Use placeholder for build time, but will check at runtime in API routes
 const stripeKey = process.env.STRIPE_SECRET_KEY || "sk_test_placeholder_for_build";
@@ -8,35 +9,33 @@ export const stripe = new Stripe(stripeKey, {
   typescript: true,
 });
 
-export function ensureStripeConfigured() {
+/**
+ * Ensure Stripe is configured properly
+ */
+export function ensureStripeConfigured(): void {
   if (!process.env.STRIPE_SECRET_KEY) {
     throw new Error("STRIPE_SECRET_KEY is not configured in environment variables");
   }
+
+  // Validate price IDs are configured
+  const { valid, missing } = validateStripePriceIds();
+  if (!valid) {
+    console.warn(`Warning: Missing Stripe price IDs: ${missing.join(', ')}`);
+  }
 }
 
-// Price IDs - ще ги добавиш след като създадеш products в Stripe
+/**
+ * Get Stripe price IDs (deprecated - use PLAN_CONFIGS from plans.ts instead)
+ * @deprecated Use `import { PLAN_CONFIGS } from "@/lib/config/plans"` instead
+ */
 export const STRIPE_PRICES = {
-  BASIC_MONTHLY: process.env.STRIPE_BASIC_PRICE_ID || "",
-  ULTIMATE_MONTHLY: process.env.STRIPE_ULTIMATE_PRICE_ID || "",
+  BASIC_MONTHLY: PLAN_CONFIGS.basic.stripePriceId,
+  ULTIMATE_MONTHLY: PLAN_CONFIGS.ultimate.stripePriceId,
 };
 
-export const PLAN_LIMITS = {
-  free: {
-    dailyHoroscope: true,
-    cardOfDay: true,
-    tarotReadings: 0,
-    oracleQuestions: 0,
-  },
-  basic: {
-    dailyHoroscope: true,
-    cardOfDay: true,
-    tarotReadings: 3,
-    oracleQuestions: 3,
-  },
-  ultimate: {
-    dailyHoroscope: true,
-    cardOfDay: true,
-    tarotReadings: 999,
-    oracleQuestions: 10,
-  },
-};
+/**
+ * Get Stripe price ID for a plan type
+ */
+export function getStripePriceIdForPlan(planType: Exclude<PlanType, 'free'>): string {
+  return PLAN_CONFIGS[planType].stripePriceId;
+}

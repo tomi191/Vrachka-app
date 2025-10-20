@@ -1,4 +1,4 @@
-import { Loader2, Sparkles } from 'lucide-react'
+import { Sparkles } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 
 export default function DashboardLoading() {

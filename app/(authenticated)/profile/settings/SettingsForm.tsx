@@ -27,11 +27,10 @@ export function SettingsForm({ userEmail }: SettingsFormProps) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const supabase = createClient();
-
   // Load preferences from database
   useEffect(() => {
     async function loadPreferences() {
+      const supabase = createClient();
       try {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) return;
@@ -88,6 +87,7 @@ export function SettingsForm({ userEmail }: SettingsFormProps) {
     }));
 
     try {
+      const supabase = createClient();
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         throw new Error('Not authenticated');

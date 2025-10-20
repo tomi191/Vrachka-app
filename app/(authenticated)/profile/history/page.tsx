@@ -1,7 +1,8 @@
 import { createClient } from "@/lib/supabase/server";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { ArrowLeft, Calendar } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 
 export default async function HistoryPage() {
   const supabase = await createClient();
@@ -47,16 +48,16 @@ export default async function HistoryPage() {
                 <div className="flex gap-4">
                   {/* Card Image */}
                   <div className="flex-shrink-0">
-                    <div
-                      className="w-20 h-28 rounded-lg overflow-hidden shadow-lg"
-                      style={{
-                        transform: reading.is_reversed ? 'rotate(180deg)' : 'none'
-                      }}
-                    >
-                      <img
+                    <div className="relative w-20 h-28 rounded-lg overflow-hidden shadow-lg">
+                      <Image
                         src={reading.card_image_url}
                         alt={reading.card_name_bg}
-                        className="w-full h-full object-cover"
+                        fill
+                        sizes="80px"
+                        className="object-cover"
+                        style={{
+                          transform: reading.is_reversed ? 'rotate(180deg)' : 'none'
+                        }}
                       />
                     </div>
                   </div>

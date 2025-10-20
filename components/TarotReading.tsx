@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Lock, Sparkles, Heart, Briefcase, Loader2, Crown } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { playShuffleSound, playFlipSound, playRevealSound } from "@/lib/sounds";
 
 interface TarotCard {
@@ -108,10 +109,13 @@ export function TarotReading({ planType = 'free' }: { planType?: PlanType }) {
                 animationDelay: '100ms'
               }}
             >
-              <img
+              <Image
                 src={card.image_url}
                 alt={card.name_bg}
-                className={`w-full h-full object-cover ${card.reversed ? 'rotate-180' : ''}`}
+                fill
+                sizes="(max-width: 768px) 250px, 250px"
+                className={`object-cover ${card.reversed ? 'rotate-180' : ''}`}
+                priority
               />
             </div>
 
@@ -201,10 +205,12 @@ export function TarotReading({ planType = 'free' }: { planType?: PlanType }) {
                       zIndex: 5 - i
                     }}
                   >
-                    <img
+                    <Image
                       src="/Tarot/back.webp"
                       alt="Shuffle"
-                      className="w-full h-full object-cover"
+                      fill
+                      sizes="250px"
+                      className="object-cover"
                     />
                   </div>
                 ))}
@@ -258,10 +264,12 @@ export function TarotReading({ planType = 'free' }: { planType?: PlanType }) {
                     transform: isFlipping ? 'rotateY(180deg)' : 'rotateY(0deg)'
                   }}
                 >
-                  <img
+                  <Image
                     src="/Tarot/back.webp"
                     alt="Гръб на карта"
-                    className="w-full h-full object-cover"
+                    fill
+                    sizes="250px"
+                    className="object-cover"
                   />
                 </div>
               </div>
