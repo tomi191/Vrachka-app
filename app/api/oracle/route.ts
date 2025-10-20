@@ -1,19 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { canAskOracle, incrementOracleUsage, isPremiumUser } from "@/lib/subscription";
+import { ensureOpenAIConfigured, generateCompletion } from "@/lib/ai/client";
+import { ORACLE_SYSTEM_PROMPT, getOraclePrompt } from "@/lib/ai/prompts";
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-const ORACLE_FUNCTION_URL = process.env.NEXT_PUBLIC_SUPABASE_URL
-  ? `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/oracle-chat`
-  : undefined;
-
 export async function POST(req: NextRequest) {
   try {
-    if (!ORACLE_FUNCTION_URL) {
-      throw new Error("Oracle Function URL not configured");
-    }
+    ensureOpenAIConfigured();
 
     const supabase = await createClient();
     const {
@@ -68,30 +64,56 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Call Supabase Edge Function
-    const { data: session } = await supabase.auth.getSession();
+    // Get user profile for context
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('full_name, zodiac_sign')
+      .eq('id', user.id)
+      .single();
 
-    const functionResponse = await fetch(ORACLE_FUNCTION_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${session.session?.access_token}`,
-      },
-      body: JSON.stringify({
-        question: question.trim(),
-        userId: user.id,
-      }),
-    });
+    // Get subscription for plan type
+    const { data: subscription } = await supabase
+      .from('subscriptions')
+      .select('plan_type')
+      .eq('user_id', user.id)
+      .single();
 
-    if (!functionResponse.ok) {
-      const errorData = await functionResponse.json();
-      throw new Error(errorData.error || 'Edge Function error');
-    }
+    const planType = subscription?.plan_type === 'ultimate' ? 'ultimate' : 'basic';
 
-    const { answer } = await functionResponse.json();
+    // Generate AI response using OpenRouter
+    const oraclePrompt = getOraclePrompt(
+      question.trim(),
+      profile?.zodiac_sign || undefined,
+      profile?.full_name || undefined,
+      planType
+    );
+
+    const answer = await generateCompletion(
+      ORACLE_SYSTEM_PROMPT,
+      oraclePrompt,
+      {
+        temperature: 0.8,
+        maxTokens: planType === 'ultimate' ? 1000 : 600,
+      }
+    );
 
     if (!answer || answer.trim().length === 0) {
       throw new Error('AI generated empty response');
+    }
+
+    // Save conversation to database
+    const { error: conversationError } = await supabase
+      .from('oracle_conversations')
+      .insert({
+        user_id: user.id,
+        question: question.trim(),
+        answer: answer.trim(),
+        asked_at: new Date().toISOString(),
+      });
+
+    if (conversationError) {
+      console.error('Error saving conversation:', conversationError);
+      // Don't fail the request if saving fails
     }
 
     // Increment usage
