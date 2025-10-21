@@ -89,7 +89,8 @@ export async function middleware(request: NextRequest) {
   }
 
   // If user is logged in but hasn't completed onboarding
-  if (user && isProtectedRoute && request.nextUrl.pathname !== '/onboarding') {
+  // Skip onboarding check for admin routes - admins can access admin panel directly
+  if (user && isProtectedRoute && !isAdminRoute && request.nextUrl.pathname !== '/onboarding') {
     // Check if onboarding is completed
     const { data: profile } = await supabase
       .from('profiles')
