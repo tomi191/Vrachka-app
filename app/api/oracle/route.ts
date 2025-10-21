@@ -69,7 +69,7 @@ export async function POST(req: NextRequest) {
 
     // Get request body
     const body = await req.json();
-    const { question } = body;
+    const { question, conversation_id } = body;
 
     if (!question || question.trim().length < 5) {
       return NextResponse.json(
@@ -101,13 +101,32 @@ export async function POST(req: NextRequest) {
 
     const planType = subscription?.plan_type === 'ultimate' ? 'ultimate' : 'basic';
 
-    // Generate AI response using OpenRouter
+    // Load conversation context for memory (last 5-10 messages)
+    let conversationContext = "";
+    if (conversation_id) {
+      const { data: previousMessages } = await supabase
+        .from('oracle_conversations')
+        .select('question, answer, asked_at')
+        .eq('conversation_id', conversation_id)
+        .eq('user_id', user.id)
+        .order('asked_at', { ascending: false })
+        .limit(5);
+
+      if (previousMessages && previousMessages.length > 0) {
+        conversationContext = "\n\nПредишен разговор:\n" + previousMessages
+          .reverse() // Oldest first
+          .map((msg, idx) => `${idx + 1}. Въпрос: ${msg.question}\nОтговор: ${msg.answer}`)
+          .join("\n\n");
+      }
+    }
+
+    // Generate AI response using OpenRouter with conversation context
     const oraclePrompt = getOraclePrompt(
       question.trim(),
       profile?.zodiac_sign || undefined,
       profile?.full_name || undefined,
       planType
-    );
+    ) + conversationContext;
 
     const answer = await generateCompletion(
       ORACLE_SYSTEM_PROMPT,
@@ -122,13 +141,18 @@ export async function POST(req: NextRequest) {
       throw new Error('AI generated empty response');
     }
 
+    // Generate new conversation_id if not provided (start of new conversation)
+    const finalConversationId = conversation_id || crypto.randomUUID();
+
     // Save conversation to database
     const { error: conversationError } = await supabase
       .from('oracle_conversations')
       .insert({
         user_id: user.id,
+        conversation_id: finalConversationId,
         question: question.trim(),
         answer: answer.trim(),
+        message_type: 'user_question', // Will store both question and answer in one row for now
         asked_at: new Date().toISOString(),
       });
 
@@ -157,6 +181,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       question: question.trim(),
       answer: answer.trim(),
+      conversation_id: finalConversationId,
       remaining: remaining - 1,
       limit,
       asked_at: new Date().toISOString(),
