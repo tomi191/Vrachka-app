@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Users, ArrowLeft, Crown, Flame } from "lucide-react";
 import Link from "next/link";
+import { UserActionsMenu } from "@/components/admin/user-actions-menu";
 
 export default async function AdminUsersPage() {
   const supabase = await createClient();
@@ -98,16 +99,24 @@ export default async function AdminUsersPage() {
                           </div>
                         </div>
                       </div>
-                      <div className="mt-3 md:mt-0 text-right">
-                        <p className="text-sm text-zinc-400">
-                          Регистриран:{" "}
-                          {new Date(profile.created_at).toLocaleDateString(
-                            "bg-BG"
-                          )}
-                        </p>
-                        <p className="text-xs text-zinc-500">
-                          ID: {profile.id.substring(0, 8)}...
-                        </p>
+                      <div className="mt-3 md:mt-0 flex items-center gap-4">
+                        <div className="text-right">
+                          <p className="text-sm text-zinc-400">
+                            Регистриран:{" "}
+                            {new Date(profile.created_at).toLocaleDateString(
+                              "bg-BG"
+                            )}
+                          </p>
+                          <p className="text-xs text-zinc-500">
+                            ID: {profile.id.substring(0, 8)}...
+                          </p>
+                        </div>
+                        <UserActionsMenu
+                          userId={profile.id}
+                          userName={profile.full_name || "Unknown"}
+                          currentPlan={subscription?.plan_type || "free"}
+                          isAdmin={profile.is_admin || false}
+                        />
                       </div>
                     </div>
                   );

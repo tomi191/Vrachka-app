@@ -2,6 +2,8 @@ import { createClient } from "@/lib/supabase/server";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Crown, ArrowLeft, TrendingUp } from "lucide-react";
 import Link from "next/link";
+import { CancelSubscriptionButton } from "@/components/admin/subscription-actions";
+import { GrantPremiumWithUserSelect } from "@/components/admin/grant-premium-with-user-select";
 
 export default async function AdminSubscriptionsPage() {
   const supabase = await createClient();
@@ -50,6 +52,7 @@ export default async function AdminSubscriptionsPage() {
               </p>
             </div>
           </div>
+          <GrantPremiumWithUserSelect />
         </div>
 
         {/* Stats */}
@@ -113,9 +116,9 @@ export default async function AdminSubscriptionsPage() {
                 subscriptions.map((sub) => (
                   <div
                     key={sub.id}
-                    className="flex flex-col md:flex-row md:items-center justify-between p-4 bg-zinc-950/50 border border-zinc-800 rounded-lg"
+                    className="flex flex-col md:flex-row md:items-center justify-between p-4 bg-zinc-950/50 border border-zinc-800 rounded-lg hover:bg-zinc-900/30 transition-colors"
                   >
-                    <div>
+                    <div className="flex-1">
                       <p className="font-semibold text-zinc-100">
                         {sub.profiles?.full_name || "Unknown User"}
                       </p>
@@ -147,24 +150,31 @@ export default async function AdminSubscriptionsPage() {
                         </span>
                       </div>
                     </div>
-                    <div className="mt-3 md:mt-0 text-right space-y-1">
-                      <p className="text-sm text-zinc-400">
-                        Създаден:{" "}
-                        {new Date(sub.created_at).toLocaleDateString("bg-BG")}
-                      </p>
-                      {sub.current_period_end && (
-                        <p className="text-xs text-zinc-500">
-                          Изтича:{" "}
-                          {new Date(sub.current_period_end).toLocaleDateString(
-                            "bg-BG"
-                          )}
+                    <div className="mt-3 md:mt-0 flex items-center gap-4">
+                      <div className="text-right space-y-1">
+                        <p className="text-sm text-zinc-400">
+                          Създаден:{" "}
+                          {new Date(sub.created_at).toLocaleDateString("bg-BG")}
                         </p>
-                      )}
-                      {sub.stripe_customer_id && (
-                        <p className="text-xs text-zinc-600">
-                          Stripe: {sub.stripe_customer_id.substring(0, 12)}...
-                        </p>
-                      )}
+                        {sub.current_period_end && (
+                          <p className="text-xs text-zinc-500">
+                            Изтича:{" "}
+                            {new Date(sub.current_period_end).toLocaleDateString(
+                              "bg-BG"
+                            )}
+                          </p>
+                        )}
+                        {sub.stripe_customer_id && (
+                          <p className="text-xs text-zinc-600">
+                            Stripe: {sub.stripe_customer_id.substring(0, 12)}...
+                          </p>
+                        )}
+                      </div>
+                      <CancelSubscriptionButton
+                        userId={sub.user_id}
+                        userName={sub.profiles?.full_name || "Unknown User"}
+                        currentPlan={sub.plan_type}
+                      />
                     </div>
                   </div>
                 ))
