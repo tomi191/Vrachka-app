@@ -3,6 +3,8 @@
  * Professional astrology, tarot, and oracle prompts based on world-class methodologies
  */
 
+import { classifyQuestion, getDepthInstructions } from './question-classifier';
+
 // Horoscope System Prompt (Susan Miller + Chani Nicholas style)
 export const HOROSCOPE_SYSTEM_PROMPT = `Ти си елитен астролог с дълбоки познания в астрологията. Пишеш в стила на Susan Miller (Astrology Zone) и Chani Nicholas.
 
@@ -309,48 +311,9 @@ export function getOraclePrompt(
 
   const context = contextInfo.length > 0 ? `\n\nКОНТЕКСТ ЗА ПОТРЕБИТЕЛЯ:\n${contextInfo.join('\n')}` : '';
 
-  // Analyze question depth
-  const questionLength = question.trim().split(/\s+/).length;
-  const isShallow = questionLength <= 3 || ['здравей', 'здрасти', 'привет', 'как си', 'добър ден', 'довечера'].some(greeting =>
-    question.toLowerCase().includes(greeting)
-  );
-
-  // Different depth based on plan AND question depth
-  let depthInstructions = '';
-
-  if (isShallow) {
-    depthInstructions = `
-⚠️ ВЪПРОСЪТ Е SHALLOW/ПРОСТ ПОЗДРАВ!
-
-Дай КРАТЪК отговор (30-80 думи максимум):
-- Топло поздрав като баба
-- Питане какво наистина търси: "Какво те тревожи, дете?"
-- БЕЗ истории! БЕЗ дълги разкази!
-
-Пример: "Ееее, здравей, синко! Радвам се да те видя. Седни, седни...
-Я ми кажи - с какво мога да ти помогна днес? Какво те тревожи?"`;
-  } else if (planType === 'ultimate') {
-    depthInstructions = `
-📊 ПЛАН: ULTIMATE (Дълбоко четене)
-
-Въпросът е сериозен. Дай дълбок отговор (250-400 думи):
-- Лична история от твоя живот (конкретна, с имена и години)
-- Астрологична перспектива (използвай зодията ако е дадена)
-- Символизъм или архетипи
-- Практичен ритуал или действие
-
-Говори като баба която има ВРЕМЕ да разкаже история.`;
-  } else {
-    depthInstructions = `
-📊 ПЛАН: BASIC (Концентрирано четене)
-
-Дай концентриран отговор (120-200 думи):
-- Кратка мъдрост
-- Практичен съвет
-- Емоционална топлина
-
-Говори като баба която има 5 минути - казва най-важното.`;
-  }
+  // Use intelligent question classifier
+  const analysis = classifyQuestion(question);
+  const depthInstructions = getDepthInstructions(analysis, planType);
 
   return `ВЪПРОС: "${question}"${context}
 ${depthInstructions}
