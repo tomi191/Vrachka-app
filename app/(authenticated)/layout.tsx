@@ -23,13 +23,22 @@ export default async function AuthenticatedLayout({
   await trackDailyVisit();
 
   // Get user profile for streak (fetched AFTER streak update)
-  const { data: profile } = await supabase
+  const { data: profile, error: profileError } = await supabase
     .from("profiles")
     .select("daily_streak, onboarding_completed")
     .eq("id", user.id)
     .single();
 
+  console.log('[LAYOUT] Profile check:', {
+    userId: user.id,
+    email: user.email,
+    profile,
+    profileError,
+    onboarding_completed: profile?.onboarding_completed,
+  });
+
   if (!profile?.onboarding_completed) {
+    console.log('[LAYOUT] Redirecting to /onboarding');
     redirect("/onboarding");
   }
 

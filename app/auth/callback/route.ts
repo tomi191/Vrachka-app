@@ -16,15 +16,26 @@ export async function GET(request: Request) {
     } = await supabase.auth.getUser();
 
     if (user) {
-      const { data: profile } = await supabase
+      const { data: profile, error: profileError } = await supabase
         .from('profiles')
         .select('onboarding_completed')
         .eq('id', user.id)
         .single();
 
+      console.log('[CALLBACK] User login:', {
+        userId: user.id,
+        email: user.email,
+        profile,
+        profileError,
+        onboarding_completed: profile?.onboarding_completed,
+      });
+
       // If onboarding is completed, redirect to dashboard
       if (profile?.onboarding_completed) {
+        console.log('[CALLBACK] Redirecting to /dashboard');
         return NextResponse.redirect(`${origin}/dashboard`);
+      } else {
+        console.log('[CALLBACK] Redirecting to /onboarding');
       }
     }
   }

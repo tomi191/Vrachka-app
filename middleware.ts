@@ -92,13 +92,23 @@ export async function middleware(request: NextRequest) {
   // Skip onboarding check for admin routes - admins can access admin panel directly
   if (user && isProtectedRoute && !isAdminRoute && request.nextUrl.pathname !== '/onboarding') {
     // Check if onboarding is completed
-    const { data: profile } = await supabase
+    const { data: profile, error: profileError } = await supabase
       .from('profiles')
       .select('onboarding_completed')
       .eq('id', user.id)
       .single();
 
-    if (profile && !profile.onboarding_completed) {
+    console.log('[MIDDLEWARE] Onboarding check:', {
+      userId: user.id,
+      email: user.email,
+      pathname: request.nextUrl.pathname,
+      profile,
+      profileError,
+      onboarding_completed: profile?.onboarding_completed,
+    });
+
+    if (!profile || !profile.onboarding_completed) {
+      console.log('[MIDDLEWARE] Redirecting to /onboarding');
       return NextResponse.redirect(new URL('/onboarding', request.url));
     }
   }
