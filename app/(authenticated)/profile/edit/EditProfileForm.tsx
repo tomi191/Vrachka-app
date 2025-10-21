@@ -42,7 +42,7 @@ export function EditProfileForm({ profile }: EditProfileFormProps) {
     return zodiacSigns[sign as ZodiacSign];
   }, [formData.birth_date]);
 
-  const zodiacChanged = formData.birth_date !== profile?.birth_date && originalZodiac && newZodiac && originalZodiac.key !== newZodiac.key;
+  const zodiacChanged = formData.birth_date !== profile?.birth_date && originalZodiac && newZodiac && originalZodiac.name !== newZodiac.name;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
