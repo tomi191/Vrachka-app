@@ -67,16 +67,28 @@ export async function middleware(request: NextRequest) {
     }
 
     // Check if user is admin
-    const { data: profile } = await supabase
+    const { data: profile, error: adminCheckError } = await supabase
       .from('profiles')
       .select('is_admin')
       .eq('id', user.id)
       .single();
 
+    console.log('[MIDDLEWARE] Admin access check:', {
+      userId: user.id,
+      email: user.email,
+      pathname: request.nextUrl.pathname,
+      profile,
+      adminCheckError,
+      is_admin: profile?.is_admin,
+    });
+
     if (!profile?.is_admin) {
       // Not an admin - redirect to dashboard with error
+      console.log('[MIDDLEWARE] Access denied - not admin, redirecting to /dashboard');
       return NextResponse.redirect(new URL('/dashboard?error=unauthorized', request.url));
     }
+
+    console.log('[MIDDLEWARE] Admin access granted');
   }
 
   // Protected routes
