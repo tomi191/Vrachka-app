@@ -2,6 +2,7 @@ import { BottomNav } from "@/components/layout/bottom-nav";
 import { TopHeader } from "@/components/layout/top-header";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import { trackDailyVisit } from "@/app/actions/streak";
 
 export default async function AuthenticatedLayout({
   children,
@@ -18,7 +19,10 @@ export default async function AuthenticatedLayout({
     redirect("/auth/login");
   }
 
-  // Get user profile for streak
+  // Track daily visit for streak (must await to update before fetching profile)
+  await trackDailyVisit();
+
+  // Get user profile for streak (fetched AFTER streak update)
   const { data: profile } = await supabase
     .from("profiles")
     .select("daily_streak, onboarding_completed")
