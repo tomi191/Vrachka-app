@@ -9,8 +9,26 @@ export async function GET(request: Request) {
   if (code) {
     const supabase = await createClient();
     await supabase.auth.exchangeCodeForSession(code);
+
+    // Check if user has completed onboarding
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (user) {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('onboarding_completed')
+        .eq('id', user.id)
+        .single();
+
+      // If onboarding is completed, redirect to dashboard
+      if (profile?.onboarding_completed) {
+        return NextResponse.redirect(`${origin}/dashboard`);
+      }
+    }
   }
 
-  // Redirect to onboarding or dashboard
+  // Default: Redirect to onboarding for new users or incomplete onboarding
   return NextResponse.redirect(`${origin}/onboarding`);
 }
