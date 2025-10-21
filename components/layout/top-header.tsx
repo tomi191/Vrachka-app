@@ -1,6 +1,8 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { Flame, Bell } from "lucide-react";
+import { NotificationsDropdown } from "@/components/NotificationsDropdown";
 
 interface TopHeaderProps {
   streak?: number;
@@ -8,6 +10,36 @@ interface TopHeaderProps {
 }
 
 export function TopHeader({ streak = 0, showNotifications = true }: TopHeaderProps) {
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  // Fetch unread notification count on mount
+  useEffect(() => {
+    if (showNotifications) {
+      fetchUnreadCount();
+    }
+  }, [showNotifications]);
+
+  async function fetchUnreadCount() {
+    try {
+      const response = await fetch('/api/notifications/count');
+      if (response.ok) {
+        const data = await response.json();
+        setUnreadCount(data.count || 0);
+      }
+    } catch (error) {
+      console.error('Failed to fetch unread count:', error);
+    }
+  }
+
+  function toggleDropdown() {
+    setIsDropdownOpen(prev => !prev);
+  }
+
+  function handleUnreadCountChange(count: number) {
+    setUnreadCount(count);
+  }
+
   return (
     <header className="sticky top-0 z-40 bg-mystic-950/95 backdrop-blur-lg border-b border-mystic-800">
       <div className="container max-w-lg mx-auto px-4 h-16 flex items-center justify-between">
@@ -33,11 +65,24 @@ export function TopHeader({ streak = 0, showNotifications = true }: TopHeaderPro
 
           {/* Notifications */}
           {showNotifications && (
-            <button className="relative p-2 hover:bg-mystic-900/50 rounded-full transition-colors">
-              <Bell className="w-5 h-5 text-mystic-400" />
-              {/* Notification dot */}
-              <span className="absolute top-1 right-1 w-2 h-2 bg-cosmic-500 rounded-full" />
-            </button>
+            <div className="relative">
+              <button
+                onClick={toggleDropdown}
+                className="relative p-2 hover:bg-mystic-900/50 rounded-full transition-colors"
+              >
+                <Bell className="w-5 h-5 text-mystic-400" />
+                {/* Notification dot - show only if unread count > 0 */}
+                {unreadCount > 0 && (
+                  <span className="absolute top-1 right-1 w-2 h-2 bg-cosmic-500 rounded-full" />
+                )}
+              </button>
+
+              <NotificationsDropdown
+                isOpen={isDropdownOpen}
+                onClose={() => setIsDropdownOpen(false)}
+                onUnreadCountChange={handleUnreadCountChange}
+              />
+            </div>
           )}
         </div>
       </div>

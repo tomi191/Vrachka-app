@@ -4,6 +4,7 @@
  */
 
 import { createClient } from "@/lib/supabase/server";
+import { notifyStreakMilestone } from "@/lib/notifications";
 
 /**
  * Check if two dates are the same day (ignoring time)
@@ -101,6 +102,9 @@ export async function updateDailyStreak(userId: string): Promise<number | null> 
       }
 
       console.log(`[Streak] Updated for user ${userId}: ${newStreak} days`);
+
+      // Send notification for streak milestones (3, 7, 14, 30, 60, 90, 180, 365 days)
+      await notifyStreakMilestone(userId, newStreak);
     }
 
     return newStreak;
