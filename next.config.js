@@ -2,7 +2,8 @@ const withPWA = require('next-pwa')({
   dest: 'public',
   register: true,
   skipWaiting: true,
-  disable: process.env.NODE_ENV === 'development'
+  disable: process.env.NODE_ENV === 'development',
+  sw: 'worker/index.js', // Custom service worker with push handlers
 });
 
 /** @type {import('next').NextConfig} */
