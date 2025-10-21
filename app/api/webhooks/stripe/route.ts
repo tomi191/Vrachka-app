@@ -4,6 +4,7 @@ import { createClient } from "@supabase/supabase-js";
 import Stripe from "stripe";
 import { sendPaymentConfirmationEmail } from "@/lib/email/send";
 import { grantReferrerReward } from "@/lib/referrals";
+import { syncSubscriptionToAnalytics } from "@/lib/stripe/analytics";
 
 // Lazy initialize Supabase client to avoid build-time errors
 function getSupabaseAdmin() {
@@ -37,6 +38,21 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  // Log the event to database for auditing
+  try {
+    await supabase
+      .from('stripe_webhook_events')
+      .insert({
+        event_id: event.id,
+        event_type: event.type,
+        data: event.data.object as any,
+        processed: false,
+      });
+  } catch (logError) {
+    console.error('Failed to log webhook event:', logError);
+    // Continue processing even if logging fails
+  }
+
   // Handle the event
   try {
     switch (event.type) {
@@ -49,12 +65,16 @@ export async function POST(req: NextRequest) {
       case "customer.subscription.updated": {
         const subscription = event.data.object as Stripe.Subscription;
         await handleSubscriptionUpdated(supabase, subscription);
+        // Sync to analytics table
+        await syncSubscriptionToAnalytics(subscription);
         break;
       }
 
       case "customer.subscription.deleted": {
         const subscription = event.data.object as Stripe.Subscription;
         await handleSubscriptionDeleted(supabase, subscription);
+        // Sync to analytics table
+        await syncSubscriptionToAnalytics(subscription);
         break;
       }
 
@@ -119,6 +139,9 @@ async function handleCheckoutSessionCompleted(
     .eq("user_id", userId);
 
   console.log(`Subscription activated for user ${userId}`);
+
+  // Sync subscription to analytics table
+  await syncSubscriptionToAnalytics(stripeSubscription);
 
   // Send payment confirmation email
   try {

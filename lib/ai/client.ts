@@ -4,6 +4,7 @@
  */
 
 import OpenAI from 'openai';
+import { logAIUsage } from '@/lib/ai/cost-tracker';
 
 // Initialize OpenRouter client (OpenAI-compatible API)
 export const openai = new OpenAI({
@@ -29,6 +30,9 @@ export async function generateCompletion(
     temperature?: number;
     maxTokens?: number;
     responseFormat?: 'text' | 'json';
+    userId?: string; // For cost tracking
+    feature?: 'tarot' | 'oracle' | 'horoscope' | 'daily_content'; // For cost tracking
+    metadata?: Record<string, any>; // Additional tracking metadata
   }
 ): Promise<string> {
   const {
@@ -36,6 +40,9 @@ export async function generateCompletion(
     temperature = 0.7,
     maxTokens = 2000,
     responseFormat = 'text',
+    userId,
+    feature,
+    metadata,
   } = options || {};
 
   const messages: OpenAI.Chat.ChatCompletionMessageParam[] = [
@@ -51,7 +58,24 @@ export async function generateCompletion(
     response_format: responseFormat === 'json' ? { type: 'json_object' } : undefined,
   });
 
-  return completion.choices[0]?.message?.content || '';
+  const content = completion.choices[0]?.message?.content || '';
+
+  // Log AI usage for cost tracking (async, don't block response)
+  if (feature && completion.usage) {
+    logAIUsage({
+      userId,
+      feature,
+      model,
+      promptTokens: completion.usage.prompt_tokens || 0,
+      completionTokens: completion.usage.completion_tokens || 0,
+      metadata,
+    }).catch((error) => {
+      console.error('[AI Client] Failed to log usage:', error);
+      // Don't fail the request if logging fails
+    });
+  }
+
+  return content;
 }
 
 /**
