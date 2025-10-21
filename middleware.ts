@@ -58,6 +58,27 @@ export async function middleware(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
+  // Admin routes - check for admin role
+  const isAdminRoute = request.nextUrl.pathname.startsWith('/admin');
+
+  if (isAdminRoute) {
+    if (!user) {
+      return NextResponse.redirect(new URL('/auth/login', request.url));
+    }
+
+    // Check if user is admin
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('is_admin')
+      .eq('id', user.id)
+      .single();
+
+    if (!profile?.is_admin) {
+      // Not an admin - redirect to dashboard with error
+      return NextResponse.redirect(new URL('/dashboard?error=unauthorized', request.url));
+    }
+  }
+
   // Protected routes
   const protectedRoutes = ['/dashboard', '/tarot', '/oracle', '/profile', '/onboarding'];
   const isProtectedRoute = protectedRoutes.some(route => request.nextUrl.pathname.startsWith(route));
