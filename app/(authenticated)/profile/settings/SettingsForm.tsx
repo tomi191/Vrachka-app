@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { Bell, Mail, Moon, Check, Loader2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { subscribeToPush, unsubscribeFromPush, isPushSupported } from "@/lib/push/client";
 
 interface SettingsFormProps {
   userEmail: string;
@@ -79,6 +80,34 @@ export function SettingsForm({ userEmail }: SettingsFormProps) {
 
   const handleToggle = async (key: keyof typeof settings) => {
     const newValue = !settings[key];
+
+    // Special handling for push notifications
+    if (key === 'pushNotifications') {
+      if (!isPushSupported()) {
+        setError('Push notifications не се поддържат в този браузър');
+        setTimeout(() => setError(''), 3000);
+        return;
+      }
+
+      try {
+        if (newValue) {
+          // Subscribe to push
+          await subscribeToPush();
+        } else {
+          // Unsubscribe from push
+          await unsubscribeFromPush();
+        }
+      } catch (err) {
+        console.error('Push notification error:', err);
+        setError(
+          err instanceof Error
+            ? err.message
+            : 'Грешка при активиране на notifications'
+        );
+        setTimeout(() => setError(''), 3000);
+        return;
+      }
+    }
 
     // Optimistically update UI
     setSettings((prev) => ({
@@ -184,10 +213,9 @@ export function SettingsForm({ userEmail }: SettingsFormProps) {
 
         <SettingToggle
           label="Push notifications"
-          description="Известия в браузъра (скоро)"
+          description="Получавай уведомления в браузъра"
           checked={settings.pushNotifications}
           onChange={() => handleToggle("pushNotifications")}
-          disabled
         />
 
         <SettingToggle
