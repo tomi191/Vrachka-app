@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { Loader2, AlertTriangle } from "lucide-react";
-import { getZodiacSign } from "@/lib/zodiac";
+import { Loader2, AlertTriangle, ArrowRight } from "lucide-react";
+import { getZodiacSign, zodiacSigns, type ZodiacSign } from "@/lib/zodiac";
+import { AvatarUpload } from "@/components/AvatarUpload";
 
 interface EditProfileFormProps {
   profile: {
@@ -11,6 +12,7 @@ interface EditProfileFormProps {
     birth_date: string;
     birth_time?: string;
     birth_place?: string;
+    avatar_url?: string | null;
   } | null;
 }
 
@@ -26,6 +28,21 @@ export function EditProfileForm({ profile }: EditProfileFormProps) {
     birth_time: profile?.birth_time || "",
     birth_place: profile?.birth_place || "",
   });
+
+  // Calculate zodiac signs for preview
+  const originalZodiac = useMemo(() => {
+    if (!profile?.birth_date) return null;
+    const sign = getZodiacSign(new Date(profile.birth_date));
+    return zodiacSigns[sign as ZodiacSign];
+  }, [profile?.birth_date]);
+
+  const newZodiac = useMemo(() => {
+    if (!formData.birth_date) return null;
+    const sign = getZodiacSign(new Date(formData.birth_date));
+    return zodiacSigns[sign as ZodiacSign];
+  }, [formData.birth_date]);
+
+  const zodiacChanged = formData.birth_date !== profile?.birth_date && originalZodiac && newZodiac && originalZodiac.key !== newZodiac.key;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -66,7 +83,23 @@ export function EditProfileForm({ profile }: EditProfileFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-6">
+      {/* Avatar Upload */}
+      <AvatarUpload
+        currentAvatarUrl={profile?.avatar_url}
+        userName={formData.full_name || "User"}
+        onUploadSuccess={(url) => {
+          // Avatar is saved separately, just refresh
+          router.refresh();
+        }}
+        onRemove={() => {
+          // Avatar is removed separately, just refresh
+          router.refresh();
+        }}
+      />
+
+      <div className="border-t border-zinc-800 pt-6" />
+
       {/* Full Name */}
       <div>
         <label className="block text-sm font-medium text-zinc-300 mb-2">
@@ -98,12 +131,18 @@ export function EditProfileForm({ profile }: EditProfileFormProps) {
           required
           className="w-full px-4 py-3 bg-zinc-950 border border-zinc-800 rounded-lg text-zinc-100 focus:border-accent-500 focus:outline-none"
         />
-        {formData.birth_date !== profile?.birth_date && (
-          <div className="mt-2 flex items-start gap-2 p-3 bg-yellow-900/20 border border-yellow-600/30 rounded-lg">
-            <AlertTriangle className="w-4 h-4 text-yellow-500 flex-shrink-0 mt-0.5" />
-            <p className="text-xs text-yellow-200">
-              Промяната на рождената дата ще промени и зодията ти
-            </p>
+        {zodiacChanged && originalZodiac && newZodiac && (
+          <div className="mt-2 flex items-center gap-3 p-3 bg-accent-950/30 border border-accent-600/30 rounded-lg">
+            <AlertTriangle className="w-4 h-4 text-accent-400 flex-shrink-0" />
+            <div className="flex-1 flex items-center gap-2 text-sm">
+              <span className="text-zinc-300">
+                {originalZodiac.emoji} {originalZodiac.name}
+              </span>
+              <ArrowRight className="w-4 h-4 text-accent-400" />
+              <span className="text-accent-300 font-semibold">
+                {newZodiac.emoji} {newZodiac.name}
+              </span>
+            </div>
           </div>
         )}
       </div>

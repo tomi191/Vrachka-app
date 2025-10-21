@@ -5,6 +5,7 @@ import { User, Settings, LogOut, Crown, Flame, History } from "lucide-react";
 import { signOut } from "@/app/actions/auth";
 import { ManageSubscriptionButton } from "@/components/ManageSubscriptionButton";
 import Link from "next/link";
+import Image from "next/image";
 
 export default async function ProfilePage() {
   const supabase = await createClient();
@@ -33,9 +34,22 @@ export default async function ProfilePage() {
       <Card className="glass-card">
         <CardContent className="pt-6">
           <div className="flex items-center gap-4">
-            <div className="w-20 h-20 rounded-full bg-gradient-to-br from-accent-500 to-accent-700 flex items-center justify-center text-white text-3xl font-bold">
-              {profile?.full_name?.charAt(0).toUpperCase()}
-            </div>
+            {/* Avatar */}
+            {profile?.avatar_url ? (
+              <div className="relative w-20 h-20 rounded-full overflow-hidden ring-2 ring-accent-500/30">
+                <Image
+                  src={profile.avatar_url}
+                  alt={profile.full_name || "User"}
+                  fill
+                  sizes="80px"
+                  className="object-cover"
+                />
+              </div>
+            ) : (
+              <div className="w-20 h-20 rounded-full bg-gradient-to-br from-accent-500 to-accent-700 flex items-center justify-center text-white text-3xl font-bold ring-2 ring-accent-500/30">
+                {profile?.full_name?.charAt(0).toUpperCase()}
+              </div>
+            )}
             <div className="flex-1">
               <h2 className="text-2xl font-bold text-zinc-100">
                 {profile?.full_name}
