@@ -22,10 +22,14 @@ interface OracleChatProps {
   isPremium: boolean;
 }
 
+const MIN_QUESTION_LENGTH = 5;
+const MAX_QUESTION_LENGTH = 500;
+
 export function OracleChat({ isPremium }: OracleChatProps) {
   const [messages, setMessages] = useState<OracleMessage[]>([]);
   const [question, setQuestion] = useState("");
   const [loading, setLoading] = useState(false);
+  const [loadingUsage, setLoadingUsage] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [usage, setUsage] = useState<OracleUsage | null>(null);
 
@@ -37,6 +41,7 @@ export function OracleChat({ isPremium }: OracleChatProps) {
 
   async function loadConversations() {
     try {
+      setLoadingUsage(true);
       const response = await fetch('/api/oracle?limit=5');
       if (response.ok) {
         const data = await response.json();
@@ -45,6 +50,8 @@ export function OracleChat({ isPremium }: OracleChatProps) {
       }
     } catch (err) {
       console.error('Failed to load conversations:', err);
+    } finally {
+      setLoadingUsage(false);
     }
   }
 
@@ -52,6 +59,12 @@ export function OracleChat({ isPremium }: OracleChatProps) {
     e.preventDefault();
 
     if (!question.trim() || loading) return;
+
+    // Validate minimum length
+    if (question.trim().length < MIN_QUESTION_LENGTH) {
+      setError(`Въпросът трябва да е поне ${MIN_QUESTION_LENGTH} символа`);
+      return;
+    }
 
     setLoading(true);
     setError(null);
@@ -228,8 +241,20 @@ export function OracleChat({ isPremium }: OracleChatProps) {
         </Card>
       )}
 
+      {/* Loading state while fetching usage */}
+      {loadingUsage && (
+        <Card className="glass-card">
+          <CardContent className="pt-8 pb-8">
+            <div className="flex items-center justify-center gap-3">
+              <Loader2 className="w-6 h-6 text-accent-400 animate-spin" />
+              <span className="text-zinc-400">Зареждане...</span>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Question form - only show if has remaining questions */}
-      {usage && usage.allowed && (
+      {!loadingUsage && usage && usage.allowed && (
         <Card className="glass-card">
           <CardHeader>
             <CardTitle className="text-zinc-50 flex items-center gap-2">
@@ -244,15 +269,23 @@ export function OracleChat({ isPremium }: OracleChatProps) {
               onChange={(e) => setQuestion(e.target.value)}
               placeholder="Какво те тревожи? Задай въпроса си към Врачката..."
               rows={4}
-              maxLength={500}
+              maxLength={MAX_QUESTION_LENGTH}
               disabled={loading}
               className="w-full px-4 py-3 bg-zinc-950/50 border border-zinc-800 rounded-lg text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:ring-2 focus:ring-accent-600 resize-none disabled:opacity-50"
             />
             <div className="flex items-center justify-between">
-              <span className="text-xs text-zinc-500">{question.length} / 500</span>
+              <div className="text-xs">
+                {question.trim().length > 0 && question.trim().length < MIN_QUESTION_LENGTH ? (
+                  <span className="text-red-400">
+                    Минимум {MIN_QUESTION_LENGTH} символа (още {MIN_QUESTION_LENGTH - question.trim().length})
+                  </span>
+                ) : (
+                  <span className="text-zinc-500">{question.length} / {MAX_QUESTION_LENGTH}</span>
+                )}
+              </div>
               <button
                 type="submit"
-                disabled={loading || !question.trim()}
+                disabled={loading || question.trim().length < MIN_QUESTION_LENGTH}
                 className="px-6 py-3 bg-accent-600 hover:bg-accent-700 disabled:bg-zinc-700 disabled:cursor-not-allowed text-white rounded-lg transition-colors font-semibold flex items-center gap-2"
               >
                 {loading ? (
