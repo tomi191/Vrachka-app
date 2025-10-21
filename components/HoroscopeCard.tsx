@@ -22,6 +22,30 @@ interface HoroscopeCardProps {
   zodiacName: string;
 }
 
+/**
+ * Helper function to clean up old horoscope caches from previous days
+ * Keeps localStorage clean by removing outdated horoscopes
+ */
+function cleanupOldHoroscopeCache(zodiacSign: string, currentDate: string) {
+  try {
+    const prefix = `horoscope_${zodiacSign}_`;
+    const keysToRemove: string[] = [];
+
+    // Find all horoscope cache keys for this zodiac sign
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && key.startsWith(prefix) && !key.endsWith(currentDate)) {
+        keysToRemove.push(key);
+      }
+    }
+
+    // Remove old cache entries
+    keysToRemove.forEach(key => localStorage.removeItem(key));
+  } catch (error) {
+    console.error('Cache cleanup error:', error);
+  }
+}
+
 export function HoroscopeCard({ zodiacSign, zodiacEmoji, zodiacName }: HoroscopeCardProps) {
   const [horoscope, setHoroscope] = useState<HoroscopeData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -31,6 +55,29 @@ export function HoroscopeCard({ zodiacSign, zodiacEmoji, zodiacName }: Horoscope
     async function fetchHoroscope() {
       try {
         setLoading(true);
+
+        // Get today's date in YYYY-MM-DD format
+        const today = new Date().toISOString().split('T')[0];
+        const cacheKey = `horoscope_${zodiacSign}_${today}`;
+
+        // Check localStorage cache
+        const cached = localStorage.getItem(cacheKey);
+        if (cached) {
+          try {
+            const cachedData = JSON.parse(cached);
+            setHoroscope(cachedData);
+            setLoading(false);
+
+            // Clean up old cache entries from previous days
+            cleanupOldHoroscopeCache(zodiacSign, today);
+            return; // Skip API call - use cached data
+          } catch (parseError) {
+            console.error('Cache parse error:', parseError);
+            // If cache is corrupted, continue to fetch from API
+          }
+        }
+
+        // Fetch from API if no cache or cache invalid
         const response = await fetch(`/api/horoscope?zodiac=${zodiacSign}&period=daily`);
 
         if (!response.ok) {
@@ -39,6 +86,18 @@ export function HoroscopeCard({ zodiacSign, zodiacEmoji, zodiacName }: Horoscope
 
         const data = await response.json();
         setHoroscope(data);
+
+        // Save to localStorage for future visits today
+        try {
+          localStorage.setItem(cacheKey, JSON.stringify(data));
+        } catch (storageError) {
+          console.error('localStorage save error:', storageError);
+          // Continue even if cache save fails
+        }
+
+        // Clean up old cache entries
+        cleanupOldHoroscopeCache(zodiacSign, today);
+
       } catch (err) {
         console.error('Horoscope fetch error:', err);
         setError('Не успяхме да заредим хороскопа. Опитай отново.');
