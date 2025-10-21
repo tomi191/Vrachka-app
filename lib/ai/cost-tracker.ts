@@ -192,3 +192,126 @@ export async function getMonthAICosts(): Promise<number> {
 
   return getAICosts(startOfMonth, endOfMonth);
 }
+
+/**
+ * Get AI costs breakdown by model
+ */
+export async function getAICostsByModel(
+  startDate: Date,
+  endDate: Date
+): Promise<Record<string, number>> {
+  try {
+    const supabase = await createClient();
+
+    const { data, error } = await supabase
+      .from('ai_usage_logs')
+      .select('model, estimated_cost_usd')
+      .gte('created_at', startDate.toISOString())
+      .lt('created_at', endDate.toISOString());
+
+    if (error) {
+      console.error('[AI Cost Tracker] Failed to get costs by model:', error);
+      return {};
+    }
+
+    return data.reduce((acc, log) => {
+      acc[log.model] = (acc[log.model] || 0) + Number(log.estimated_cost_usd);
+      return acc;
+    }, {} as Record<string, number>);
+  } catch (error) {
+    console.error('[AI Cost Tracker] Error:', error);
+    return {};
+  }
+}
+
+/**
+ * Get top users by AI costs
+ */
+export async function getTopUsersByAICosts(
+  startDate: Date,
+  endDate: Date,
+  limit: number = 10
+): Promise<Array<{ userId: string | null; totalCost: number; callCount: number }>> {
+  try {
+    const supabase = await createClient();
+
+    const { data, error } = await supabase
+      .from('ai_usage_logs')
+      .select('user_id, estimated_cost_usd')
+      .gte('created_at', startDate.toISOString())
+      .lt('created_at', endDate.toISOString());
+
+    if (error) {
+      console.error('[AI Cost Tracker] Failed to get top users:', error);
+      return [];
+    }
+
+    const userCosts = data.reduce((acc, log) => {
+      const userId = log.user_id || 'system';
+      if (!acc[userId]) {
+        acc[userId] = { totalCost: 0, callCount: 0 };
+      }
+      acc[userId].totalCost += Number(log.estimated_cost_usd);
+      acc[userId].callCount += 1;
+      return acc;
+    }, {} as Record<string, { totalCost: number; callCount: number }>);
+
+    return Object.entries(userCosts)
+      .map(([userId, stats]) => ({
+        userId: userId === 'system' ? null : userId,
+        totalCost: stats.totalCost,
+        callCount: stats.callCount,
+      }))
+      .sort((a, b) => b.totalCost - a.totalCost)
+      .slice(0, limit);
+  } catch (error) {
+    console.error('[AI Cost Tracker] Error:', error);
+    return [];
+  }
+}
+
+/**
+ * Get AI costs timeline (daily breakdown)
+ */
+export async function getAICostsTimeline(
+  startDate: Date,
+  endDate: Date
+): Promise<Array<{ date: string; cost: number; calls: number }>> {
+  try {
+    const supabase = await createClient();
+
+    const { data, error } = await supabase
+      .from('ai_usage_logs')
+      .select('created_at, estimated_cost_usd')
+      .gte('created_at', startDate.toISOString())
+      .lt('created_at', endDate.toISOString())
+      .order('created_at', { ascending: true });
+
+    if (error) {
+      console.error('[AI Cost Tracker] Failed to get timeline:', error);
+      return [];
+    }
+
+    // Group by date
+    const dailyData = data.reduce((acc, log) => {
+      const date = new Date(log.created_at).toISOString().split('T')[0];
+      if (!acc[date]) {
+        acc[date] = { cost: 0, calls: 0 };
+      }
+      acc[date].cost += Number(log.estimated_cost_usd);
+      acc[date].calls += 1;
+      return acc;
+    }, {} as Record<string, { cost: number; calls: number }>);
+
+    return Object.entries(dailyData)
+      .map(([date, stats]) => ({
+        date,
+        cost: stats.cost,
+        calls: stats.calls,
+      }))
+      .sort((a, b) => a.date.localeCompare(b.date));
+  } catch (error) {
+    console.error('[AI Cost Tracker] Error:', error);
+    return [];
+  }
+}
