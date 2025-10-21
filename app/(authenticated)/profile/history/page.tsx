@@ -4,21 +4,22 @@ import { ArrowLeft, Calendar } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { OracleHistoryCard } from "./OracleHistoryCard";
-import { Suspense } from "react";
 
 type TabType = "tarot" | "oracle";
 
 export default async function HistoryPage({
   searchParams,
 }: {
-  searchParams?: { tab?: TabType };
+  searchParams?: Promise<{ tab?: TabType }>;
 }) {
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const currentTab = searchParams?.tab || "tarot";
+  // Await searchParams in Next.js 15
+  const params = await searchParams;
+  const currentTab = params?.tab || "tarot";
 
   // Get last 20 tarot readings
   const { data: readings } = await supabase
