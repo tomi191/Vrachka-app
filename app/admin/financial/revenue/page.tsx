@@ -4,8 +4,21 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DollarSign, ArrowLeft, TrendingUp, Users, CreditCard } from "lucide-react";
 import Link from "next/link";
 import { getStripeRevenue, getChurnRate, getRecentSubscriptionEvents } from "@/lib/stripe/analytics";
-import { SubscriptionBarChart } from "@/components/admin/charts/SubscriptionBarChart";
+import dynamic from "next/dynamic";
 import { getStripeMode, getModeEmoji, getModeColorClass } from "@/lib/stripe/mode-detector";
+
+// Lazy load chart component with loading fallback
+const SubscriptionBarChart = dynamic(
+  () => import("@/components/admin/charts/SubscriptionBarChart").then(mod => ({ default: mod.SubscriptionBarChart })),
+  {
+    loading: () => (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-zinc-400">Зареждане на графика...</div>
+      </div>
+    ),
+    ssr: false
+  }
+);
 
 export default async function RevenuePage() {
   const supabase = await createClient();

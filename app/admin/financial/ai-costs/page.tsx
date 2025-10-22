@@ -10,8 +10,32 @@ import {
   getTopUsersByAICosts,
   getAICostsTimeline,
 } from "@/lib/ai/cost-tracker";
-import { AICostsPieChart } from "@/components/admin/charts/AICostsPieChart";
-import { MRRTrendChart } from "@/components/admin/charts/MRRTrendChart";
+import dynamic from "next/dynamic";
+
+// Lazy load heavy chart components
+const AICostsPieChart = dynamic(
+  () => import("@/components/admin/charts/AICostsPieChart").then(mod => ({ default: mod.AICostsPieChart })),
+  {
+    loading: () => (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-zinc-400">Зареждане на графика...</div>
+      </div>
+    ),
+    ssr: false
+  }
+);
+
+const MRRTrendChart = dynamic(
+  () => import("@/components/admin/charts/MRRTrendChart").then(mod => ({ default: mod.MRRTrendChart })),
+  {
+    loading: () => (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-zinc-400">Зареждане на графика...</div>
+      </div>
+    ),
+    ssr: false
+  }
+);
 
 export default async function AICostsPage() {
   const supabase = await createClient();

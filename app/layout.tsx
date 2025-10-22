@@ -98,11 +98,74 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": "https://www.vrachka.eu/#organization",
+        "name": "Vrachka",
+        "url": "https://www.vrachka.eu",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://www.vrachka.eu/icon-192.png",
+          "width": 192,
+          "height": 192
+        },
+        "description": "Персонализирани AI хороскопи, таро четения и духовни консултации на български език",
+        "sameAs": [
+          "https://www.facebook.com/vrachka",
+          "https://www.instagram.com/vrachka"
+        ]
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://www.vrachka.eu/#website",
+        "url": "https://www.vrachka.eu",
+        "name": "Vrachka",
+        "description": "AI Хороскопи, Таро Четения и Духовни Насоки",
+        "publisher": {
+          "@id": "https://www.vrachka.eu/#organization"
+        },
+        "inLanguage": "bg-BG"
+      },
+      {
+        "@type": "WebApplication",
+        "@id": "https://www.vrachka.eu/#webapp",
+        "name": "Vrachka",
+        "url": "https://www.vrachka.eu",
+        "applicationCategory": "LifestyleApplication",
+        "operatingSystem": "Any",
+        "offers": {
+          "@type": "AggregateOffer",
+          "priceCurrency": "BGN",
+          "lowPrice": "0",
+          "highPrice": "29.99",
+          "offerCount": "3"
+        },
+        "description": "AI-базирана платформа за персонализирани хороскопи, таро четения и духовни консултации",
+        "featureList": [
+          "Дневни персонализирани хороскопи",
+          "AI таро четения",
+          "Нумерология и натална карта",
+          "Съвместимост между зодии",
+          "Лунен календар",
+          "Духовни консултации"
+        ],
+        "screenshot": "https://www.vrachka.eu/og-image.png"
+      }
+    ]
+  };
+
   return (
     <html lang="bg" suppressHydrationWarning>
       <head>
         <link rel="icon" href="/icon-192.png" />
         <link rel="apple-touch-icon" href="/icon-192.png" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        />
       </head>
       <body
         className={`${GeistSans.variable} ${GeistMono.variable} font-sans antialiased min-h-screen`}

@@ -1,35 +1,33 @@
 import { MetadataRoute } from 'next'
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://vrachka.app'
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.vrachka.eu'
 
-  // Static routes
+  // Static routes (only public pages - exclude auth pages)
   const routes = [
     '',
     '/pricing',
-    '/auth/login',
-    '/auth/register',
     '/privacy',
     '/terms',
     '/contact',
   ].map((route) => ({
     url: `${baseUrl}${route}`,
     lastModified: new Date(),
-    changeFrequency: route === '' ? 'daily' as const : 'weekly' as const,
+    changeFrequency: route === '' ? 'daily' as const : 'monthly' as const,
     priority: route === '' ? 1 : 0.8,
   }))
 
-  // Zodiac signs for potential horoscope pages
+  // Bulgarian zodiac signs for horoscope pages
   const zodiacSigns = [
-    'aries', 'taurus', 'gemini', 'cancer', 'leo', 'virgo',
-    'libra', 'scorpio', 'sagittarius', 'capricorn', 'aquarius', 'pisces'
+    'oven', 'telec', 'bliznaci', 'rak', 'lav', 'deva',
+    'vezni', 'skorpion', 'strelec', 'kozirog', 'vodolej', 'ribi'
   ]
 
   const zodiacRoutes = zodiacSigns.map((sign) => ({
     url: `${baseUrl}/horoscope/${sign}`,
     lastModified: new Date(),
     changeFrequency: 'daily' as const,
-    priority: 0.7,
+    priority: 0.9, // High priority for SEO
   }))
 
   return [
