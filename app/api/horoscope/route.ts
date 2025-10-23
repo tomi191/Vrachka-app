@@ -112,38 +112,74 @@ export async function GET(req: NextRequest) {
     }
 
     // Generate new horoscope with AI
+    console.log('[Horoscope API] Generating new horoscope for:', zodiacSign, period);
     const prompt = getHoroscopePrompt(zodiacSign, period);
-    const aiResponse = await generateCompletion(
-      HOROSCOPE_SYSTEM_PROMPT,
-      prompt,
-      {
-        temperature: 0.8,
-        maxTokens: period === 'daily' ? 800 : period === 'weekly' ? 1500 : 2500,
-        responseFormat: 'json',
+
+    let aiResponse;
+    try {
+      console.log('[Horoscope API] Calling AI completion...');
+      aiResponse = await generateCompletion(
+        HOROSCOPE_SYSTEM_PROMPT,
+        prompt,
+        {
+          temperature: 0.8,
+          // Increased maxTokens for gpt-5-mini which uses reasoning tokens (typically 500-800)
+          // Total needed: reasoning tokens + completion tokens
+          maxTokens: period === 'daily' ? 2000 : period === 'weekly' ? 2500 : 3500,
+          responseFormat: 'json',
+        }
+      );
+      console.log('[Horoscope API] AI response received, length:', aiResponse?.length);
+    } catch (aiError) {
+      console.error('[Horoscope API] AI generation error:', aiError);
+      throw new Error(`AI generation failed: ${aiError instanceof Error ? aiError.message : 'Unknown error'}`);
+    }
+
+    let horoscope;
+    try {
+      console.log('[Horoscope API] Parsing AI JSON response...');
+      horoscope = parseAIJsonResponse<HoroscopeResponse>(aiResponse);
+
+      if (!horoscope) {
+        console.error('[Horoscope API] Failed to parse AI response:', aiResponse?.substring(0, 200));
+        throw new Error('Failed to parse AI response - invalid JSON');
       }
-    );
-
-    const horoscope = parseAIJsonResponse<HoroscopeResponse>(aiResponse);
-
-    if (!horoscope) {
-      throw new Error('Failed to parse AI response');
+      console.log('[Horoscope API] Successfully parsed horoscope');
+    } catch (parseError) {
+      console.error('[Horoscope API] Parse error:', parseError);
+      throw new Error(`JSON parse failed: ${parseError instanceof Error ? parseError.message : 'Unknown error'}`);
     }
 
     // Save to database for caching
-    await supabase.from('daily_content').insert({
-      content_type: contentType,
-      target_date: today,
-      target_key: zodiacSign,
-      content_body: horoscope,
-    });
+    try {
+      console.log('[Horoscope API] Saving to database...');
+      const { error: dbError } = await supabase.from('daily_content').insert({
+        content_type: contentType,
+        target_date: today,
+        target_key: zodiacSign,
+        content_body: horoscope,
+      });
 
+      if (dbError) {
+        console.error('[Horoscope API] Database save error:', dbError);
+        // Don't fail the request if caching fails
+      } else {
+        console.log('[Horoscope API] Successfully saved to database');
+      }
+    } catch (dbError) {
+      console.error('[Horoscope API] Database error:', dbError);
+      // Don't fail the request if caching fails
+    }
+
+    console.log('[Horoscope API] Returning response');
     return NextResponse.json({
       ...horoscope,
       cached: false,
       generated_at: new Date().toISOString(),
     });
   } catch (error) {
-    console.error("Horoscope generation error:", error);
+    console.error("[Horoscope API] Fatal error:", error);
+    console.error("[Horoscope API] Error stack:", error instanceof Error ? error.stack : 'No stack trace');
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Failed to generate horoscope" },
       { status: 500 }
