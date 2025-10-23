@@ -4,25 +4,29 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { StructuredData, organizationSchema, webApplicationSchema, faqSchema } from "@/components/StructuredData";
 import { createClient } from '@supabase/supabase-js'
+import { ZodiacIcon } from '@/components/icons/zodiac'
+import { ShimmerButton } from '@/components/ui/shimmer-button'
+import { HoverCardWrapper } from '@/components/ui/hover-card-wrapper'
+import { GradientText } from '@/components/ui/gradient-text'
 
 // Revalidate every hour for fresh blog posts
 export const revalidate = 3600
 
-// Zodiac signs data
+// Zodiac signs data (emoji removed - now using custom SVG icons)
 const zodiacSigns = [
-  { sign: 'oven', name: 'Овен', emoji: '♈', dates: '21 март - 19 април' },
-  { sign: 'telec', name: 'Телец', emoji: '♉', dates: '20 април - 20 май' },
-  { sign: 'bliznaci', name: 'Близнаци', emoji: '♊', dates: '21 май - 20 юни' },
-  { sign: 'rak', name: 'Рак', emoji: '♋', dates: '21 юни - 22 юли' },
-  { sign: 'lav', name: 'Лъв', emoji: '♌', dates: '23 юли - 22 август' },
-  { sign: 'deva', name: 'Дева', emoji: '♍', dates: '23 август - 22 септември' },
-  { sign: 'vezni', name: 'Везни', emoji: '♎', dates: '23 септември - 22 октомври' },
-  { sign: 'skorpion', name: 'Скорпион', emoji: '♏', dates: '23 октомври - 21 ноември' },
-  { sign: 'strelec', name: 'Стрелец', emoji: '♐', dates: '22 ноември - 21 декември' },
-  { sign: 'kozirog', name: 'Козирог', emoji: '♑', dates: '22 декември - 19 януари' },
-  { sign: 'vodolej', name: 'Водолей', emoji: '♒', dates: '20 януари - 18 февруари' },
-  { sign: 'ribi', name: 'Риби', emoji: '♓', dates: '19 февруари - 20 март' },
-]
+  { sign: 'oven', name: 'Овен', dates: '21 март - 19 април' },
+  { sign: 'telec', name: 'Телец', dates: '20 април - 20 май' },
+  { sign: 'bliznaci', name: 'Близнаци', dates: '21 май - 20 юни' },
+  { sign: 'rak', name: 'Рак', dates: '21 юни - 22 юли' },
+  { sign: 'lav', name: 'Лъв', dates: '23 юли - 22 август' },
+  { sign: 'deva', name: 'Дева', dates: '23 август - 22 септември' },
+  { sign: 'vezni', name: 'Везни', dates: '23 септември - 22 октомври' },
+  { sign: 'skorpion', name: 'Скорпион', dates: '23 октомври - 21 ноември' },
+  { sign: 'strelec', name: 'Стрелец', dates: '22 ноември - 21 декември' },
+  { sign: 'kozirog', name: 'Козирог', dates: '22 декември - 19 януари' },
+  { sign: 'vodolej', name: 'Водолей', dates: '20 януари - 18 февруари' },
+  { sign: 'ribi', name: 'Риби', dates: '19 февруари - 20 март' },
+] as const
 
 // Testimonials
 const testimonials = [
@@ -139,8 +143,10 @@ export default async function LandingPage() {
             </div>
 
             {/* Main Heading */}
-            <h1 className="text-5xl md:text-7xl font-bold gradient-text max-w-4xl mx-auto leading-tight">
-              Твоят личен астрологичен асистент
+            <h1 className="text-5xl md:text-7xl font-bold max-w-4xl mx-auto leading-tight">
+              <GradientText>
+                Твоят личен астрологичен асистент
+              </GradientText>
             </h1>
 
             {/* Subheading */}
@@ -151,10 +157,10 @@ export default async function LandingPage() {
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
               <Link href="/horoscope">
-                <Button size="lg" className="bg-accent-600 hover:bg-accent-700 text-white px-8 h-12 text-base">
+                <ShimmerButton className="text-base">
                   Виж твоя хороскоп днес
                   <ArrowRight className="ml-2 w-5 h-5" />
-                </Button>
+                </ShimmerButton>
               </Link>
               <Link href="#features">
                 <Button size="lg" variant="outline" className="border-zinc-700 hover:bg-zinc-900 px-8 h-12 text-base">
@@ -206,17 +212,23 @@ export default async function LandingPage() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-5xl mx-auto">
             {zodiacSigns.map((zodiac) => (
               <Link key={zodiac.sign} href={`/horoscope/${zodiac.sign}`}>
-                <div className="glass-card p-6 text-center card-hover group">
-                  <div className="text-5xl mb-3 group-hover:scale-110 transition-transform">
-                    {zodiac.emoji}
+                <HoverCardWrapper className="h-full">
+                  <div className="glass-card p-6 text-center card-hover group h-full">
+                    <div className="mb-3 flex justify-center">
+                      <ZodiacIcon
+                        sign={zodiac.sign as keyof typeof import('@/components/icons/zodiac').zodiacIcons}
+                        size={64}
+                        className="text-accent-400 group-hover:text-accent-300 transition-colors"
+                      />
+                    </div>
+                    <h3 className="font-semibold text-zinc-50 mb-1 text-lg">
+                      {zodiac.name}
+                    </h3>
+                    <p className="text-xs text-zinc-500">
+                      {zodiac.dates}
+                    </p>
                   </div>
-                  <h3 className="font-semibold text-zinc-50 mb-1 text-lg">
-                    {zodiac.name}
-                  </h3>
-                  <p className="text-xs text-zinc-500">
-                    {zodiac.dates}
-                  </p>
-                </div>
+                </HoverCardWrapper>
               </Link>
             ))}
           </div>
