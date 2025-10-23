@@ -1,23 +1,20 @@
-import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { Navigation } from "@/components/Navigation";
+import { Footer } from "@/components/Footer";
+import { GradientText } from "@/components/ui/gradient-text";
 
 export default function TermsPage() {
   return (
-    <div className="min-h-screen bg-brand-950 p-6">
-      <div className="max-w-4xl mx-auto space-y-6">
-        {/* Back Button */}
-        <Link
-          href="/"
-          className="text-zinc-400 hover:text-zinc-300 flex items-center gap-2 text-sm"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          Назад към начало
-        </Link>
-
+    <div className="min-h-screen bg-gradient-dark">
+      <Navigation />
+      <div className="max-w-4xl mx-auto px-4 pt-32 pb-16">
         {/* Header */}
-        <div className="space-y-2">
-          <h1 className="text-4xl font-bold text-zinc-50">Общи условия</h1>
+        <div className="space-y-2 mb-8">
+          <h1 className="text-4xl font-bold">
+            <GradientText from="#9333ea" via="#ec4899" to="#9333ea">
+              Общи условия
+            </GradientText>
+          </h1>
           <p className="text-zinc-400">Последна актуализация: {new Date().toLocaleDateString("bg-BG")}</p>
         </div>
 
@@ -147,6 +144,7 @@ export default function TermsPage() {
           </CardContent>
         </Card>
       </div>
+      <Footer />
     </div>
   );
 }
