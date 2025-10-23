@@ -5,6 +5,9 @@ import Link from "next/link";
 import { CheckoutButton } from "./CheckoutButton";
 import { Metadata } from "next";
 import { StructuredData, getSubscriptionSchema } from "@/components/StructuredData";
+import { Navigation } from "@/components/Navigation";
+import { Footer } from "@/components/Footer";
+import { GradientText } from "@/components/ui/gradient-text";
 
 export const metadata: Metadata = {
   title: 'Цени',
@@ -29,13 +32,16 @@ export default async function PricingPage() {
     <>
       <StructuredData data={getSubscriptionSchema('basic')} />
       <StructuredData data={getSubscriptionSchema('ultimate')} />
-      <div className="min-h-screen bg-brand-950">
-      <div className="max-w-7xl mx-auto px-4 py-16">
-        {/* Header */}
-        <div className="text-center space-y-4 mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold gradient-text">
-            Избери своя план
-          </h1>
+      <div className="min-h-screen bg-gradient-dark">
+        <Navigation />
+        <div className="max-w-7xl mx-auto px-4 pt-32 pb-16">
+          {/* Header */}
+          <div className="text-center space-y-4 mb-12">
+            <h1 className="text-4xl md:text-5xl font-bold">
+              <GradientText from="#9333ea" via="#ec4899" to="#9333ea">
+                Избери своя план
+              </GradientText>
+            </h1>
           <p className="text-xl text-zinc-400 max-w-2xl mx-auto">
             Отключи пълния потенциал на Vrachka с Premium функции
           </p>
@@ -196,17 +202,9 @@ export default async function PricingPage() {
           </div>
         </div>
 
-        {/* Back to Home */}
-        <div className="text-center mt-12">
-          <Link
-            href="/"
-            className="text-zinc-400 hover:text-zinc-300 text-sm"
-          >
-            ← Обратно към началото
-          </Link>
         </div>
+        <Footer />
       </div>
-    </div>
     </>
   );
 }
