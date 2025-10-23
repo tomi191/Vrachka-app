@@ -1,9 +1,92 @@
 import Link from "next/link";
-import { ArrowRight, Sparkles, Shield, Zap, Calendar, Star, TrendingUp } from "lucide-react";
+import { ArrowRight, Sparkles, Shield, Zap, Calendar, Star, TrendingUp, BookOpen, Quote } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { StructuredData, organizationSchema, webApplicationSchema, faqSchema } from "@/components/StructuredData";
+import { createClient } from '@supabase/supabase-js'
 
-export default function LandingPage() {
+// Revalidate every hour for fresh blog posts
+export const revalidate = 3600
+
+// Zodiac signs data
+const zodiacSigns = [
+  { sign: 'oven', name: 'Овен', emoji: '♈', dates: '21 март - 19 април' },
+  { sign: 'telec', name: 'Телец', emoji: '♉', dates: '20 април - 20 май' },
+  { sign: 'bliznaci', name: 'Близнаци', emoji: '♊', dates: '21 май - 20 юни' },
+  { sign: 'rak', name: 'Рак', emoji: '♋', dates: '21 юни - 22 юли' },
+  { sign: 'lav', name: 'Лъв', emoji: '♌', dates: '23 юли - 22 август' },
+  { sign: 'deva', name: 'Дева', emoji: '♍', dates: '23 август - 22 септември' },
+  { sign: 'vezni', name: 'Везни', emoji: '♎', dates: '23 септември - 22 октомври' },
+  { sign: 'skorpion', name: 'Скорпион', emoji: '♏', dates: '23 октомври - 21 ноември' },
+  { sign: 'strelec', name: 'Стрелец', emoji: '♐', dates: '22 ноември - 21 декември' },
+  { sign: 'kozirog', name: 'Козирог', emoji: '♑', dates: '22 декември - 19 януари' },
+  { sign: 'vodolej', name: 'Водолей', emoji: '♒', dates: '20 януари - 18 февруари' },
+  { sign: 'ribi', name: 'Риби', emoji: '♓', dates: '19 февруари - 20 март' },
+]
+
+// Testimonials
+const testimonials = [
+  {
+    name: 'Мария К.',
+    zodiac: 'Лъв',
+    text: 'Vrachka промени начина, по който разбирам себе си. Дневните хороскопи са невероятно точни и вдъхновяващи!',
+    rating: 5
+  },
+  {
+    name: 'Георги П.',
+    zodiac: 'Скорпион',
+    text: 'AI Оракулът ми помогна да взема едно от най-важните решения в живота ми. Впечатляващо!',
+    rating: 5
+  },
+  {
+    name: 'Елена Д.',
+    zodiac: 'Везни',
+    text: 'Таро четенията са точни и детайлни. Използвам платформата всеки ден вече 6 месеца!',
+    rating: 5
+  },
+]
+
+// Category labels
+const categoryLabels: Record<string, string> = {
+  'daily-horoscope': 'Дневен Хороскоп',
+  'weekly-horoscope': 'Седмичен Хороскоп',
+  'monthly-horoscope': 'Месечен Хороскоп',
+  'tarot': 'Таро',
+  'astrology': 'Астрология',
+  'numerology': 'Нумерология',
+  'spirituality': 'Духовност',
+}
+
+// Fetch latest blog posts
+async function getLatestBlogPosts() {
+  try {
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+    if (!supabaseUrl || !supabaseAnonKey) {
+      console.warn('[Homepage] Missing Supabase env vars')
+      return []
+    }
+
+    const supabase = createClient(supabaseUrl, supabaseAnonKey)
+
+    const { data } = await supabase
+      .from('blog_posts')
+      .select('slug, title, description, category, published_at')
+      .eq('published', true)
+      .order('published_at', { ascending: false })
+      .limit(3)
+
+    return data || []
+  } catch (error) {
+    console.error('[Homepage] Failed to fetch blog posts:', error)
+    return []
+  }
+}
+
+export default async function LandingPage() {
+  const blogPosts = await getLatestBlogPosts()
+
   return (
     <>
       <StructuredData data={organizationSchema} />
@@ -21,6 +104,12 @@ export default function LandingPage() {
           </div>
 
           <div className="hidden md:flex items-center gap-8">
+            <Link href="/horoscope" className="text-sm text-zinc-400 hover:text-zinc-50 transition-colors">
+              Хороскопи
+            </Link>
+            <Link href="/blog" className="text-sm text-zinc-400 hover:text-zinc-50 transition-colors">
+              Блог
+            </Link>
             <Link href="#features" className="text-sm text-zinc-400 hover:text-zinc-50 transition-colors">
               Функции
             </Link>
@@ -61,9 +150,9 @@ export default function LandingPage() {
 
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-              <Link href="/auth/register">
+              <Link href="/horoscope">
                 <Button size="lg" className="bg-accent-600 hover:bg-accent-700 text-white px-8 h-12 text-base">
-                  Безплатен пробен период
+                  Виж твоя хороскоп днес
                   <ArrowRight className="ml-2 w-5 h-5" />
                 </Button>
               </Link>
@@ -94,6 +183,51 @@ export default function LandingPage() {
             </div>
             {/* Glow effect */}
             <div className="absolute inset-0 -z-10 bg-accent-500/20 blur-3xl rounded-full" />
+          </div>
+        </div>
+      </section>
+
+      {/* Free Horoscopes Section */}
+      <section className="py-20 px-6 bg-gradient-to-b from-transparent to-brand-950">
+        <div className="container mx-auto max-w-6xl">
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full glass text-sm text-accent-400 mb-4">
+              <Star className="w-4 h-4" />
+              <span>100% Безплатно</span>
+            </div>
+            <h2 className="text-4xl font-bold text-zinc-50 mb-4">
+              Изберете вашата зодия
+            </h2>
+            <p className="text-xl text-zinc-400">
+              Дневни хороскопи за всички 12 зодиакални знака
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-5xl mx-auto">
+            {zodiacSigns.map((zodiac) => (
+              <Link key={zodiac.sign} href={`/horoscope/${zodiac.sign}`}>
+                <div className="glass-card p-6 text-center card-hover group">
+                  <div className="text-5xl mb-3 group-hover:scale-110 transition-transform">
+                    {zodiac.emoji}
+                  </div>
+                  <h3 className="font-semibold text-zinc-50 mb-1 text-lg">
+                    {zodiac.name}
+                  </h3>
+                  <p className="text-xs text-zinc-500">
+                    {zodiac.dates}
+                  </p>
+                </div>
+              </Link>
+            ))}
+          </div>
+
+          <div className="text-center mt-8">
+            <Link href="/horoscope">
+              <Button variant="outline" className="border-zinc-700 hover:bg-zinc-900">
+                Виж всички хороскопи
+                <ArrowRight className="ml-2 w-4 h-4" />
+              </Button>
+            </Link>
           </div>
         </div>
       </section>
@@ -192,6 +326,57 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* Blog Section */}
+      {blogPosts.length > 0 && (
+        <section className="py-20 px-6 bg-gradient-to-b from-transparent to-brand-950">
+          <div className="container mx-auto max-w-6xl">
+            <div className="text-center mb-16">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full glass text-sm text-accent-400 mb-4">
+                <BookOpen className="w-4 h-4" />
+                <span>Блог</span>
+              </div>
+              <h2 className="text-4xl font-bold text-zinc-50 mb-4">
+                Последни статии
+              </h2>
+              <p className="text-xl text-zinc-400">
+                Открий нови прозрения и духовни насоки
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-8">
+              {blogPosts.map((post) => (
+                <Link key={post.slug} href={`/blog/${post.slug}`}>
+                  <div className="glass-card p-6 card-hover h-full">
+                    <Badge variant="secondary" className="mb-4">
+                      {categoryLabels[post.category] || post.category}
+                    </Badge>
+                    <h3 className="text-xl font-semibold text-zinc-50 mb-3 line-clamp-2">
+                      {post.title}
+                    </h3>
+                    <p className="text-zinc-400 leading-relaxed line-clamp-3">
+                      {post.description}
+                    </p>
+                    <div className="mt-4 text-sm text-accent-400 flex items-center gap-2">
+                      <span>Прочети повече</span>
+                      <ArrowRight className="w-4 h-4" />
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+
+            <div className="text-center mt-8">
+              <Link href="/blog">
+                <Button variant="outline" className="border-zinc-700 hover:bg-zinc-900">
+                  Всички статии
+                  <ArrowRight className="ml-2 w-4 h-4" />
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* Pricing Section */}
       <section id="pricing" className="py-20 px-6">
         <div className="container mx-auto max-w-6xl">
@@ -243,9 +428,11 @@ export default function LandingPage() {
                 </li>
               </ul>
 
-              <Button variant="outline" className="w-full border-zinc-700 hover:bg-zinc-900">
-                Започни безплатно
-              </Button>
+              <Link href="/horoscope">
+                <Button variant="outline" className="w-full border-zinc-700 hover:bg-zinc-900">
+                  Започни безплатно
+                </Button>
+              </Link>
             </div>
 
             {/* Basic Plan */}
@@ -290,9 +477,11 @@ export default function LandingPage() {
                 </li>
               </ul>
 
-              <Button className="w-full bg-accent-600 hover:bg-accent-700">
-                Избери Basic
-              </Button>
+              <Link href="/auth/register">
+                <Button className="w-full bg-accent-600 hover:bg-accent-700">
+                  Избери Basic
+                </Button>
+              </Link>
             </div>
 
             {/* Ultimate Plan */}
@@ -333,10 +522,54 @@ export default function LandingPage() {
                 </li>
               </ul>
 
-              <Button variant="outline" className="w-full border-zinc-700 hover:bg-zinc-900">
-                Избери Ultimate
-              </Button>
+              <Link href="/auth/register">
+                <Button variant="outline" className="w-full border-zinc-700 hover:bg-zinc-900">
+                  Избери Ultimate
+                </Button>
+              </Link>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials Section */}
+      <section className="py-20 px-6 bg-gradient-to-b from-transparent to-brand-950">
+        <div className="container mx-auto max-w-6xl">
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full glass text-sm text-accent-400 mb-4">
+              <Quote className="w-4 h-4" />
+              <span>Отзиви</span>
+            </div>
+            <h2 className="text-4xl font-bold text-zinc-50 mb-4">
+              Какво казват нашите потребители
+            </h2>
+            <p className="text-xl text-zinc-400">
+              Присъедини се към хилядите доволни потребители
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            {testimonials.map((testimonial, index) => (
+              <div key={index} className="glass-card p-8">
+                <div className="flex items-center gap-1 mb-4">
+                  {[...Array(testimonial.rating)].map((_, i) => (
+                    <Star key={i} className="w-5 h-5 fill-accent-400 text-accent-400" />
+                  ))}
+                </div>
+                <p className="text-zinc-300 leading-relaxed mb-6 italic">
+                  "{testimonial.text}"
+                </p>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-accent-500/10 flex items-center justify-center text-lg">
+                    {testimonial.name.charAt(0)}
+                  </div>
+                  <div>
+                    <p className="font-semibold text-zinc-50">{testimonial.name}</p>
+                    <p className="text-sm text-zinc-500">{testimonial.zodiac}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -344,27 +577,68 @@ export default function LandingPage() {
       {/* Footer */}
       <footer className="border-t border-zinc-800/50 py-12 px-6 mt-20">
         <div className="container mx-auto max-w-6xl">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-accent-500 to-accent-700 flex items-center justify-center">
-                <Sparkles className="w-5 h-5 text-white" />
+          <div className="grid md:grid-cols-4 gap-8 mb-8">
+            {/* Brand */}
+            <div>
+              <div className="flex items-center gap-2 mb-4">
+                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-accent-500 to-accent-700 flex items-center justify-center">
+                  <Sparkles className="w-5 h-5 text-white" />
+                </div>
+                <span className="font-semibold text-zinc-50">Vrachka</span>
               </div>
-              <span className="font-semibold text-zinc-50">Vrachka</span>
+              <p className="text-sm text-zinc-500">
+                Твоят духовен гид с AI технология
+              </p>
             </div>
 
-            <div className="flex gap-8">
-              <Link href="/privacy" className="text-sm text-zinc-500 hover:text-zinc-300 transition-colors">
-                Поверителност
-              </Link>
-              <Link href="/terms" className="text-sm text-zinc-500 hover:text-zinc-300 transition-colors">
-                Условия
-              </Link>
-              <Link href="/contact" className="text-sm text-zinc-500 hover:text-zinc-300 transition-colors">
-                Контакт
-              </Link>
+            {/* Безплатни */}
+            <div>
+              <h4 className="font-semibold text-zinc-50 mb-4">Безплатни</h4>
+              <div className="flex flex-col gap-2">
+                <Link href="/horoscope" className="text-sm text-zinc-500 hover:text-zinc-300 transition-colors">
+                  Дневни Хороскопи
+                </Link>
+                <Link href="/blog" className="text-sm text-zinc-500 hover:text-zinc-300 transition-colors">
+                  Блог & Статии
+                </Link>
+                <Link href="/tarot" className="text-sm text-zinc-500 hover:text-zinc-300 transition-colors">
+                  Таро Четене
+                </Link>
+              </div>
             </div>
 
-            <p className="text-sm text-zinc-600">
+            {/* Функции */}
+            <div>
+              <h4 className="font-semibold text-zinc-50 mb-4">Функции</h4>
+              <div className="flex flex-col gap-2">
+                <Link href="/oracle" className="text-sm text-zinc-500 hover:text-zinc-300 transition-colors">
+                  AI Оракул
+                </Link>
+                <Link href="/pricing" className="text-sm text-zinc-500 hover:text-zinc-300 transition-colors">
+                  Цени
+                </Link>
+              </div>
+            </div>
+
+            {/* Информация */}
+            <div>
+              <h4 className="font-semibold text-zinc-50 mb-4">Информация</h4>
+              <div className="flex flex-col gap-2">
+                <Link href="/privacy" className="text-sm text-zinc-500 hover:text-zinc-300 transition-colors">
+                  Поверителност
+                </Link>
+                <Link href="/terms" className="text-sm text-zinc-500 hover:text-zinc-300 transition-colors">
+                  Условия
+                </Link>
+                <Link href="/contact" className="text-sm text-zinc-500 hover:text-zinc-300 transition-colors">
+                  Контакт
+                </Link>
+              </div>
+            </div>
+          </div>
+
+          <div className="pt-8 border-t border-zinc-800/50">
+            <p className="text-sm text-zinc-600 text-center">
               © 2025 Vrachka. Всички права запазени.
             </p>
           </div>
