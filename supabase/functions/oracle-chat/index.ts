@@ -163,7 +163,7 @@ ${depthGuidance}
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "gpt-4o",
+        model: "gpt-5-mini",
         messages: [
           { role: "system", content: ORACLE_SYSTEM_PROMPT },
           { role: "user", content: prompt }
