@@ -569,7 +569,7 @@ export default async function LandingPage() {
                   ))}
                 </div>
                 <p className="text-zinc-300 leading-relaxed mb-6 italic">
-                  "{testimonial.text}"
+                  &ldquo;{testimonial.text}&rdquo;
                 </p>
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-accent-500/10 flex items-center justify-center text-lg">
