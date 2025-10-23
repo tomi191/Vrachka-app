@@ -58,11 +58,11 @@ const nextConfig = {
             key: 'Content-Security-Policy',
             value: [
               "default-src 'self'",
-              "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://vercel.live https://va.vercel-scripts.com",
+              "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://vercel.live https://va.vercel-scripts.com https://www.googletagmanager.com",
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "img-src 'self' data: blob: https://*.supabase.co https://vercel.live",
               "font-src 'self' https://fonts.gstatic.com",
-              "connect-src 'self' https://*.supabase.co https://openrouter.ai https://api.stripe.com https://vercel.live wss://*.supabase.co",
+              "connect-src 'self' https://*.supabase.co https://openrouter.ai https://api.stripe.com https://vercel.live wss://*.supabase.co https://www.google-analytics.com https://analytics.google.com",
               "frame-src 'self' https://js.stripe.com https://hooks.stripe.com",
               "worker-src 'self' blob:",
             ].join('; ')
