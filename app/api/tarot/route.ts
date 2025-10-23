@@ -162,21 +162,42 @@ export async function POST(req: NextRequest) {
     })) as TarotCard[];
 
     // Generate reading with AI
+    console.log('[Tarot API] Generating reading for user:', user.id, 'spread:', spreadType, 'cards:', selectedCards.length);
     const prompt = getTarotPrompt(selectedCards, spreadType as SpreadType, question);
-    const aiResponse = await generateCompletion(
-      TAROT_SYSTEM_PROMPT,
-      prompt,
-      {
-        temperature: 0.85,
-        maxTokens: spreadType === 'single' ? 600 : 1500,
-        responseFormat: 'json',
+
+    let aiResponse;
+    try {
+      console.log('[Tarot API] Calling AI completion...');
+      aiResponse = await generateCompletion(
+        TAROT_SYSTEM_PROMPT,
+        prompt,
+        {
+          temperature: 0.85,
+          // Increased maxTokens for gpt-5-mini which uses reasoning tokens (typically 500-800)
+          // 3-card spread gets more tokens for detailed interpretation
+          maxTokens: spreadType === 'single' ? 1800 : 2500,
+          responseFormat: 'json',
+        }
+      );
+      console.log('[Tarot API] AI response received, length:', aiResponse?.length);
+    } catch (aiError) {
+      console.error('[Tarot API] AI generation error:', aiError);
+      throw new Error(`AI generation failed: ${aiError instanceof Error ? aiError.message : 'Unknown error'}`);
+    }
+
+    let reading;
+    try {
+      console.log('[Tarot API] Parsing AI JSON response...');
+      reading = parseAIJsonResponse<TarotReading>(aiResponse);
+
+      if (!reading) {
+        console.error('[Tarot API] Failed to parse AI response:', aiResponse?.substring(0, 200));
+        throw new Error('Failed to parse AI tarot reading - invalid JSON');
       }
-    );
-
-    const reading = parseAIJsonResponse<TarotReading>(aiResponse);
-
-    if (!reading) {
-      throw new Error('Failed to parse AI tarot reading');
+      console.log('[Tarot API] Successfully parsed tarot reading');
+    } catch (parseError) {
+      console.error('[Tarot API] Parse error:', parseError);
+      throw new Error(`JSON parse failed: ${parseError instanceof Error ? parseError.message : 'Unknown error'}`);
     }
 
     // Increment usage

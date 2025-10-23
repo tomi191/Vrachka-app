@@ -128,18 +128,30 @@ export async function POST(req: NextRequest) {
       planType
     ) + conversationContext;
 
-    const answer = await generateCompletion(
-      ORACLE_SYSTEM_PROMPT,
-      oraclePrompt,
-      {
-        temperature: 0.8,
-        maxTokens: planType === 'ultimate' ? 1000 : 600,
-      }
-    );
+    console.log('[Oracle API] Generating response for user:', user.id, 'plan:', planType);
+    let answer;
+    try {
+      answer = await generateCompletion(
+        ORACLE_SYSTEM_PROMPT,
+        oraclePrompt,
+        {
+          temperature: 0.8,
+          // Increased maxTokens for gpt-5-mini which uses reasoning tokens (typically 500-800)
+          // Ultimate gets more detailed answers
+          maxTokens: planType === 'ultimate' ? 2500 : 2000,
+        }
+      );
+      console.log('[Oracle API] AI response received, length:', answer?.length);
+    } catch (aiError) {
+      console.error('[Oracle API] AI generation error:', aiError);
+      throw new Error(`AI generation failed: ${aiError instanceof Error ? aiError.message : 'Unknown error'}`);
+    }
 
     if (!answer || answer.trim().length === 0) {
+      console.error('[Oracle API] Empty response received from AI');
       throw new Error('AI generated empty response');
     }
+    console.log('[Oracle API] Response validated successfully');
 
     // Generate new conversation_id if not provided (start of new conversation)
     const finalConversationId = conversation_id || crypto.randomUUID();
