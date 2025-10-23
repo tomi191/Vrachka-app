@@ -190,9 +190,8 @@ export default async function PricingPage() {
         {/* Testimonials */}
         <BentoTestimonials />
 
-        <div className="max-w-7xl mx-auto px-4">
         {/* FAQ */}
-        <div className="mt-20 max-w-3xl mx-auto">
+        <div className="mt-20 max-w-3xl mx-auto px-4">
           <div className="text-center mb-12">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full glass text-sm text-accent-400 mb-4">
               <Sparkles className="w-4 h-4" />
@@ -269,7 +268,6 @@ export default async function PricingPage() {
           </div>
         </div>
 
-        </div>
         <Footer />
       </div>
     </>
