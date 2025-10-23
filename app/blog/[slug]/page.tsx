@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { createClient as createSupabaseClient } from '@supabase/supabase-js'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -48,7 +49,16 @@ interface BlogPost {
 
 // Generate static params for published posts (will be called at build time)
 export async function generateStaticParams() {
-  const supabase = await createClient()
+  // Use direct Supabase client (no cookies) for build-time static generation
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+
+  if (!supabaseUrl || !supabaseAnonKey) {
+    console.warn('[generateStaticParams] Missing Supabase env vars, returning empty array')
+    return []
+  }
+
+  const supabase = createSupabaseClient(supabaseUrl, supabaseAnonKey)
 
   const { data: posts } = await supabase
     .from('blog_posts')
