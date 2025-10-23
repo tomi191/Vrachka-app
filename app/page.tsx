@@ -16,6 +16,8 @@ import { ComparisonTable } from '@/components/landing/ComparisonTable'
 import { BentoTestimonials } from '@/components/landing/BentoTestimonials'
 import { FinalCTA } from '@/components/landing/FinalCTA'
 import { MysticBackground } from '@/components/background/MysticBackground'
+import { Navigation } from '@/components/Navigation'
+import { Footer } from '@/components/Footer'
 
 // Revalidate every hour for fresh blog posts
 export const revalidate = 3600
@@ -159,44 +161,10 @@ export default async function LandingPage() {
       <StructuredData data={webApplicationSchema} />
       <StructuredData data={faqSchema} />
 
-      {/* Unified Background Animation */}
+      <Navigation />
       <MysticBackground />
 
       <div className="min-h-screen bg-gradient-dark relative">
-      {/* Navigation */}
-      <nav className="fixed top-0 w-full z-50 border-b border-zinc-800/50 bg-brand-950/80 backdrop-blur-xl">
-        <div className="container mx-auto px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-accent-500 to-accent-700 flex items-center justify-center">
-              <Sparkles className="w-5 h-5 text-white" />
-            </div>
-            <span className="font-semibold text-lg text-zinc-50">Vrachka</span>
-          </div>
-
-          <div className="hidden md:flex items-center gap-8">
-            <Link href="/horoscope" className="text-sm text-zinc-400 hover:text-zinc-50 transition-colors">
-              Хороскопи
-            </Link>
-            <Link href="/blog" className="text-sm text-zinc-400 hover:text-zinc-50 transition-colors">
-              Блог
-            </Link>
-            <Link href="#features" className="text-sm text-zinc-400 hover:text-zinc-50 transition-colors">
-              Функции
-            </Link>
-            <Link href="#pricing" className="text-sm text-zinc-400 hover:text-zinc-50 transition-colors">
-              Цени
-            </Link>
-            <Link href="/auth/login" className="text-sm text-zinc-400 hover:text-zinc-50 transition-colors">
-              Вход
-            </Link>
-            <Link href="/auth/register">
-              <Button size="sm" className="bg-accent-600 hover:bg-accent-700">
-                Започни сега
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </nav>
 
       {/* Hero Section */}
       <section className="pt-32 pb-20 px-6">
@@ -580,76 +548,7 @@ export default async function LandingPage() {
       {/* Final CTA */}
       <FinalCTA />
 
-      {/* Footer */}
-      <footer className="border-t border-zinc-800/50 py-12 px-6">
-        <div className="container mx-auto max-w-6xl">
-          <div className="grid md:grid-cols-4 gap-8 mb-8">
-            {/* Brand */}
-            <div>
-              <div className="flex items-center gap-2 mb-4">
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-accent-500 to-accent-700 flex items-center justify-center">
-                  <Sparkles className="w-5 h-5 text-white" />
-                </div>
-                <span className="font-semibold text-zinc-50">Vrachka</span>
-              </div>
-              <p className="text-sm text-zinc-500">
-                Твоят духовен гид с AI технология
-              </p>
-            </div>
-
-            {/* Безплатни */}
-            <div>
-              <h4 className="font-semibold text-zinc-50 mb-4">Безплатни</h4>
-              <div className="flex flex-col gap-2">
-                <Link href="/horoscope" className="text-sm text-zinc-500 hover:text-zinc-300 transition-colors">
-                  Дневни Хороскопи
-                </Link>
-                <Link href="/blog" className="text-sm text-zinc-500 hover:text-zinc-300 transition-colors">
-                  Блог & Статии
-                </Link>
-                <Link href="/tarot" className="text-sm text-zinc-500 hover:text-zinc-300 transition-colors">
-                  Таро Четене
-                </Link>
-              </div>
-            </div>
-
-            {/* Функции */}
-            <div>
-              <h4 className="font-semibold text-zinc-50 mb-4">Функции</h4>
-              <div className="flex flex-col gap-2">
-                <Link href="/oracle" className="text-sm text-zinc-500 hover:text-zinc-300 transition-colors">
-                  AI Оракул
-                </Link>
-                <Link href="/pricing" className="text-sm text-zinc-500 hover:text-zinc-300 transition-colors">
-                  Цени
-                </Link>
-              </div>
-            </div>
-
-            {/* Информация */}
-            <div>
-              <h4 className="font-semibold text-zinc-50 mb-4">Информация</h4>
-              <div className="flex flex-col gap-2">
-                <Link href="/privacy" className="text-sm text-zinc-500 hover:text-zinc-300 transition-colors">
-                  Поверителност
-                </Link>
-                <Link href="/terms" className="text-sm text-zinc-500 hover:text-zinc-300 transition-colors">
-                  Условия
-                </Link>
-                <Link href="/contact" className="text-sm text-zinc-500 hover:text-zinc-300 transition-colors">
-                  Контакт
-                </Link>
-              </div>
-            </div>
-          </div>
-
-          <div className="pt-8 border-t border-zinc-800/50">
-            <p className="text-sm text-zinc-600 text-center">
-              © 2025 Vrachka. Всички права запазени.
-            </p>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
     </>
   );
