@@ -28,7 +28,7 @@ const problems = [
 
 export function ProblemSolution() {
   return (
-    <section className="py-20 px-6 bg-gradient-to-b from-brand-950 to-transparent">
+    <section className="py-20 px-6">
       <div className="container mx-auto max-w-6xl">
         {/* Header */}
         <div className="text-center mb-16">

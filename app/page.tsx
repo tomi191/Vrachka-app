@@ -253,7 +253,7 @@ export default async function LandingPage() {
       <ProblemSolution />
 
       {/* Free Horoscopes Section */}
-      <section className="py-20 px-6 bg-gradient-to-b from-transparent to-brand-950">
+      <section className="py-20 px-6">
         <div className="container mx-auto max-w-6xl">
           <div className="text-center mb-16">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full glass text-sm text-accent-400 mb-4">
@@ -308,7 +308,7 @@ export default async function LandingPage() {
 
       {/* Blog Section */}
       {blogPosts.length > 0 && (
-        <section className="py-20 px-6 bg-gradient-to-b from-transparent to-brand-950">
+        <section className="py-20 px-6">
           <div className="container mx-auto max-w-6xl">
             <div className="text-center mb-16">
               <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full glass text-sm text-accent-400 mb-4">
@@ -530,7 +530,7 @@ export default async function LandingPage() {
       </section>
 
       {/* FAQ Section */}
-      <section className="py-20 px-6 bg-gradient-to-b from-transparent to-brand-950">
+      <section className="py-20 px-6">
         <div className="container mx-auto max-w-4xl">
           <div className="text-center mb-16">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full glass text-sm text-accent-400 mb-4">
