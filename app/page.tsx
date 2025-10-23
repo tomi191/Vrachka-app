@@ -8,6 +8,13 @@ import { ZodiacIcon } from '@/components/icons/zodiac'
 import { ShimmerButton } from '@/components/ui/shimmer-button'
 import { HoverCardWrapper } from '@/components/ui/hover-card-wrapper'
 import { GradientText } from '@/components/ui/gradient-text'
+import { BentoHero } from '@/components/landing/BentoHero'
+import { ProblemSolution } from '@/components/landing/ProblemSolution'
+import { StatsBar } from '@/components/landing/StatsBar'
+import { BentoFeatures } from '@/components/landing/BentoFeatures'
+import { ComparisonTable } from '@/components/landing/ComparisonTable'
+import { BentoTestimonials } from '@/components/landing/BentoTestimonials'
+import { FinalCTA } from '@/components/landing/FinalCTA'
 
 // Revalidate every hour for fresh blog posts
 export const revalidate = 3600
@@ -229,23 +236,16 @@ export default async function LandingPage() {
             </p>
           </div>
 
-          {/* Hero Image/Dashboard Preview */}
-          <div className="mt-20 relative">
-            <div className="glass-card p-2 max-w-5xl mx-auto card-hover">
-              <div className="bg-brand-900 rounded-xl h-[500px] flex items-center justify-center">
-                <div className="text-center space-y-4">
-                  <div className="w-20 h-20 mx-auto rounded-2xl bg-accent-500/10 flex items-center justify-center">
-                    <Star className="w-10 h-10 text-accent-400" />
-                  </div>
-                  <p className="text-zinc-600 text-lg">Dashboard Preview</p>
-                </div>
-              </div>
-            </div>
-            {/* Glow effect */}
-            <div className="absolute inset-0 -z-10 bg-accent-500/20 blur-3xl rounded-full" />
-          </div>
+          {/* Bento Grid Hero */}
+          <BentoHero />
         </div>
       </section>
+
+      {/* Stats Bar */}
+      <StatsBar />
+
+      {/* Problem → Solution Section */}
+      <ProblemSolution />
 
       {/* Free Horoscopes Section */}
       <section className="py-20 px-6 bg-gradient-to-b from-transparent to-brand-950">
@@ -298,99 +298,8 @@ export default async function LandingPage() {
         </div>
       </section>
 
-      {/* Features Section */}
-      <section id="features" className="py-20 px-6">
-        <div className="container mx-auto max-w-6xl">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-zinc-50 mb-4">
-              Всичко необходимо за твоето духовно развитие
-            </h2>
-            <p className="text-xl text-zinc-400">
-              Мощни функции за управление на твоето пътуване
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            {/* Feature 1 */}
-            <div className="glass-card p-8 card-hover">
-              <div className="w-12 h-12 rounded-xl bg-accent-500/10 flex items-center justify-center mb-6">
-                <Calendar className="w-6 h-6 text-accent-400" />
-              </div>
-              <h3 className="text-xl font-semibold text-zinc-50 mb-3">
-                Дневни хороскопи
-              </h3>
-              <p className="text-zinc-400 leading-relaxed">
-                Персонализирани астрологични прогнози базирани на твоята натална карта. Актуализират се ежедневно с AI-генерирано съдържание.
-              </p>
-            </div>
-
-            {/* Feature 2 */}
-            <div className="glass-card p-8 card-hover">
-              <div className="w-12 h-12 rounded-xl bg-accent-500/10 flex items-center justify-center mb-6">
-                <Sparkles className="w-6 h-6 text-accent-400" />
-              </div>
-              <h3 className="text-xl font-semibold text-zinc-50 mb-3">
-                Таро четения
-              </h3>
-              <p className="text-zinc-400 leading-relaxed">
-                Изтегли карти и получи моментална интерпретация. Множество подредби налични за различни въпроси.
-              </p>
-            </div>
-
-            {/* Feature 3 */}
-            <div className="glass-card p-8 card-hover">
-              <div className="w-12 h-12 rounded-xl bg-accent-500/10 flex items-center justify-center mb-6">
-                <Shield className="w-6 h-6 text-accent-400" />
-              </div>
-              <h3 className="text-xl font-semibold text-zinc-50 mb-3">
-                AI Оракул
-              </h3>
-              <p className="text-zinc-400 leading-relaxed">
-                Задай всякакъв духовен въпрос и получи обмислени насоки от нашия напреднал AI асистент.
-              </p>
-            </div>
-
-            {/* Feature 4 */}
-            <div className="glass-card p-8 card-hover">
-              <div className="w-12 h-12 rounded-xl bg-accent-500/10 flex items-center justify-center mb-6">
-                <TrendingUp className="w-6 h-6 text-accent-400" />
-              </div>
-              <h3 className="text-xl font-semibold text-zinc-50 mb-3">
-                Нумерология
-              </h3>
-              <p className="text-zinc-400 leading-relaxed">
-                Открий значението на числата в твоя живот. Детайлни анализи базирани на рождената ти дата и име.
-              </p>
-            </div>
-
-            {/* Feature 5 */}
-            <div className="glass-card p-8 card-hover">
-              <div className="w-12 h-12 rounded-xl bg-accent-500/10 flex items-center justify-center mb-6">
-                <Zap className="w-6 h-6 text-accent-400" />
-              </div>
-              <h3 className="text-xl font-semibold text-zinc-50 mb-3">
-                Съвместимост
-              </h3>
-              <p className="text-zinc-400 leading-relaxed">
-                Анализирай връзките си с други хора. Любовна, приятелска и бизнес съвместимост.
-              </p>
-            </div>
-
-            {/* Feature 6 */}
-            <div className="glass-card p-8 card-hover">
-              <div className="w-12 h-12 rounded-xl bg-accent-500/10 flex items-center justify-center mb-6">
-                <Star className="w-6 h-6 text-accent-400" />
-              </div>
-              <h3 className="text-xl font-semibold text-zinc-50 mb-3">
-                Натална карта
-              </h3>
-              <p className="text-zinc-400 leading-relaxed">
-                Пълна астрологична карта с всички планети, къщи и аспекти. Задълбочен анализ на личността ти.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* Features Section - Bento Grid */}
+      <BentoFeatures />
 
       {/* Blog Section */}
       {blogPosts.length > 0 && (
@@ -442,6 +351,9 @@ export default async function LandingPage() {
           </div>
         </section>
       )}
+
+      {/* Comparison Table */}
+      <ComparisonTable />
 
       {/* Pricing Section */}
       <section id="pricing" className="py-20 px-6">
@@ -657,63 +569,14 @@ export default async function LandingPage() {
         </div>
       </section>
 
-      {/* Testimonials Section */}
-      <section className="py-20 px-6 relative overflow-hidden">
-        <div className="container mx-auto max-w-6xl">
-          <div className="text-center mb-16">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full glass text-sm text-accent-400 mb-4">
-              <Quote className="w-4 h-4" />
-              <span>Отзиви</span>
-            </div>
-            <h2 className="text-4xl font-bold text-zinc-50 mb-4">
-              Какво казват нашите потребители
-            </h2>
-            <p className="text-xl text-zinc-400">
-              Присъедини се към хилядите доволни потребители
-            </p>
-          </div>
+      {/* Testimonials Section - Bento Grid */}
+      <BentoTestimonials />
 
-          {/* Horizontal Scrollable Container with Fade */}
-          <div className="relative">
-            {/* Left Fade Gradient */}
-            <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-brand-950 to-transparent z-10 pointer-events-none" />
-
-            {/* Right Fade Gradient */}
-            <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-brand-950 to-transparent z-10 pointer-events-none" />
-
-            {/* Scrollable Testimonials */}
-            <div className="flex gap-6 overflow-x-auto pb-4 snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] px-4">
-              {testimonials.map((testimonial, index) => (
-                <div
-                  key={index}
-                  className="glass-card p-6 min-w-[320px] max-w-[360px] snap-center flex-shrink-0"
-                >
-                  <div className="flex items-center gap-1 mb-3">
-                    {[...Array(testimonial.rating)].map((_, i) => (
-                      <Star key={i} className="w-4 h-4 fill-accent-400 text-accent-400" />
-                    ))}
-                  </div>
-                  <p className="text-zinc-300 leading-relaxed mb-4 italic text-sm">
-                    &ldquo;{testimonial.text}&rdquo;
-                  </p>
-                  <div className="flex items-center gap-3 mt-auto">
-                    <div className="w-10 h-10 rounded-full bg-accent-500/10 flex items-center justify-center text-base">
-                      {testimonial.name.charAt(0)}
-                    </div>
-                    <div>
-                      <p className="font-semibold text-zinc-50 text-sm">{testimonial.name}</p>
-                      <p className="text-xs text-zinc-500">{testimonial.zodiac}</p>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* Final CTA */}
+      <FinalCTA />
 
       {/* Footer */}
-      <footer className="border-t border-zinc-800/50 py-12 px-6 mt-20">
+      <footer className="border-t border-zinc-800/50 py-12 px-6">
         <div className="container mx-auto max-w-6xl">
           <div className="grid md:grid-cols-4 gap-8 mb-8">
             {/* Brand */}
