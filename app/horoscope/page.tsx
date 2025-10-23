@@ -3,6 +3,10 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { StructuredData, getBreadcrumbSchema } from '@/components/StructuredData'
+import { ZodiacIcon } from '@/components/icons/zodiac'
+import { HoverCardWrapper } from '@/components/ui/hover-card-wrapper'
+import { GradientText } from '@/components/ui/gradient-text'
+import { ShimmerButton } from '@/components/ui/shimmer-button'
 
 export const metadata: Metadata = {
   title: 'Дневен Хороскоп за Всички Зодии',
@@ -32,7 +36,6 @@ const zodiacSigns = [
   {
     sign: 'oven',
     name: 'Овен',
-    emoji: '♈',
     dates: '21 март - 19 април',
     element: 'Огън',
     planet: 'Марс',
@@ -41,7 +44,6 @@ const zodiacSigns = [
   {
     sign: 'telec',
     name: 'Телец',
-    emoji: '♉',
     dates: '20 април - 20 май',
     element: 'Земя',
     planet: 'Венера',
@@ -50,7 +52,6 @@ const zodiacSigns = [
   {
     sign: 'bliznaci',
     name: 'Близнаци',
-    emoji: '♊',
     dates: '21 май - 20 юни',
     element: 'Въздух',
     planet: 'Меркурий',
@@ -59,7 +60,6 @@ const zodiacSigns = [
   {
     sign: 'rak',
     name: 'Рак',
-    emoji: '♋',
     dates: '21 юни - 22 юли',
     element: 'Вода',
     planet: 'Луна',
@@ -68,7 +68,6 @@ const zodiacSigns = [
   {
     sign: 'lav',
     name: 'Лъв',
-    emoji: '♌',
     dates: '23 юли - 22 август',
     element: 'Огън',
     planet: 'Слънце',
@@ -77,7 +76,6 @@ const zodiacSigns = [
   {
     sign: 'deva',
     name: 'Дева',
-    emoji: '♍',
     dates: '23 август - 22 септември',
     element: 'Земя',
     planet: 'Меркурий',
@@ -86,7 +84,6 @@ const zodiacSigns = [
   {
     sign: 'vezni',
     name: 'Везни',
-    emoji: '♎',
     dates: '23 септември - 22 октомври',
     element: 'Въздух',
     planet: 'Венера',
@@ -95,7 +92,6 @@ const zodiacSigns = [
   {
     sign: 'skorpion',
     name: 'Скорпион',
-    emoji: '♏',
     dates: '23 октомври - 21 ноември',
     element: 'Вода',
     planet: 'Плутон',
@@ -104,7 +100,6 @@ const zodiacSigns = [
   {
     sign: 'strelec',
     name: 'Стрелец',
-    emoji: '♐',
     dates: '22 ноември - 21 декември',
     element: 'Огън',
     planet: 'Юпитер',
@@ -113,7 +108,6 @@ const zodiacSigns = [
   {
     sign: 'kozirog',
     name: 'Козирог',
-    emoji: '♑',
     dates: '22 декември - 19 януари',
     element: 'Земя',
     planet: 'Сатурн',
@@ -122,7 +116,6 @@ const zodiacSigns = [
   {
     sign: 'vodolej',
     name: 'Водолей',
-    emoji: '♒',
     dates: '20 януари - 18 февруари',
     element: 'Въздух',
     planet: 'Уран',
@@ -131,13 +124,12 @@ const zodiacSigns = [
   {
     sign: 'ribi',
     name: 'Риби',
-    emoji: '♓',
     dates: '19 февруари - 20 март',
     element: 'Вода',
     planet: 'Нептун',
     traits: 'Състрадателен, артистичен, духовен',
   },
-]
+] as const
 
 const breadcrumbData = getBreadcrumbSchema([
   { name: 'Начало', url: 'https://www.vrachka.eu' },
@@ -154,8 +146,10 @@ export default function HoroscopePage() {
         <div className="container mx-auto px-4 py-16">
           <div className="text-center mb-12">
             <div className="text-6xl mb-4">🔮</div>
-            <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-              Дневен Хороскоп за Всички Зодии
+            <h1 className="text-4xl md:text-5xl font-bold mb-4">
+              <GradientText from="#9333ea" via="#ec4899" to="#9333ea">
+                Дневен Хороскоп за Всички Зодии
+              </GradientText>
             </h1>
             <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
               Открийте какво ви носят звездите днес. Персонализирани астрологични прогнози за любов, кариера, здраве и духовно развитие.
@@ -166,26 +160,34 @@ export default function HoroscopePage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-16">
             {zodiacSigns.map((zodiac) => (
               <Link key={zodiac.sign} href={`/horoscope/${zodiac.sign}`}>
-                <Card className="h-full hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer border-2 hover:border-purple-500">
-                  <CardHeader>
-                    <div className="text-5xl text-center mb-2">{zodiac.emoji}</div>
-                    <CardTitle className="text-center text-2xl">{zodiac.name}</CardTitle>
-                    <CardDescription className="text-center font-medium">
-                      {zodiac.dates}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-2">
-                    <div className="text-sm">
-                      <span className="font-semibold">Стихия:</span> {zodiac.element}
-                    </div>
-                    <div className="text-sm">
-                      <span className="font-semibold">Планета:</span> {zodiac.planet}
-                    </div>
-                    <div className="text-sm text-gray-600 dark:text-gray-400">
-                      {zodiac.traits}
-                    </div>
-                  </CardContent>
-                </Card>
+                <HoverCardWrapper className="h-full">
+                  <Card className="h-full hover:shadow-xl transition-all duration-300 cursor-pointer border-2 hover:border-purple-500">
+                    <CardHeader>
+                      <div className="flex justify-center mb-2">
+                        <ZodiacIcon
+                          sign={zodiac.sign as keyof typeof import('@/components/icons/zodiac').zodiacIcons}
+                          size={56}
+                          className="text-purple-600 dark:text-purple-400"
+                        />
+                      </div>
+                      <CardTitle className="text-center text-2xl">{zodiac.name}</CardTitle>
+                      <CardDescription className="text-center font-medium">
+                        {zodiac.dates}
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-2">
+                      <div className="text-sm">
+                        <span className="font-semibold">Стихия:</span> {zodiac.element}
+                      </div>
+                      <div className="text-sm">
+                        <span className="font-semibold">Планета:</span> {zodiac.planet}
+                      </div>
+                      <div className="text-sm text-gray-600 dark:text-gray-400">
+                        {zodiac.traits}
+                      </div>
+                    </CardContent>
+                  </Card>
+                </HoverCardWrapper>
               </Link>
             ))}
           </div>
@@ -255,9 +257,13 @@ export default function HoroscopePage() {
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link href="/auth/register">
-                  <Button size="lg" variant="secondary" className="text-lg px-8">
+                  <ShimmerButton
+                    className="text-lg px-8"
+                    background="linear-gradient(135deg, #ffffff 0%, #f3f4f6 100%)"
+                    shimmerColor="#9333ea"
+                  >
                     Започни Сега - Безплатно
-                  </Button>
+                  </ShimmerButton>
                 </Link>
                 <Link href="/pricing">
                   <Button size="lg" variant="outline" className="text-lg px-8 bg-white/10 hover:bg-white/20 text-white border-white">

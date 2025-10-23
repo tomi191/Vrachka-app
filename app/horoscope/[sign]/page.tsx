@@ -6,6 +6,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge'
 import { StructuredData, getBreadcrumbSchema } from '@/components/StructuredData'
 import { ArrowLeft, Heart, Briefcase, Star, TrendingUp } from 'lucide-react'
+import { ZodiacIcon } from '@/components/icons/zodiac'
+import { GradientText } from '@/components/ui/gradient-text'
+import { ShimmerButton } from '@/components/ui/shimmer-button'
 
 // ISR: Revalidate every 24 hours (daily horoscope updates)
 export const revalidate = 86400
@@ -13,10 +16,8 @@ export const revalidate = 86400
 interface ZodiacData {
   sign: string
   name: string
-  emoji: string
   dates: string
   element: string
-  elementEmoji: string
   planet: string
   color: string
   luckyNumbers: number[]
@@ -39,10 +40,8 @@ const zodiacData: Record<string, ZodiacData> = {
   oven: {
     sign: 'oven',
     name: 'Овен',
-    emoji: '♈',
     dates: '21 март - 19 април',
     element: 'Огън',
-    elementEmoji: '🔥',
     planet: 'Марс',
     color: 'Червено',
     luckyNumbers: [1, 9, 19, 28],
@@ -63,10 +62,8 @@ const zodiacData: Record<string, ZodiacData> = {
   telec: {
     sign: 'telec',
     name: 'Телец',
-    emoji: '♉',
     dates: '20 април - 20 май',
     element: 'Земя',
-    elementEmoji: '🌍',
     planet: 'Венера',
     color: 'Зелено',
     luckyNumbers: [2, 6, 15, 24],
@@ -87,10 +84,8 @@ const zodiacData: Record<string, ZodiacData> = {
   bliznaci: {
     sign: 'bliznaci',
     name: 'Близнаци',
-    emoji: '♊',
     dates: '21 май - 20 юни',
     element: 'Въздух',
-    elementEmoji: '💨',
     planet: 'Меркурий',
     color: 'Жълто',
     luckyNumbers: [3, 5, 12, 18],
@@ -111,10 +106,8 @@ const zodiacData: Record<string, ZodiacData> = {
   rak: {
     sign: 'rak',
     name: 'Рак',
-    emoji: '♋',
     dates: '21 юни - 22 юли',
     element: 'Вода',
-    elementEmoji: '💧',
     planet: 'Луна',
     color: 'Сребристо',
     luckyNumbers: [2, 7, 11, 16],
@@ -135,10 +128,8 @@ const zodiacData: Record<string, ZodiacData> = {
   lav: {
     sign: 'lav',
     name: 'Лъв',
-    emoji: '♌',
     dates: '23 юли - 22 август',
     element: 'Огън',
-    elementEmoji: '🔥',
     planet: 'Слънце',
     color: 'Златисто',
     luckyNumbers: [1, 4, 10, 19],
@@ -159,10 +150,8 @@ const zodiacData: Record<string, ZodiacData> = {
   deva: {
     sign: 'deva',
     name: 'Дева',
-    emoji: '♍',
     dates: '23 август - 22 септември',
     element: 'Земя',
-    elementEmoji: '🌍',
     planet: 'Меркурий',
     color: 'Тъмносиньо',
     luckyNumbers: [5, 14, 23, 32],
@@ -183,10 +172,8 @@ const zodiacData: Record<string, ZodiacData> = {
   vezni: {
     sign: 'vezni',
     name: 'Везни',
-    emoji: '♎',
     dates: '23 септември - 22 октомври',
     element: 'Въздух',
-    elementEmoji: '💨',
     planet: 'Венера',
     color: 'Розово',
     luckyNumbers: [6, 15, 24, 33],
@@ -207,10 +194,8 @@ const zodiacData: Record<string, ZodiacData> = {
   skorpion: {
     sign: 'skorpion',
     name: 'Скорпион',
-    emoji: '♏',
     dates: '23 октомври - 21 ноември',
     element: 'Вода',
-    elementEmoji: '💧',
     planet: 'Плутон',
     color: 'Тъмночервено',
     luckyNumbers: [8, 11, 18, 22],
@@ -231,10 +216,8 @@ const zodiacData: Record<string, ZodiacData> = {
   strelec: {
     sign: 'strelec',
     name: 'Стрелец',
-    emoji: '♐',
     dates: '22 ноември - 21 декември',
     element: 'Огън',
-    elementEmoji: '🔥',
     planet: 'Юпитер',
     color: 'Лилаво',
     luckyNumbers: [3, 9, 12, 21],
@@ -255,10 +238,8 @@ const zodiacData: Record<string, ZodiacData> = {
   kozirog: {
     sign: 'kozirog',
     name: 'Козирог',
-    emoji: '♑',
     dates: '22 декември - 19 януари',
     element: 'Земя',
-    elementEmoji: '🌍',
     planet: 'Сатурн',
     color: 'Кафяво',
     luckyNumbers: [4, 8, 13, 22],
@@ -279,10 +260,8 @@ const zodiacData: Record<string, ZodiacData> = {
   vodolej: {
     sign: 'vodolej',
     name: 'Водолей',
-    emoji: '♒',
     dates: '20 януари - 18 февруари',
     element: 'Въздух',
-    elementEmoji: '💨',
     planet: 'Уран',
     color: 'Електриково синьо',
     luckyNumbers: [4, 7, 11, 22],
@@ -303,10 +282,8 @@ const zodiacData: Record<string, ZodiacData> = {
   ribi: {
     sign: 'ribi',
     name: 'Риби',
-    emoji: '♓',
     dates: '19 февруари - 20 март',
     element: 'Вода',
-    elementEmoji: '💧',
     planet: 'Нептун',
     color: 'Морско зелено',
     luckyNumbers: [3, 7, 12, 16],
@@ -355,9 +332,9 @@ export async function generateMetadata({ params }: { params: Promise<{ sign: str
       `любовен хороскоп ${zodiac.name.toLowerCase()}`,
     ],
     openGraph: {
-      title: `Хороскоп ${zodiac.name} ${zodiac.emoji} - Дневна Прогноза`,
+      title: `Хороскоп ${zodiac.name} - Дневна Прогноза`,
       description: `${zodiac.description}`,
-      images: [`/api/og?title=Хороскоп ${zodiac.name} ${zodiac.emoji}&description=${zodiac.dates} • ${zodiac.element}`],
+      images: [`/api/og?title=Хороскоп ${zodiac.name}&description=${zodiac.dates} • ${zodiac.element}`],
     },
     alternates: {
       canonical: `/horoscope/${zodiac.sign}`,
@@ -378,7 +355,7 @@ export default async function ZodiacSignPage({ params }: { params: Promise<{ sig
     '@type': 'Article',
     headline: `Хороскоп ${zodiac.name} - Дневна Прогноза и Характеристики`,
     description: zodiac.description,
-    image: `https://www.vrachka.eu/api/og?title=Хороскоп ${zodiac.name} ${zodiac.emoji}`,
+    image: `https://www.vrachka.eu/api/og?title=Хороскоп ${zodiac.name}`,
     datePublished: new Date().toISOString(),
     dateModified: new Date().toISOString(),
     author: {
@@ -408,20 +385,28 @@ export default async function ZodiacSignPage({ params }: { params: Promise<{ sig
 
           {/* Hero Section */}
           <div className="text-center mb-12">
-            <div className="text-8xl mb-4">{zodiac.emoji}</div>
-            <h1 className="text-4xl md:text-5xl font-bold mb-2 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-              Хороскоп {zodiac.name}
+            <div className="flex justify-center mb-4">
+              <ZodiacIcon
+                sign={zodiac.sign as keyof typeof import('@/components/icons/zodiac').zodiacIcons}
+                size={128}
+                className="text-purple-600 dark:text-purple-400"
+              />
+            </div>
+            <h1 className="text-4xl md:text-5xl font-bold mb-2">
+              <GradientText from="#9333ea" via="#ec4899" to="#9333ea">
+                Хороскоп {zodiac.name}
+              </GradientText>
             </h1>
             <p className="text-xl text-gray-600 dark:text-gray-300 mb-4">{zodiac.dates}</p>
             <div className="flex justify-center gap-4 flex-wrap">
               <Badge variant="secondary" className="text-base px-4 py-2">
-                {zodiac.elementEmoji} {zodiac.element}
+                {zodiac.element}
               </Badge>
               <Badge variant="secondary" className="text-base px-4 py-2">
-                ✨ {zodiac.planet}
+                {zodiac.planet}
               </Badge>
               <Badge variant="secondary" className="text-base px-4 py-2">
-                🎨 {zodiac.color}
+                {zodiac.color}
               </Badge>
             </div>
           </div>
@@ -589,9 +574,13 @@ export default async function ZodiacSignPage({ params }: { params: Promise<{ sig
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link href="/auth/register">
-                  <Button size="lg" variant="secondary" className="text-lg px-8">
+                  <ShimmerButton
+                    className="text-lg px-8"
+                    background="linear-gradient(135deg, #ffffff 0%, #f3f4f6 100%)"
+                    shimmerColor="#9333ea"
+                  >
                     Започни Безплатно
-                  </Button>
+                  </ShimmerButton>
                 </Link>
                 <Link href="/pricing">
                   <Button size="lg" variant="outline" className="text-lg px-8 bg-white/10 hover:bg-white/20 text-white border-white">
