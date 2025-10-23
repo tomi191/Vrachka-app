@@ -80,6 +80,10 @@ export const metadata: Metadata = {
   alternates: {
     canonical: '/',
   },
+  icons: {
+    icon: '/icon-192.png',
+    apple: '/icon-192.png',
+  },
 };
 
 export const viewport: Viewport = {
@@ -159,17 +163,13 @@ export default function RootLayout({
 
   return (
     <html lang="bg" suppressHydrationWarning>
-      <head>
-        <link rel="icon" href="/icon-192.png" />
-        <link rel="apple-touch-icon" href="/icon-192.png" />
+      <body
+        className={`${GeistSans.variable} ${GeistMono.variable} font-sans antialiased min-h-screen`}
+      >
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
         />
-      </head>
-      <body
-        className={`${GeistSans.variable} ${GeistMono.variable} font-sans antialiased min-h-screen`}
-      >
         <QueryProvider>
           {children}
           <Toaster />
