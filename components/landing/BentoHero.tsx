@@ -81,10 +81,10 @@ export function BentoHero() {
           </div>
           <div className="space-y-3 mb-4">
             <div className="bg-brand-900/50 rounded-lg p-3 text-sm text-zinc-300">
-              "Как мога да подобря връзката си?"
+              &ldquo;Как мога да подобря връзката си?&rdquo;
             </div>
             <div className="bg-accent-500/10 rounded-lg p-3 text-sm text-zinc-300 border border-accent-500/20">
-              "Започни с честен разговор за очакванията..."
+              &ldquo;Започни с честен разговор за очакванията...&rdquo;
             </div>
           </div>
           <p className="text-xs text-zinc-500">24/7 духовни консултации</p>
