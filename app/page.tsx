@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, Sparkles, Shield, Zap, Calendar, Star, TrendingUp, BookOpen, Quote } from "lucide-react";
+import { ArrowRight, Sparkles, Shield, Zap, Calendar, Star, TrendingUp, BookOpen, Quote, Crown, Check, X, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { StructuredData, organizationSchema, webApplicationSchema, faqSchema } from "@/components/StructuredData";
@@ -33,20 +33,74 @@ const testimonials = [
   {
     name: 'Мария К.',
     zodiac: 'Лъв',
-    text: 'Vrachka промени начина, по който разбирам себе си. Дневните хороскопи са невероятно точни и вдъхновяващи!',
+    text: 'Vrachka промени начина, по който разбирам себе си. Дневните хороскопи са невероятно точни!',
     rating: 5
   },
   {
     name: 'Георги П.',
     zodiac: 'Скорпион',
-    text: 'AI Оракулът ми помогна да взема едно от най-важните решения в живота ми. Впечатляващо!',
+    text: 'AI Оракулът ми помогна да взема важно решение. Впечатляващо!',
     rating: 5
   },
   {
     name: 'Елена Д.',
     zodiac: 'Везни',
-    text: 'Таро четенията са точни и детайлни. Използвам платформата всеки ден вече 6 месеца!',
+    text: 'Таро четенията са точни и детайлни. Използвам платформата всеки ден!',
     rating: 5
+  },
+  {
+    name: 'Иван С.',
+    zodiac: 'Овен',
+    text: 'Седмичните прогнози ми помагат да планирам седмицата си. Много полезно!',
+    rating: 5
+  },
+  {
+    name: 'Цветелина М.',
+    zodiac: 'Риби',
+    text: 'Натална карта разкри толкова много за личността ми. Препоръчвам на всички!',
+    rating: 5
+  },
+  {
+    name: 'Петър Н.',
+    zodiac: 'Телец',
+    text: 'Анализът на съвместимост беше изключително точен. Благодаря!',
+    rating: 5
+  },
+  {
+    name: 'Анна В.',
+    zodiac: 'Дева',
+    text: 'Нумерологията ми помогна да разбера жизнения си път по-добре.',
+    rating: 5
+  },
+  {
+    name: 'Димитър К.',
+    zodiac: 'Стрелец',
+    text: 'Качеството на AI прогнозите е невероятно. Искрено впечатлен!',
+    rating: 5
+  },
+]
+
+// FAQ data
+const faqs = [
+  {
+    question: 'Как работи AI Оракулът?',
+    answer: 'AI Оракулът използва напреднали езикови модели, обучени на хиляди астрологични текстове и духовни учения. Той анализира вашия въпрос в контекста на вашата натална карта и текущите астрологични аспекти, за да предостави персонализирани насоки.'
+  },
+  {
+    question: 'Мога ли да откажа абонамента си по всяко време?',
+    answer: 'Да, можете да отмените абонамента си по всяко време от вашия профил. Ще запазите достъп до края на текущия период и няма такси за анулиране.'
+  },
+  {
+    question: 'Защитени ли са моите лични данни?',
+    answer: 'Абсолютно. Използваме банково ниво на криптиране за всички данни. Вашата информация никога не се споделя с трети страни и е съхранена на сигурни сървъри в Европа.'
+  },
+  {
+    question: 'Колко точни са прогнозите?',
+    answer: 'Нашите прогнози се базират на традиционни астрологични принципи, подобрени с AI анализ. Хиляди потребители потвърждават високата точност на дневните хороскопи и таро четенията.'
+  },
+  {
+    question: 'Какво включва безплатният план?',
+    answer: 'Безплатният план включва дневен хороскоп и карта на деня за всички 12 зодиакални знака. За достъп до таро четения, AI Оракул и детайлни анализи се изисква premium абонамент.'
   },
 ]
 
@@ -403,140 +457,154 @@ export default async function LandingPage() {
 
           <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
             {/* Free Plan */}
-            <div className="glass-card p-8">
-              <div className="mb-8">
-                <h3 className="text-lg font-semibold text-zinc-400 mb-2">Безплатен</h3>
+            <div className="glass-card p-8 card-hover">
+              <div className="mb-6">
+                <h3 className="text-2xl font-semibold text-zinc-50 mb-2">Free</h3>
                 <div className="flex items-baseline gap-2 mb-4">
-                  <span className="text-5xl font-bold text-zinc-50">0</span>
-                  <span className="text-zinc-500">лв/месец</span>
+                  <span className="text-4xl font-bold text-zinc-100">0 лв</span>
+                  <span className="text-zinc-400">/месец</span>
                 </div>
-                <p className="text-sm text-zinc-500">Перфектен за начинаещи</p>
+                <p className="text-zinc-400 text-sm">Перфектен за начинаещи</p>
               </div>
 
-              <ul className="space-y-4 mb-8">
-                <li className="flex items-start gap-3 text-sm text-zinc-300">
-                  <svg className="w-5 h-5 text-accent-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                  <span>Дневен хороскоп</span>
+              <ul className="space-y-3 mb-8">
+                <li className="flex items-center gap-3">
+                  <Check className="w-5 h-5 text-green-400 flex-shrink-0" />
+                  <span className="text-zinc-200">Дневен хороскоп</span>
                 </li>
-                <li className="flex items-start gap-3 text-sm text-zinc-300">
-                  <svg className="w-5 h-5 text-accent-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                  <span>Карта на деня</span>
+                <li className="flex items-center gap-3">
+                  <Check className="w-5 h-5 text-green-400 flex-shrink-0" />
+                  <span className="text-zinc-200">Карта на деня</span>
                 </li>
-                <li className="flex items-start gap-3 text-sm text-zinc-500">
-                  <svg className="w-5 h-5 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                  <span>Таро четения</span>
+                <li className="flex items-center gap-3">
+                  <X className="w-5 h-5 text-zinc-600 flex-shrink-0" />
+                  <span className="text-zinc-500">Таро четения</span>
                 </li>
-                <li className="flex items-start gap-3 text-sm text-zinc-500">
-                  <svg className="w-5 h-5 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                  <span>AI Оракул</span>
+                <li className="flex items-center gap-3">
+                  <X className="w-5 h-5 text-zinc-600 flex-shrink-0" />
+                  <span className="text-zinc-500">Digital Oracle (AI)</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <X className="w-5 h-5 text-zinc-600 flex-shrink-0" />
+                  <span className="text-zinc-500">Седмични прогнози</span>
                 </li>
               </ul>
 
-              <Link href="/horoscope">
-                <Button variant="outline" className="w-full border-zinc-700 hover:bg-zinc-900">
+              <Link href="/auth/register">
+                <Button variant="outline" className="w-full border-zinc-700 hover:bg-zinc-800">
                   Започни безплатно
                 </Button>
               </Link>
             </div>
 
             {/* Basic Plan */}
-            <div className="glass-card p-8 border-accent-500/50 relative">
-              <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-accent-600 text-white text-xs font-medium rounded-full">
-                Популярен
+            <div className="glass-card p-8 card-hover border-blue-500/30 relative">
+              <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                <span className="bg-blue-600 text-white text-xs px-3 py-1 rounded-full">
+                  Популярен
+                </span>
               </div>
 
-              <div className="mb-8">
-                <h3 className="text-lg font-semibold text-zinc-100 mb-2">Basic</h3>
+              <div className="mb-6">
+                <h3 className="text-2xl font-semibold text-zinc-50 flex items-center gap-2 mb-2">
+                  <Crown className="w-5 h-5 text-blue-400" />
+                  Basic
+                </h3>
                 <div className="flex items-baseline gap-2 mb-4">
-                  <span className="text-5xl font-bold text-zinc-50">9.99</span>
-                  <span className="text-zinc-500">лв/месец</span>
+                  <span className="text-4xl font-bold text-zinc-100">9.99 лв</span>
+                  <span className="text-zinc-400">/месец</span>
                 </div>
-                <p className="text-sm text-zinc-500">За редовни потребители</p>
+                <p className="text-zinc-400 text-sm">За редовни потребители</p>
               </div>
 
-              <ul className="space-y-4 mb-8">
-                <li className="flex items-start gap-3 text-sm text-zinc-300">
-                  <svg className="w-5 h-5 text-accent-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                  <span>Всичко от Безплатен</span>
+              <ul className="space-y-3 mb-8">
+                <li className="flex items-center gap-3">
+                  <Check className="w-5 h-5 text-green-400 flex-shrink-0" />
+                  <span className="text-zinc-200">Дневен хороскоп</span>
                 </li>
-                <li className="flex items-start gap-3 text-sm text-zinc-300">
-                  <svg className="w-5 h-5 text-accent-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                  <span>Таро четения (3/ден)</span>
+                <li className="flex items-center gap-3">
+                  <Check className="w-5 h-5 text-green-400 flex-shrink-0" />
+                  <span className="text-zinc-200">Карта на деня</span>
                 </li>
-                <li className="flex items-start gap-3 text-sm text-zinc-300">
-                  <svg className="w-5 h-5 text-accent-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                  <span>AI Оракул (3 въпроса/ден)</span>
+                <li className="flex items-center gap-3">
+                  <Check className="w-5 h-5 text-green-400 flex-shrink-0" />
+                  <span className="text-zinc-200">3 таро четения/ден</span>
                 </li>
-                <li className="flex items-start gap-3 text-sm text-zinc-300">
-                  <svg className="w-5 h-5 text-accent-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                  <span>Седмични хороскопи</span>
+                <li className="flex items-center gap-3">
+                  <Check className="w-5 h-5 text-green-400 flex-shrink-0" />
+                  <span className="text-zinc-200">3 въпроса към Oracle/ден</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <Check className="w-5 h-5 text-green-400 flex-shrink-0" />
+                  <span className="text-zinc-200">Седмични прогнози</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <Check className="w-5 h-5 text-green-400 flex-shrink-0" />
+                  <span className="text-zinc-200">Приоритетна поддръжка</span>
                 </li>
               </ul>
 
               <Link href="/auth/register">
-                <Button className="w-full bg-accent-600 hover:bg-accent-700">
-                  Избери Basic
+                <Button className="w-full bg-blue-600 hover:bg-blue-700 font-semibold">
+                  Започни сега
                 </Button>
               </Link>
             </div>
 
             {/* Ultimate Plan */}
-            <div className="glass-card p-8">
-              <div className="mb-8">
-                <h3 className="text-lg font-semibold text-zinc-400 mb-2">Ultimate</h3>
-                <div className="flex items-baseline gap-2 mb-4">
-                  <span className="text-5xl font-bold text-zinc-50">16.99</span>
-                  <span className="text-zinc-500">лв/месец</span>
-                </div>
-                <p className="text-sm text-zinc-500">За power потребители</p>
+            <div className="glass-card p-8 card-hover border-accent-500/30 relative">
+              <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                <span className="bg-gradient-to-r from-accent-600 to-accent-700 text-white text-xs px-3 py-1 rounded-full">
+                  Най-добра стойност
+                </span>
               </div>
 
-              <ul className="space-y-4 mb-8">
-                <li className="flex items-start gap-3 text-sm text-zinc-300">
-                  <svg className="w-5 h-5 text-accent-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                  <span>Всичко от Basic</span>
+              <div className="mb-6">
+                <h3 className="text-2xl font-semibold text-zinc-50 flex items-center gap-2 mb-2">
+                  <Sparkles className="w-5 h-5 text-accent-400" />
+                  Ultimate
+                </h3>
+                <div className="flex items-baseline gap-2 mb-4">
+                  <span className="text-4xl font-bold text-zinc-100">19.99 лв</span>
+                  <span className="text-zinc-400">/месец</span>
+                </div>
+                <p className="text-zinc-400 text-sm">Пълен духовен опит</p>
+              </div>
+
+              <ul className="space-y-3 mb-8">
+                <li className="flex items-center gap-3">
+                  <Check className="w-5 h-5 text-green-400 flex-shrink-0" />
+                  <span className="text-zinc-200">Дневен хороскоп</span>
                 </li>
-                <li className="flex items-start gap-3 text-sm text-zinc-300">
-                  <svg className="w-5 h-5 text-accent-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                  <span>Неограничени таро четения</span>
+                <li className="flex items-center gap-3">
+                  <Check className="w-5 h-5 text-green-400 flex-shrink-0" />
+                  <span className="text-zinc-200">Карта на деня</span>
                 </li>
-                <li className="flex items-start gap-3 text-sm text-zinc-300">
-                  <svg className="w-5 h-5 text-accent-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                  <span>10 въпроса/ден към Оракула</span>
+                <li className="flex items-center gap-3">
+                  <Check className="w-5 h-5 text-green-400 flex-shrink-0" />
+                  <span className="text-zinc-200">Неограничени таро четения</span>
                 </li>
-                <li className="flex items-start gap-3 text-sm text-zinc-300">
-                  <svg className="w-5 h-5 text-accent-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                  <span>Детайлна натална карта</span>
+                <li className="flex items-center gap-3">
+                  <Check className="w-5 h-5 text-green-400 flex-shrink-0" />
+                  <span className="text-zinc-200">10 въпроса към Oracle/ден</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <Check className="w-5 h-5 text-green-400 flex-shrink-0" />
+                  <span className="text-zinc-200">Седмични и месечни прогнози</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <Check className="w-5 h-5 text-green-400 flex-shrink-0" />
+                  <span className="text-zinc-200">Персонализирани съвети</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <Check className="w-5 h-5 text-green-400 flex-shrink-0" />
+                  <span className="text-zinc-200">VIP поддръжка</span>
                 </li>
               </ul>
 
               <Link href="/auth/register">
-                <Button variant="outline" className="w-full border-zinc-700 hover:bg-zinc-900">
-                  Избери Ultimate
+                <Button className="w-full bg-accent-600 hover:bg-accent-700 font-semibold">
+                  Започни сега
                 </Button>
               </Link>
             </div>
@@ -544,8 +612,53 @@ export default async function LandingPage() {
         </div>
       </section>
 
-      {/* Testimonials Section */}
+      {/* FAQ Section */}
       <section className="py-20 px-6 bg-gradient-to-b from-transparent to-brand-950">
+        <div className="container mx-auto max-w-4xl">
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full glass text-sm text-accent-400 mb-4">
+              <Star className="w-4 h-4" />
+              <span>FAQ</span>
+            </div>
+            <h2 className="text-4xl font-bold text-zinc-50 mb-4">
+              Често задавани въпроси
+            </h2>
+            <p className="text-xl text-zinc-400">
+              Отговори на най-честите въпроси
+            </p>
+          </div>
+
+          <div className="space-y-4">
+            {faqs.map((faq, index) => (
+              <details key={index} className="glass-card group">
+                <summary className="flex items-center justify-between cursor-pointer p-6 list-none">
+                  <h3 className="text-lg font-semibold text-zinc-50 pr-8">
+                    {faq.question}
+                  </h3>
+                  <ChevronDown className="w-5 h-5 text-accent-400 transition-transform group-open:rotate-180 flex-shrink-0" />
+                </summary>
+                <div className="px-6 pb-6 pt-0">
+                  <p className="text-zinc-400 leading-relaxed">
+                    {faq.answer}
+                  </p>
+                </div>
+              </details>
+            ))}
+          </div>
+
+          <div className="text-center mt-12">
+            <p className="text-zinc-400 mb-4">Не намери отговор на въпроса си?</p>
+            <Link href="/contact">
+              <Button variant="outline" className="border-zinc-700 hover:bg-zinc-900">
+                Свържи се с нас
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials Section */}
+      <section className="py-20 px-6 relative overflow-hidden">
         <div className="container mx-auto max-w-6xl">
           <div className="text-center mb-16">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full glass text-sm text-accent-400 mb-4">
@@ -560,29 +673,52 @@ export default async function LandingPage() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
-            {testimonials.map((testimonial, index) => (
-              <div key={index} className="glass-card p-8">
-                <div className="flex items-center gap-1 mb-4">
-                  {[...Array(testimonial.rating)].map((_, i) => (
-                    <Star key={i} className="w-5 h-5 fill-accent-400 text-accent-400" />
-                  ))}
-                </div>
-                <p className="text-zinc-300 leading-relaxed mb-6 italic">
-                  &ldquo;{testimonial.text}&rdquo;
-                </p>
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-accent-500/10 flex items-center justify-center text-lg">
-                    {testimonial.name.charAt(0)}
+          {/* Horizontal Scrollable Container with Fade */}
+          <div className="relative">
+            {/* Left Fade Gradient */}
+            <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-brand-950 to-transparent z-10 pointer-events-none" />
+
+            {/* Right Fade Gradient */}
+            <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-brand-950 to-transparent z-10 pointer-events-none" />
+
+            {/* Scrollable Testimonials */}
+            <div className="flex gap-6 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide px-4">
+              {testimonials.map((testimonial, index) => (
+                <div
+                  key={index}
+                  className="glass-card p-6 min-w-[320px] max-w-[360px] snap-center flex-shrink-0"
+                >
+                  <div className="flex items-center gap-1 mb-3">
+                    {[...Array(testimonial.rating)].map((_, i) => (
+                      <Star key={i} className="w-4 h-4 fill-accent-400 text-accent-400" />
+                    ))}
                   </div>
-                  <div>
-                    <p className="font-semibold text-zinc-50">{testimonial.name}</p>
-                    <p className="text-sm text-zinc-500">{testimonial.zodiac}</p>
+                  <p className="text-zinc-300 leading-relaxed mb-4 italic text-sm">
+                    &ldquo;{testimonial.text}&rdquo;
+                  </p>
+                  <div className="flex items-center gap-3 mt-auto">
+                    <div className="w-10 h-10 rounded-full bg-accent-500/10 flex items-center justify-center text-base">
+                      {testimonial.name.charAt(0)}
+                    </div>
+                    <div>
+                      <p className="font-semibold text-zinc-50 text-sm">{testimonial.name}</p>
+                      <p className="text-xs text-zinc-500">{testimonial.zodiac}</p>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
+
+          <style jsx>{`
+            .scrollbar-hide::-webkit-scrollbar {
+              display: none;
+            }
+            .scrollbar-hide {
+              -ms-overflow-style: none;
+              scrollbar-width: none;
+            }
+          `}</style>
         </div>
       </section>
 
