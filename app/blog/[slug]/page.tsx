@@ -8,6 +8,10 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Calendar, Eye, ArrowLeft, Share2 } from 'lucide-react'
 import { StructuredData, getBreadcrumbSchema } from '@/components/StructuredData'
+import { Navigation } from '@/components/Navigation'
+import { Footer } from '@/components/Footer'
+import { ZodiacIcon } from '@/components/icons/zodiac'
+import { HoverCardWrapper } from '@/components/ui/hover-card-wrapper'
 
 // ISR: Revalidate every 24 hours for daily horoscopes
 export const revalidate = 86400
@@ -185,10 +189,11 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
       <StructuredData data={articleSchema} />
       <StructuredData data={breadcrumbData} />
 
-      <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white dark:from-gray-900 dark:to-gray-800">
-        <article className="container mx-auto px-4 py-8 max-w-4xl">
+      <div className="min-h-screen bg-gradient-dark">
+        <Navigation />
+        <article className="container mx-auto px-4 pt-24 pb-16 max-w-4xl">
           {/* Back Button */}
-          <Link href="/blog" className="inline-flex items-center gap-2 text-purple-600 hover:text-purple-700 mb-6">
+          <Link href="/blog" className="inline-flex items-center gap-2 text-accent-400 hover:text-accent-300 mb-6">
             <ArrowLeft className="w-4 h-4" />
             <span>Всички статии</span>
           </Link>
@@ -196,25 +201,30 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
           {/* Header */}
           <div className="mb-8">
             <div className="flex flex-wrap items-center gap-2 mb-4">
-              <Badge className="bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-100">
+              <Badge className="bg-accent-600/20 text-accent-300 border-accent-700">
                 {categoryLabels[post.category] || post.category}
               </Badge>
               {post.zodiac_sign && (
-                <Badge variant="outline" className="text-lg">
-                  {getZodiacEmoji(post.zodiac_sign)} {getZodiacName(post.zodiac_sign)}
-                </Badge>
+                <div className="flex items-center gap-2">
+                  <ZodiacIcon
+                    sign={post.zodiac_sign as keyof typeof import('@/components/icons/zodiac').zodiacIcons}
+                    size={24}
+                    className="text-accent-400"
+                  />
+                  <span className="text-zinc-300">{getZodiacName(post.zodiac_sign)}</span>
+                </div>
               )}
             </div>
 
-            <h1 className="text-4xl md:text-5xl font-bold mb-4 text-gray-900 dark:text-gray-100">
+            <h1 className="text-4xl md:text-5xl font-bold mb-4 text-zinc-50">
               {post.title}
             </h1>
 
-            <p className="text-xl text-gray-600 dark:text-gray-300 mb-6">
+            <p className="text-xl text-zinc-400 mb-6">
               {post.description}
             </p>
 
-            <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400 pb-6 border-b border-gray-200 dark:border-gray-700">
+            <div className="flex items-center justify-between text-sm text-zinc-500 pb-6 border-b border-zinc-800/50">
               <div className="flex items-center gap-4">
                 <div className="flex items-center gap-1">
                   <Calendar className="w-4 h-4" />
@@ -239,8 +249,8 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
 
           {/* Keywords */}
           {post.keywords && post.keywords.length > 0 && (
-            <div className="flex flex-wrap gap-2 mb-12 pb-8 border-b border-gray-200 dark:border-gray-700">
-              <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">Тагове:</span>
+            <div className="flex flex-wrap gap-2 mb-12 pb-8 border-b border-zinc-800/50">
+              <span className="text-sm font-semibold text-zinc-300">Тагове:</span>
               {post.keywords.map((keyword, index) => (
                 <Badge key={index} variant="secondary">
                   {keyword}
@@ -250,22 +260,22 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
           )}
 
           {/* CTA Section */}
-          <Card className="bg-gradient-to-r from-purple-600 to-pink-600 text-white border-0 mb-12">
+          <Card className="glass-card bg-gradient-to-r from-accent-600/20 to-accent-700/20 border-accent-500/30 mb-12">
             <CardContent className="py-8 text-center">
-              <h2 className="text-2xl font-bold mb-3">
+              <h2 className="text-2xl font-bold mb-3 text-zinc-50">
                 Искаш Персонализиран Хороскоп?
               </h2>
-              <p className="text-lg mb-6 text-purple-100">
+              <p className="text-lg mb-6 text-zinc-300">
                 Получи AI-генерирани прогнози, специално за твоята зодия и натална карта
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link href="/auth/register">
-                  <Button size="lg" variant="secondary">
+                  <Button size="lg" className="bg-accent-600 hover:bg-accent-700">
                     Започни Безплатно
                   </Button>
                 </Link>
                 <Link href="/pricing">
-                  <Button size="lg" variant="outline" className="bg-white/10 hover:bg-white/20 text-white border-white">
+                  <Button size="lg" variant="outline" className="border-zinc-700 hover:bg-zinc-800">
                     Виж Плановете
                   </Button>
                 </Link>
@@ -276,53 +286,42 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
           {/* Related Posts */}
           {relatedPosts && relatedPosts.length > 0 && (
             <div>
-              <h2 className="text-2xl font-bold mb-6">Свързани Статии</h2>
+              <h2 className="text-2xl font-bold mb-6 text-zinc-50">Свързани Статии</h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {relatedPosts.map((related) => (
                   <Link key={related.id} href={`/blog/${related.slug}`}>
-                    <Card className="h-full hover:shadow-lg transition-shadow cursor-pointer">
-                      <CardContent className="p-4">
-                        <div className="flex items-center gap-2 mb-2">
-                          <Badge variant="outline" className="text-xs">
-                            {categoryLabels[related.category]}
-                          </Badge>
-                          {related.zodiac_sign && (
-                            <span className="text-xl">{getZodiacEmoji(related.zodiac_sign)}</span>
-                          )}
-                        </div>
-                        <h3 className="font-semibold mb-2 line-clamp-2">{related.title}</h3>
-                        <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
-                          {related.description}
-                        </p>
-                      </CardContent>
-                    </Card>
+                    <HoverCardWrapper className="h-full">
+                      <Card className="h-full cursor-pointer glass-card card-hover">
+                        <CardContent className="p-4">
+                          <div className="flex items-center gap-2 mb-2">
+                            <Badge variant="outline" className="text-xs border-zinc-700">
+                              {categoryLabels[related.category]}
+                            </Badge>
+                            {related.zodiac_sign && (
+                              <ZodiacIcon
+                                sign={related.zodiac_sign as keyof typeof import('@/components/icons/zodiac').zodiacIcons}
+                                size={20}
+                                className="text-accent-400"
+                              />
+                            )}
+                          </div>
+                          <h3 className="font-semibold mb-2 line-clamp-2 text-zinc-50">{related.title}</h3>
+                          <p className="text-sm text-zinc-400 line-clamp-2">
+                            {related.description}
+                          </p>
+                        </CardContent>
+                      </Card>
+                    </HoverCardWrapper>
                   </Link>
                 ))}
               </div>
             </div>
           )}
         </article>
+        <Footer />
       </div>
     </>
   )
-}
-
-function getZodiacEmoji(sign: string): string {
-  const emojis: Record<string, string> = {
-    oven: '♈',
-    telec: '♉',
-    bliznaci: '♊',
-    rak: '♋',
-    lav: '♌',
-    deva: '♍',
-    vezni: '♎',
-    skorpion: '♏',
-    strelec: '♐',
-    kozirog: '♑',
-    vodolej: '♒',
-    ribi: '♓',
-  }
-  return emojis[sign] || '✨'
 }
 
 function getZodiacName(sign: string): string {
