@@ -7,6 +7,8 @@ import { ZodiacIcon } from '@/components/icons/zodiac'
 import { HoverCardWrapper } from '@/components/ui/hover-card-wrapper'
 import { GradientText } from '@/components/ui/gradient-text'
 import { ShimmerButton } from '@/components/ui/shimmer-button'
+import { Navigation } from '@/components/Navigation'
+import { Footer } from '@/components/Footer'
 
 export const metadata: Metadata = {
   title: 'Дневен Хороскоп за Всички Зодии',
@@ -141,9 +143,10 @@ export default function HoroscopePage() {
     <>
       <StructuredData data={breadcrumbData} />
 
-      <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white dark:from-gray-900 dark:to-gray-800">
+      <div className="min-h-screen bg-gradient-dark">
+        <Navigation />
         {/* Hero Section */}
-        <div className="container mx-auto px-4 py-16">
+        <div className="container mx-auto px-4 pt-32 pb-16">
           <div className="text-center mb-12">
             <div className="text-6xl mb-4">🔮</div>
             <h1 className="text-4xl md:text-5xl font-bold mb-4">
@@ -151,7 +154,7 @@ export default function HoroscopePage() {
                 Дневен Хороскоп за Всички Зодии
               </GradientText>
             </h1>
-            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+            <p className="text-xl text-zinc-400 max-w-3xl mx-auto">
               Открийте какво ви носят звездите днес. Персонализирани астрологични прогнози за любов, кариера, здраве и духовно развитие.
             </p>
           </div>
@@ -274,6 +277,8 @@ export default function HoroscopePage() {
             </CardContent>
           </Card>
         </div>
+
+        <Footer />
       </div>
     </>
   )

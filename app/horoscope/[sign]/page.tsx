@@ -9,6 +9,8 @@ import { ArrowLeft, Heart, Briefcase, Star, TrendingUp } from 'lucide-react'
 import { ZodiacIcon } from '@/components/icons/zodiac'
 import { GradientText } from '@/components/ui/gradient-text'
 import { ShimmerButton } from '@/components/ui/shimmer-button'
+import { Navigation } from '@/components/Navigation'
+import { Footer } from '@/components/Footer'
 
 // ISR: Revalidate every 24 hours (daily horoscope updates)
 export const revalidate = 86400
@@ -375,10 +377,11 @@ export default async function ZodiacSignPage({ params }: { params: Promise<{ sig
       <StructuredData data={articleSchema} />
       <StructuredData data={breadcrumbData} />
 
-      <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white dark:from-gray-900 dark:to-gray-800">
-        <div className="container mx-auto px-4 py-8 max-w-5xl">
+      <div className="min-h-screen bg-gradient-dark">
+        <Navigation />
+        <div className="container mx-auto px-4 pt-24 pb-8 max-w-5xl">
           {/* Back Button */}
-          <Link href="/horoscope" className="inline-flex items-center gap-2 text-purple-600 hover:text-purple-700 mb-6">
+          <Link href="/horoscope" className="inline-flex items-center gap-2 text-accent-400 hover:text-accent-300 mb-6">
             <ArrowLeft className="w-4 h-4" />
             <span>Всички зодии</span>
           </Link>
@@ -397,7 +400,7 @@ export default async function ZodiacSignPage({ params }: { params: Promise<{ sig
                 Хороскоп {zodiac.name}
               </GradientText>
             </h1>
-            <p className="text-xl text-gray-600 dark:text-gray-300 mb-4">{zodiac.dates}</p>
+            <p className="text-xl text-zinc-400 mb-4">{zodiac.dates}</p>
             <div className="flex justify-center gap-4 flex-wrap">
               <Badge variant="secondary" className="text-base px-4 py-2">
                 {zodiac.element}
@@ -591,6 +594,8 @@ export default async function ZodiacSignPage({ params }: { params: Promise<{ sig
             </CardContent>
           </Card>
         </div>
+
+        <Footer />
       </div>
     </>
   )
