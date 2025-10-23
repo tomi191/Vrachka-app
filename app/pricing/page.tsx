@@ -270,6 +270,7 @@ export default async function PricingPage() {
 
         <Footer />
       </div>
+    </div>
     </>
   );
 }
