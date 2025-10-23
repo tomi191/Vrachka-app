@@ -1,7 +1,5 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { StructuredData, getBreadcrumbSchema } from '@/components/StructuredData'
 import { ZodiacIcon } from '@/components/icons/zodiac'
 import { HoverCardWrapper } from '@/components/ui/hover-card-wrapper'
@@ -9,6 +7,7 @@ import { GradientText } from '@/components/ui/gradient-text'
 import { ShimmerButton } from '@/components/ui/shimmer-button'
 import { Navigation } from '@/components/Navigation'
 import { Footer } from '@/components/Footer'
+import { MysticBackground } from '@/components/background/MysticBackground'
 
 export const metadata: Metadata = {
   title: 'Дневен Хороскоп за Всички Зодии',
@@ -145,6 +144,7 @@ export default function HoroscopePage() {
 
       <div className="min-h-screen bg-gradient-dark">
         <Navigation />
+        <MysticBackground />
         {/* Hero Section */}
         <div className="container mx-auto px-4 pt-32 pb-16">
           <div className="text-center mb-12">
@@ -164,32 +164,30 @@ export default function HoroscopePage() {
             {zodiacSigns.map((zodiac) => (
               <Link key={zodiac.sign} href={`/horoscope/${zodiac.sign}`}>
                 <HoverCardWrapper className="h-full">
-                  <Card className="h-full hover:shadow-xl transition-all duration-300 cursor-pointer border-2 hover:border-purple-500">
-                    <CardHeader>
-                      <div className="flex justify-center mb-2">
-                        <ZodiacIcon
-                          sign={zodiac.sign as keyof typeof import('@/components/icons/zodiac').zodiacIcons}
-                          size={56}
-                          className="text-purple-600 dark:text-purple-400"
-                        />
-                      </div>
-                      <CardTitle className="text-center text-2xl">{zodiac.name}</CardTitle>
-                      <CardDescription className="text-center font-medium">
-                        {zodiac.dates}
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-2">
-                      <div className="text-sm">
+                  <div className="glass-card card-hover h-full cursor-pointer p-6">
+                    <div className="flex justify-center mb-4">
+                      <ZodiacIcon
+                        sign={zodiac.sign as keyof typeof import('@/components/icons/zodiac').zodiacIcons}
+                        size={56}
+                        className="text-purple-600 dark:text-purple-400"
+                      />
+                    </div>
+                    <h3 className="text-center text-2xl font-bold text-zinc-50 mb-2">{zodiac.name}</h3>
+                    <p className="text-center font-medium text-zinc-400 mb-4">
+                      {zodiac.dates}
+                    </p>
+                    <div className="space-y-2">
+                      <div className="text-sm text-zinc-300">
                         <span className="font-semibold">Стихия:</span> {zodiac.element}
                       </div>
-                      <div className="text-sm">
+                      <div className="text-sm text-zinc-300">
                         <span className="font-semibold">Планета:</span> {zodiac.planet}
                       </div>
-                      <div className="text-sm text-gray-600 dark:text-gray-400">
+                      <div className="text-sm text-zinc-400">
                         {zodiac.traits}
                       </div>
-                    </CardContent>
-                  </Card>
+                    </div>
+                  </div>
                 </HoverCardWrapper>
               </Link>
             ))}
@@ -197,11 +195,9 @@ export default function HoroscopePage() {
 
           {/* SEO Content Section */}
           <div className="max-w-4xl mx-auto space-y-8 mb-16">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-2xl">Какво е Дневният Хороскоп?</CardTitle>
-              </CardHeader>
-              <CardContent className="prose prose-purple dark:prose-invert max-w-none">
+            <div className="glass-card p-8">
+              <h2 className="text-2xl font-bold text-zinc-50 mb-4">Какво е Дневният Хороскоп?</h2>
+              <div className="prose prose-invert max-w-none text-zinc-300">
                 <p>
                   Дневният хороскоп е астрологична прогноза, базирана на позициите на планетите и звездите във вашата зодия за конкретния ден.
                   Той ви предоставя насоки за любовта, кариерата, здравето и личностното развитие.
@@ -210,33 +206,29 @@ export default function HoroscopePage() {
                   С Vrachka получавате персонализирани хороскопи, генерирани от напреднала AI технология, която отчита не само вашата зодия,
                   но и множество други астрологични фактори за максимална точност.
                 </p>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
 
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-2xl">Как Работи Астрологията?</CardTitle>
-              </CardHeader>
-              <CardContent className="prose prose-purple dark:prose-invert max-w-none">
+            <div className="glass-card p-8">
+              <h2 className="text-2xl font-bold text-zinc-50 mb-4">Как Работи Астрологията?</h2>
+              <div className="prose prose-invert max-w-none text-zinc-300">
                 <p>
                   Астрологията изучава влиянието на небесните тела върху човешкия живот. Всяка от 12-те зодии се управлява от различна планета
                   и принадлежи към една от четирите стихии - Огън, Земя, Въздух или Вода.
                 </p>
-                <h3 className="text-xl font-semibold mt-4">Четирите Стихии:</h3>
+                <h3 className="text-xl font-semibold mt-4 text-zinc-200">Четирите Стихии:</h3>
                 <ul>
                   <li><strong>Огън</strong> (Овен, Лъв, Стрелец) - Енергия, страст, инициативност</li>
                   <li><strong>Земя</strong> (Телец, Дева, Козирог) - Стабилност, практичност, реализъм</li>
                   <li><strong>Въздух</strong> (Близнаци, Везни, Водолей) - Интелект, комуникация, свобода</li>
                   <li><strong>Вода</strong> (Рак, Скорпион, Риби) - Емоции, интуиция, чувствителност</li>
                 </ul>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
 
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-2xl">Защо да Избера Vrachka?</CardTitle>
-              </CardHeader>
-              <CardContent className="prose prose-purple dark:prose-invert max-w-none">
+            <div className="glass-card p-8">
+              <h2 className="text-2xl font-bold text-zinc-50 mb-4">Защо да Избера Vrachka?</h2>
+              <div className="prose prose-invert max-w-none text-zinc-300">
                 <ul>
                   <li><strong>AI Персонализация</strong> - Хороскопи, създадени специално за вас</li>
                   <li><strong>Дневни Актуализации</strong> - Нови прогнози всеки ден</li>
@@ -245,37 +237,32 @@ export default function HoroscopePage() {
                   <li><strong>Духовен Оракул</strong> - Консултации с AI Врачката</li>
                   <li><strong>Нумерология</strong> - Анализ на вашите числа</li>
                 </ul>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           </div>
 
           {/* CTA Section */}
-          <Card className="bg-gradient-to-r from-purple-600 to-pink-600 text-white border-0">
-            <CardContent className="py-12 text-center">
-              <h2 className="text-3xl font-bold mb-4">
-                Готови за Персонализиран Хороскоп?
-              </h2>
-              <p className="text-xl mb-8 text-purple-100">
-                Създайте безплатен акаунт и получете достъп до дневни хороскопи, таро четения и духовни консултации
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Link href="/auth/register">
-                  <ShimmerButton
-                    className="text-lg px-8"
-                    background="linear-gradient(135deg, #ffffff 0%, #f3f4f6 100%)"
-                    shimmerColor="#9333ea"
-                  >
-                    Започни Сега - Безплатно
-                  </ShimmerButton>
-                </Link>
-                <Link href="/pricing">
-                  <Button size="lg" variant="outline" className="text-lg px-8 bg-white/10 hover:bg-white/20 text-white border-white">
-                    Разгледай Плановете
-                  </Button>
-                </Link>
-              </div>
-            </CardContent>
-          </Card>
+          <div className="glass-card p-12 text-center relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-r from-purple-600/20 to-pink-600/20 -z-10"></div>
+            <h2 className="text-3xl font-bold mb-4 text-zinc-50">
+              Готови за Персонализиран Хороскоп?
+            </h2>
+            <p className="text-xl mb-8 text-zinc-300">
+              Създайте безплатен акаунт и получете достъп до дневни хороскопи, таро четения и духовни консултации
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link href="/auth/register">
+                <ShimmerButton className="text-lg px-8">
+                  Започни Сега - Безплатно
+                </ShimmerButton>
+              </Link>
+              <Link href="/pricing">
+                <button className="px-8 py-3 rounded-full glass text-zinc-50 font-medium card-hover">
+                  Разгледай Плановете
+                </button>
+              </Link>
+            </div>
+          </div>
         </div>
 
         <Footer />

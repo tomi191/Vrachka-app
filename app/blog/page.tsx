@@ -1,12 +1,12 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Calendar, Eye, BookOpen, PenTool } from 'lucide-react'
 import { StructuredData, getBreadcrumbSchema } from '@/components/StructuredData'
 import { Navigation } from '@/components/Navigation'
 import { Footer } from '@/components/Footer'
+import { MysticBackground } from '@/components/background/MysticBackground'
 import { ZodiacIcon } from '@/components/icons/zodiac'
 import { GradientText } from '@/components/ui/gradient-text'
 import { HoverCardWrapper } from '@/components/ui/hover-card-wrapper'
@@ -96,6 +96,7 @@ export default async function BlogPage() {
 
       <div className="min-h-screen bg-gradient-dark">
         <Navigation />
+        <MysticBackground />
         <div className="container mx-auto px-4 pt-32 pb-16">
           {/* Hero Section */}
           <div className="text-center mb-12">
@@ -127,38 +128,34 @@ export default async function BlogPage() {
               {posts.map((post) => (
                 <Link key={post.id} href={`/blog/${post.slug}`}>
                   <HoverCardWrapper className="h-full">
-                    <Card className="h-full cursor-pointer glass-card card-hover">
-                      <CardHeader>
-                        <div className="flex items-start justify-between gap-2 mb-2">
-                          <Badge className={categoryColors[post.category] || 'bg-zinc-800 text-zinc-200'}>
-                            {categoryLabels[post.category] || post.category}
-                          </Badge>
-                          {post.zodiac_sign && (
-                            <ZodiacIcon
-                              sign={post.zodiac_sign as keyof typeof import('@/components/icons/zodiac').zodiacIcons}
-                              size={24}
-                              className="text-accent-400"
-                            />
-                          )}
+                    <div className="h-full cursor-pointer glass-card card-hover p-6">
+                      <div className="flex items-start justify-between gap-2 mb-4">
+                        <Badge className={categoryColors[post.category] || 'bg-zinc-800 text-zinc-200'}>
+                          {categoryLabels[post.category] || post.category}
+                        </Badge>
+                        {post.zodiac_sign && (
+                          <ZodiacIcon
+                            sign={post.zodiac_sign as keyof typeof import('@/components/icons/zodiac').zodiacIcons}
+                            size={24}
+                            className="text-accent-400"
+                          />
+                        )}
+                      </div>
+                      <h3 className="line-clamp-2 text-zinc-50 text-xl font-bold mb-2">{post.title}</h3>
+                      <p className="line-clamp-3 text-zinc-400 mb-4">
+                        {post.description}
+                      </p>
+                      <div className="flex items-center justify-between text-sm text-zinc-500 mt-auto">
+                        <div className="flex items-center gap-1">
+                          <Calendar className="w-4 h-4" />
+                          <span>{formatDate(post.published_at)}</span>
                         </div>
-                        <CardTitle className="line-clamp-2 text-zinc-50">{post.title}</CardTitle>
-                        <CardDescription className="line-clamp-3 text-zinc-400">
-                          {post.description}
-                        </CardDescription>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="flex items-center justify-between text-sm text-zinc-500">
-                          <div className="flex items-center gap-1">
-                            <Calendar className="w-4 h-4" />
-                            <span>{formatDate(post.published_at)}</span>
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <Eye className="w-4 h-4" />
-                            <span>{post.view_count}</span>
-                          </div>
+                        <div className="flex items-center gap-1">
+                          <Eye className="w-4 h-4" />
+                          <span>{post.view_count}</span>
                         </div>
-                      </CardContent>
-                    </Card>
+                      </div>
+                    </div>
                   </HoverCardWrapper>
                 </Link>
               ))}
@@ -184,16 +181,14 @@ export default async function BlogPage() {
 
           {/* SEO Content Section */}
           <div className="max-w-4xl mx-auto space-y-8">
-            <Card className="glass-card">
-              <CardHeader>
-                <CardTitle className="text-2xl text-zinc-50">За Какво е Нашият Блог?</CardTitle>
-              </CardHeader>
-              <CardContent className="prose prose-invert max-w-none text-zinc-300">
+            <div className="glass-card p-8">
+              <h2 className="text-2xl font-bold text-zinc-50 mb-4">За Какво е Нашият Блог?</h2>
+              <div className="prose prose-invert max-w-none text-zinc-300">
                 <p>
                   Блогът на Vrachka е твоят източник за актуални астрологични прогнози, дневни хороскопи и духовни насоки.
                   Всеки ден публикуваме нови хороскопи за всички 12 зодии, базирани на най-новите позиции на планетите.
                 </p>
-                <h3 className="text-xl font-semibold mt-4">Какво ще намериш тук:</h3>
+                <h3 className="text-xl font-semibold mt-4 text-zinc-200">Какво ще намериш тук:</h3>
                 <ul>
                   <li><strong>Дневни хороскопи</strong> - Прогнози за всяка зодия, актуализирани ежедневно</li>
                   <li><strong>Седмични прогнози</strong> - Задълбочен поглед върху предстоящата седмица</li>
@@ -202,8 +197,8 @@ export default async function BlogPage() {
                   <li><strong>Таро и Нумерология</strong> - Допълнителни инструменти за самопознание</li>
                   <li><strong>Съвместимост</strong> - Разбери връзките между различните зодии</li>
                 </ul>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           </div>
         </div>
 
