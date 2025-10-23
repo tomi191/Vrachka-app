@@ -10,14 +10,22 @@ interface Star {
   twinkleDelay: number;
 }
 
-export function StarField() {
+interface Orb {
+  x: number;
+  y: number;
+  radiusScale: number;
+  color: string;
+  speed: number;
+}
+
+export function MysticBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext('2d', { alpha: true });
     if (!ctx) return;
 
     // Set canvas size
@@ -30,7 +38,7 @@ export function StarField() {
 
     // Generate stars
     const stars: Star[] = [];
-    const starCount = Math.floor((window.innerWidth * window.innerHeight) / 8000); // Responsive star count
+    const starCount = Math.floor((window.innerWidth * window.innerHeight) / 8000);
 
     for (let i = 0; i < starCount; i++) {
       stars.push({
@@ -42,6 +50,13 @@ export function StarField() {
       });
     }
 
+    // Gradient orbs configuration
+    const orbs: Orb[] = [
+      { x: 0.2, y: 0.3, radiusScale: 0.4, color: 'rgba(168, 85, 247, 0.15)', speed: 0.0005 },
+      { x: 0.8, y: 0.6, radiusScale: 0.5, color: 'rgba(147, 51, 234, 0.12)', speed: 0.0007 },
+      { x: 0.5, y: 0.8, radiusScale: 0.35, color: 'rgba(192, 132, 252, 0.1)', speed: 0.0004 },
+    ];
+
     // Animation
     let animationFrame: number;
     let time = 0;
@@ -49,8 +64,33 @@ export function StarField() {
     const animate = () => {
       time += 0.01;
 
+      // Clear canvas
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+      // Draw gradient orbs FIRST (background layer)
+      orbs.forEach((orb, index) => {
+        const offsetX = Math.sin(time * 50 * orb.speed + index) * 50;
+        const offsetY = Math.cos(time * 50 * orb.speed * 0.8 + index) * 50;
+
+        const x = canvas.width * orb.x + offsetX;
+        const y = canvas.height * orb.y + offsetY;
+        const radius = Math.min(canvas.width, canvas.height) * orb.radiusScale;
+
+        // Create radial gradient
+        const gradient = ctx.createRadialGradient(x, y, 0, x, y, radius);
+        gradient.addColorStop(0, orb.color);
+        gradient.addColorStop(1, 'rgba(168, 85, 247, 0)');
+
+        // Apply blur effect manually for orbs
+        ctx.save();
+        ctx.filter = 'blur(80px)';
+        ctx.fillStyle = gradient;
+        ctx.globalAlpha = 0.6;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.restore();
+      });
+
+      // Draw stars SECOND (foreground layer)
       stars.forEach((star) => {
         // Twinkling effect using sine wave
         const twinkle = Math.sin(time + star.twinkleDelay) * 0.3 + 0.7;
@@ -80,7 +120,26 @@ export function StarField() {
     if (!prefersReducedMotion) {
       animate();
     } else {
-      // Static stars for reduced motion
+      // Static version for reduced motion
+      // Draw orbs
+      orbs.forEach((orb) => {
+        const x = canvas.width * orb.x;
+        const y = canvas.height * orb.y;
+        const radius = Math.min(canvas.width, canvas.height) * orb.radiusScale;
+
+        const gradient = ctx.createRadialGradient(x, y, 0, x, y, radius);
+        gradient.addColorStop(0, orb.color);
+        gradient.addColorStop(1, 'rgba(168, 85, 247, 0)');
+
+        ctx.save();
+        ctx.filter = 'blur(80px)';
+        ctx.fillStyle = gradient;
+        ctx.globalAlpha = 0.6;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.restore();
+      });
+
+      // Draw stars
       stars.forEach((star) => {
         ctx.beginPath();
         ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);

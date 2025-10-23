@@ -15,8 +15,7 @@ import { BentoFeatures } from '@/components/landing/BentoFeatures'
 import { ComparisonTable } from '@/components/landing/ComparisonTable'
 import { BentoTestimonials } from '@/components/landing/BentoTestimonials'
 import { FinalCTA } from '@/components/landing/FinalCTA'
-import { StarField } from '@/components/background/StarField'
-import { MysticGradient } from '@/components/background/MysticGradient'
+import { MysticBackground } from '@/components/background/MysticBackground'
 
 // Revalidate every hour for fresh blog posts
 export const revalidate = 3600
@@ -160,9 +159,8 @@ export default async function LandingPage() {
       <StructuredData data={webApplicationSchema} />
       <StructuredData data={faqSchema} />
 
-      {/* Background Animations */}
-      <MysticGradient />
-      <StarField />
+      {/* Unified Background Animation */}
+      <MysticBackground />
 
       <div className="min-h-screen bg-gradient-dark relative">
       {/* Navigation */}
