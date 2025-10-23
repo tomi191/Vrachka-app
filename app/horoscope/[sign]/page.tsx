@@ -334,8 +334,9 @@ export async function generateStaticParams() {
 }
 
 // Generate metadata for each zodiac page
-export async function generateMetadata({ params }: { params: { sign: string } }): Promise<Metadata> {
-  const zodiac = zodiacData[params.sign]
+export async function generateMetadata({ params }: { params: Promise<{ sign: string }> }): Promise<Metadata> {
+  const { sign } = await params
+  const zodiac = zodiacData[sign]
 
   if (!zodiac) {
     return {
@@ -364,8 +365,9 @@ export async function generateMetadata({ params }: { params: { sign: string } })
   }
 }
 
-export default function ZodiacSignPage({ params }: { params: { sign: string } }) {
-  const zodiac = zodiacData[params.sign]
+export default async function ZodiacSignPage({ params }: { params: Promise<{ sign: string }> }) {
+  const { sign } = await params
+  const zodiac = zodiacData[sign]
 
   if (!zodiac) {
     notFound()
