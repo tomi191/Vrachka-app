@@ -17,7 +17,7 @@ export const openai = new OpenAI({
 });
 
 // Default model for all AI operations (OpenRouter model)
-export const DEFAULT_MODEL = 'openai/gpt-4.1-mini';
+export const DEFAULT_MODEL = 'openai/gpt-5-mini';
 
 /**
  * Generate AI completion with system prompt

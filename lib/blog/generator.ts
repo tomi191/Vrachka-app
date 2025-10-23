@@ -1,5 +1,5 @@
 import { createOpenRouterCompletion } from '@/lib/ai/openrouter'
-import { trackAICost } from '@/lib/ai/cost-tracker'
+import { logAIUsage } from '@/lib/ai/cost-tracker'
 import { createClient } from '@/lib/supabase/server'
 
 const zodiacSigns = [
@@ -67,7 +67,7 @@ Keywords трябва да са 5-7 релевантни думи за SEO.`
 
   try {
     const response = await createOpenRouterCompletion({
-      model: 'openai/gpt-4-1106-preview',
+      model: 'openai/gpt-5-mini',
       messages: [
         {
           role: 'system',
@@ -83,13 +83,12 @@ Keywords трябва да са 5-7 релевантни думи за SEO.`
     })
 
     // Track AI cost
-    await trackAICost({
-      user_id: 'system',
-      feature: 'blog_generation',
-      model: 'openai/gpt-4-1106-preview',
-      input_tokens: response.usage.prompt_tokens,
-      output_tokens: response.usage.completion_tokens,
-      total_cost: response.usage.total_cost,
+    await logAIUsage({
+      userId: 'system',
+      feature: 'daily_content',
+      model: 'openai/gpt-5-mini',
+      promptTokens: response.usage.prompt_tokens,
+      completionTokens: response.usage.completion_tokens,
       metadata: { zodiac_sign: zodiacSign },
     })
 
@@ -155,7 +154,7 @@ export async function createBlogPost(
         published: publish,
         published_at: publish ? new Date().toISOString() : null,
         generated_by_ai: true,
-        ai_model: 'gpt-4-1106-preview',
+        ai_model: 'gpt-5-mini',
       })
       .select('id')
       .single()
@@ -257,7 +256,7 @@ Keywords трябва да са 7-10 релевантни думи за SEO.`
 
   try {
     const response = await createOpenRouterCompletion({
-      model: 'openai/gpt-4-1106-preview',
+      model: 'openai/gpt-5-mini',
       messages: [
         {
           role: 'system',
@@ -273,13 +272,12 @@ Keywords трябва да са 7-10 релевантни думи за SEO.`
     })
 
     // Track AI cost
-    await trackAICost({
-      user_id: 'system',
-      feature: 'blog_generation',
-      model: 'openai/gpt-4-1106-preview',
-      input_tokens: response.usage.prompt_tokens,
-      output_tokens: response.usage.completion_tokens,
-      total_cost: response.usage.total_cost,
+    await logAIUsage({
+      userId: 'system',
+      feature: 'daily_content',
+      model: 'openai/gpt-5-mini',
+      promptTokens: response.usage.prompt_tokens,
+      completionTokens: response.usage.completion_tokens,
       metadata: { topic, category },
     })
 

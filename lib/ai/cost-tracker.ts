@@ -15,6 +15,10 @@ import { createClient } from "@/lib/supabase/server";
  */
 
 const MODEL_PRICING: Record<string, { input: number; output: number }> = {
+  "openai/gpt-5-mini": {
+    input: 0.25 / 1_000_000,  // $0.25 per 1M tokens
+    output: 2.00 / 1_000_000, // $2.00 per 1M tokens
+  },
   "openai/gpt-4.1-mini": {
     input: 0.15 / 1_000_000,  // $0.15 per 1M tokens
     output: 0.60 / 1_000_000, // $0.60 per 1M tokens
@@ -22,6 +26,10 @@ const MODEL_PRICING: Record<string, { input: number; output: number }> = {
   "openai/gpt-4": {
     input: 30.0 / 1_000_000,  // $30 per 1M tokens
     output: 60.0 / 1_000_000, // $60 per 1M tokens
+  },
+  "openai/gpt-4-1106-preview": {
+    input: 10.0 / 1_000_000,  // $10 per 1M tokens
+    output: 30.0 / 1_000_000, // $30 per 1M tokens
   },
   // Add more models as needed
 };
