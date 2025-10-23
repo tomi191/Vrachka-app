@@ -5,6 +5,7 @@ import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Toaster } from "@/components/ui/toaster";
 import { QueryProvider } from "@/lib/providers/query-provider";
+import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -174,6 +175,7 @@ export default function RootLayout({
           {children}
           <Toaster />
         </QueryProvider>
+        <GoogleAnalytics />
         <Analytics />
         <SpeedInsights />
       </body>
