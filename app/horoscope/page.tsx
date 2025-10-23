@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { Sparkles } from 'lucide-react'
 import { StructuredData, getBreadcrumbSchema } from '@/components/StructuredData'
 import { ZodiacIcon } from '@/components/icons/zodiac'
 import { HoverCardWrapper } from '@/components/ui/hover-card-wrapper'
@@ -8,6 +9,7 @@ import { ShimmerButton } from '@/components/ui/shimmer-button'
 import { Navigation } from '@/components/Navigation'
 import { Footer } from '@/components/Footer'
 import { MysticBackground } from '@/components/background/MysticBackground'
+import { BentoTestimonials } from '@/components/landing/BentoTestimonials'
 
 export const metadata: Metadata = {
   title: 'Дневен Хороскоп за Всички Зодии',
@@ -148,7 +150,10 @@ export default function HoroscopePage() {
         {/* Hero Section */}
         <div className="container mx-auto px-4 pt-32 pb-16">
           <div className="text-center mb-12">
-            <div className="text-6xl mb-4">🔮</div>
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full glass text-sm text-accent-400 mb-6">
+              <Sparkles className="w-4 h-4" />
+              <span>Дневни Хороскопи</span>
+            </div>
             <h1 className="text-4xl md:text-5xl font-bold mb-4">
               <GradientText from="#9333ea" via="#ec4899" to="#9333ea">
                 Дневен Хороскоп за Всички Зодии
@@ -240,7 +245,12 @@ export default function HoroscopePage() {
               </div>
             </div>
           </div>
+        </div>
 
+        {/* Testimonials Section */}
+        <BentoTestimonials />
+
+        <div className="container mx-auto px-4 pb-16">
           {/* CTA Section */}
           <div className="glass-card p-12 text-center relative overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-r from-purple-600/20 to-pink-600/20 -z-10"></div>
