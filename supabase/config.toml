@@ -1,0 +1,7 @@
+# Supabase Edge Functions Configuration
+
+[functions.oracle-chat]
+verify_jwt = false
+
+[functions.generate-daily-horoscopes]
+verify_jwt = false  # Called by pg_cron, not user requests
