@@ -682,7 +682,7 @@ export default async function LandingPage() {
             <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-brand-950 to-transparent z-10 pointer-events-none" />
 
             {/* Scrollable Testimonials */}
-            <div className="flex gap-6 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide px-4">
+            <div className="flex gap-6 overflow-x-auto pb-4 snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] px-4">
               {testimonials.map((testimonial, index) => (
                 <div
                   key={index}
@@ -709,16 +709,6 @@ export default async function LandingPage() {
               ))}
             </div>
           </div>
-
-          <style jsx>{`
-            .scrollbar-hide::-webkit-scrollbar {
-              display: none;
-            }
-            .scrollbar-hide {
-              -ms-overflow-style: none;
-              scrollbar-width: none;
-            }
-          `}</style>
         </div>
       </section>
 
