@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Vrachka OG Image Placeholder</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            width: 1200px;
+            height: 630px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #1a0b2e 0%, #3d1e6d 50%, #8b5cf6 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        .stars {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            opacity: 0.3;
+        }
+        .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: white;
+            border-radius: 50%;
+        }
+        .content {
+            z-index: 1;
+            text-align: center;
+            padding: 80px;
+        }
+        .logo {
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+        .brand {
+            font-size: 72px;
+            font-weight: bold;
+            letter-spacing: -2px;
+            margin-bottom: 40px;
+        }
+        .title {
+            font-size: 48px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .description {
+            font-size: 24px;
+            opacity: 0.9;
+            max-width: 800px;
+        }
+        .footer {
+            position: absolute;
+            bottom: 40px;
+            font-size: 22px;
+            opacity: 0.7;
+        }
+    </style>
+</head>
+<body>
+    <div class="stars" id="stars"></div>
+    <div class="content">
+        <div class="logo">🔮</div>
+        <div class="brand">Vrachka</div>
+        <div class="title">AI Хороскопи, Таро и Духовни Насоки</div>
+        <div class="description">Персонализирани дневни хороскопи, таро четения и духовни консултации с AI Врачката</div>
+    </div>
+    <div class="footer">www.vrachka.eu</div>
+
+    <script>
+        // Generate random stars
+        const starsContainer = document.getElementById('stars');
+        for (let i = 0; i < 100; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            star.style.left = Math.random() * 100 + '%';
+            star.style.top = Math.random() * 100 + '%';
+            star.style.animationDelay = Math.random() * 3 + 's';
+            starsContainer.appendChild(star);
+        }
+    </script>
+</body>
+</html>
+<!--
+TO GENERATE PNG:
+1. Open this HTML in Chrome
+2. Set browser window to 1200x630
+3. Take screenshot OR use puppeteer:
+
+   const puppeteer = require('puppeteer');
+   (async () => {
+     const browser = await puppeteer.launch();
+     const page = await browser.newPage();
+     await page.setViewport({ width: 1200, height: 630 });
+     await page.goto('file://path/to/og-image.html');
+     await page.screenshot({ path: 'og-image.png' });
+     await browser.close();
+   })();
+-->

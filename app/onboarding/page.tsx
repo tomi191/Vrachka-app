@@ -75,6 +75,11 @@ export default function OnboardingPage() {
 
       if (profileError) throw profileError;
 
+      // Grant 3-day Ultimate trial (don't wait for it, fire and forget)
+      fetch('/api/auth/grant-trial', {
+        method: 'POST',
+      }).catch(err => console.error('Failed to grant trial:', err));
+
       // Send welcome email (don't wait for it, fire and forget)
       fetch('/api/email/welcome', {
         method: 'POST',

@@ -8,7 +8,7 @@ import { QueryProvider } from "@/lib/providers/query-provider";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://vrachka.app'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://www.vrachka.eu'),
   title: {
     template: '%s | Vrachka - Твоят Духовен Гид',
     default: 'Vrachka - AI Хороскопи, Таро Четения и Духовни Насоки'
