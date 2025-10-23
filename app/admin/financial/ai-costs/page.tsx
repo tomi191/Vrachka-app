@@ -20,8 +20,7 @@ const AICostsPieChart = dynamic(
       <div className="flex items-center justify-center h-64">
         <div className="text-zinc-400">Зареждане на графика...</div>
       </div>
-    ),
-    ssr: false
+    )
   }
 );
 
@@ -32,8 +31,7 @@ const MRRTrendChart = dynamic(
       <div className="flex items-center justify-center h-64">
         <div className="text-zinc-400">Зареждане на графика...</div>
       </div>
-    ),
-    ssr: false
+    )
   }
 );
 
