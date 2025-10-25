@@ -66,7 +66,9 @@ export async function middleware(request: NextRequest) {
 
   // If user is logged in but email is not verified
   if (user && !user.email_confirmed_at && !isVerifyEmailRoute && !isResendVerificationRoute && !isAuthCallback && !isLogoutRoute) {
-    console.log('[MIDDLEWARE] Email not verified, redirecting to /auth/verify-email');
+    if (process.env.NODE_ENV !== 'production') {
+      console.log('[MIDDLEWARE] Email not verified, redirecting to /auth/verify-email');
+    }
     return NextResponse.redirect(new URL('/auth/verify-email', request.url));
   }
 
@@ -85,22 +87,27 @@ export async function middleware(request: NextRequest) {
       .eq('id', user.id)
       .single();
 
-    console.log('[MIDDLEWARE] Admin access check:', {
-      userId: user.id,
-      email: user.email,
-      pathname: request.nextUrl.pathname,
-      profile,
-      adminCheckError,
-      is_admin: profile?.is_admin,
-    });
+    if (process.env.NODE_ENV !== 'production') {
+      console.log('[MIDDLEWARE] Admin access check:', {
+        userId: user.id,
+        email: user.email,
+        pathname: request.nextUrl.pathname,
+        profile,
+        adminCheckError,
+        is_admin: profile?.is_admin,
+      });
+    }
 
     if (!profile?.is_admin) {
       // Not an admin - redirect to dashboard with error
-      console.log('[MIDDLEWARE] Access denied - not admin, redirecting to /dashboard');
+      if (process.env.NODE_ENV !== 'production') {
+        console.log('[MIDDLEWARE] Access denied - not admin, redirecting to /dashboard');
+      }
       return NextResponse.redirect(new URL('/dashboard?error=unauthorized', request.url));
     }
-
-    console.log('[MIDDLEWARE] Admin access granted');
+    if (process.env.NODE_ENV !== 'production') {
+      console.log('[MIDDLEWARE] Admin access granted');
+    }
   }
 
   // Protected routes
@@ -122,17 +129,21 @@ export async function middleware(request: NextRequest) {
       .eq('id', user.id)
       .single();
 
-    console.log('[MIDDLEWARE] Onboarding check:', {
-      userId: user.id,
-      email: user.email,
-      pathname: request.nextUrl.pathname,
-      profile,
-      profileError,
-      onboarding_completed: profile?.onboarding_completed,
-    });
+    if (process.env.NODE_ENV !== 'production') {
+      console.log('[MIDDLEWARE] Onboarding check:', {
+        userId: user.id,
+        email: user.email,
+        pathname: request.nextUrl.pathname,
+        profile,
+        profileError,
+        onboarding_completed: profile?.onboarding_completed,
+      });
+    }
 
     if (!profile || !profile.onboarding_completed) {
-      console.log('[MIDDLEWARE] Redirecting to /onboarding');
+      if (process.env.NODE_ENV !== 'production') {
+        console.log('[MIDDLEWARE] Redirecting to /onboarding');
+      }
       return NextResponse.redirect(new URL('/onboarding', request.url));
     }
   }

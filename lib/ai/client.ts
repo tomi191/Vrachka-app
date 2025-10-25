@@ -79,13 +79,36 @@ export async function generateCompletion(
 }
 
 /**
+ * Extract JSON from markdown code blocks
+ * AI models often wrap JSON in ```json ... ``` or ``` ... ```
+ */
+function extractJsonFromMarkdown(response: string): string {
+  // Try to extract JSON from markdown code blocks
+  const jsonBlockRegex = /```(?:json)?\s*([\s\S]*?)```/;
+  const match = response.match(jsonBlockRegex);
+
+  if (match && match[1]) {
+    return match[1].trim();
+  }
+
+  // If no code block found, return original (might be clean JSON)
+  return response.trim();
+}
+
+/**
  * Parse JSON response safely
+ * Handles both clean JSON and markdown-wrapped JSON from AI models
  */
 export function parseAIJsonResponse<T>(response: string): T | null {
   try {
-    return JSON.parse(response) as T;
+    // First, try to extract JSON from markdown code blocks
+    const cleanJson = extractJsonFromMarkdown(response);
+
+    // Parse the cleaned JSON
+    return JSON.parse(cleanJson) as T;
   } catch (error) {
     console.error('Failed to parse AI JSON response:', error);
+    console.error('Response preview:', response.substring(0, 200));
     return null;
   }
 }

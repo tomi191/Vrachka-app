@@ -12,24 +12,23 @@ import "./globals.css";
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://www.vrachka.eu'),
   title: {
-    template: '%s | Vrachka - Твоят Духовен Гид',
-    default: 'Vrachka - AI Хороскопи, Таро Четения и Духовни Насоки'
+    template: '%s | Vrachka - Астрология и таро с AI',
+    default: 'Vrachka - AI предсказания, хороскопи и таро четения'
   },
-  description: 'Персонализирани дневни хороскопи, таро четения и духовни консултации с AI Врачката. Попитай българския духовен оракул за любов, кариера и житейски въпроси.',
+  description: 'Лични AI предсказания, дневни хороскопи и таро четения. Вземи насоки за любов, кариера и късмет чрез модерна астрология и изкуствен интелект.',
   keywords: [
     'хороскоп',
     'дневен хороскоп',
     'таро',
     'таро четене',
     'астрология',
-    'зодия',
-    'врачка',
-    'духовен гид',
-    'AI оракул',
-    'България',
-    'нумерология',
-    'натална карта',
-    'съвместимост зодии'
+    'зодии',
+    'изкуствен интелект',
+    'AI хороскоп',
+    'любов',
+    'кариера',
+    'късмет',
+    'лични предсказания'
   ],
   authors: [{ name: 'Vrachka' }],
   creator: 'Vrachka',
@@ -50,22 +49,22 @@ export const metadata: Metadata = {
     locale: 'bg_BG',
     url: '/',
     siteName: 'Vrachka',
-    title: 'Vrachka - AI Хороскопи, Таро Четения и Духовни Насоки',
-    description: 'Персонализирани дневни хороскопи, таро четения и духовни консултации с AI Врачката. Присъедини се към 10,000+ потребители в тяхното духовно пътуване.',
+    title: 'Vrachka - AI предсказания, хороскопи и таро четения',
+    description: 'Лични AI предсказания, дневни/седмични/месечни хороскопи и таро четения. Доверяват ни се 10,000+ потребители за мъдри и навременни съвети.',
     images: [
       {
         url: '/og-image.svg', // 1200x630 OG image (SVG for quality and size)
         width: 1200,
         height: 630,
-        alt: 'Vrachka - Твоят Духовен Гид с AI Хороскопи и Таро Четения',
+        alt: 'Vrachka - Астрология и таро с AI',
         type: 'image/svg+xml',
       }
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Vrachka - AI Хороскопи и Таро Четения',
-    description: 'Персонализирани дневни хороскопи, таро четения и духовни консултации с AI.',
+    title: 'Vrachka - AI предсказания и таро',
+    description: 'Лични предсказания, хороскопи и таро, задвижвани от AI.',
     images: ['/og-image.png'], // 1200x630 OG image for Twitter
   },
   robots: {
@@ -118,7 +117,7 @@ export default function RootLayout({
           "width": 192,
           "height": 192
         },
-        "description": "Персонализирани AI хороскопи, таро четения и духовни консултации на български език",
+        "description": "AI предсказания, хороскопи и таро четения за информирани решения и лична перспектива.",
         "sameAs": [
           "https://www.facebook.com/vrachka",
           "https://www.instagram.com/vrachka"
@@ -129,7 +128,7 @@ export default function RootLayout({
         "@id": "https://www.vrachka.eu/#website",
         "url": "https://www.vrachka.eu",
         "name": "Vrachka",
-        "description": "AI Хороскопи, Таро Четения и Духовни Насоки",
+        "description": "AI предсказания, хороскопи и таро четения",
         "publisher": {
           "@id": "https://www.vrachka.eu/#organization"
         },
@@ -149,14 +148,14 @@ export default function RootLayout({
           "highPrice": "29.99",
           "offerCount": "3"
         },
-        "description": "AI-базирана платформа за персонализирани хороскопи, таро четения и духовни консултации",
+        "description": "AI‑задвижвани предсказания, хороскопи и таро четения за любов, кариера и късмет",
         "featureList": [
-          "Дневни персонализирани хороскопи",
-          "AI таро четения",
-          "Нумерология и натална карта",
-          "Съвместимост между зодии",
-          "Лунен календар",
-          "Духовни консултации"
+          "Персонализирани AI предсказания",
+          "Дневни/седмични/месечни хороскопи",
+          "Таро разтвори и Карта на деня",
+          "История на разговори и четения",
+          "Абонаментни планове",
+          "Фокус върху поверителността"
         ],
         "screenshot": "https://www.vrachka.eu/og-image.png"
       }
@@ -183,3 +182,4 @@ export default function RootLayout({
     </html>
   );
 }
+

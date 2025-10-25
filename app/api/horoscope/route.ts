@@ -3,7 +3,8 @@ import { createClient } from "@/lib/supabase/server";
 import { createFeatureCompletion } from "@/lib/ai/openrouter";
 import { HOROSCOPE_SYSTEM_PROMPT, getHoroscopePrompt } from "@/lib/ai/prompts";
 import { checkFeatureAccess } from "@/lib/subscription";
-import { rateLimit, RATE_LIMITS, getClientIp, getRateLimitHeaders } from "@/lib/rate-limit";
+import { rateLimitAdaptive, RATE_LIMITS, getClientIp, getRateLimitHeaders } from "@/lib/rate-limit";
+import { parseAIJsonResponse } from "@/lib/ai/client";
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -24,7 +25,7 @@ export async function GET(req: NextRequest) {
   try {
     // IP-based rate limiting (protection against abuse)
     const clientIp = getClientIp(req);
-    const ipRateLimit = rateLimit(
+    const ipRateLimit = await rateLimitAdaptive(
       `horoscope:${clientIp}`,
       RATE_LIMITS.horoscope
     );
@@ -134,14 +135,16 @@ export async function GET(req: NextRequest) {
       aiResponse = response.choices[0]?.message?.content || '';
       console.log('[Horoscope API] AI response received from', response.model_used, 'length:', aiResponse?.length);
 
-      // Parse JSON response
+      // Parse JSON response (handles markdown code blocks from AI)
       console.log('[Horoscope API] Parsing AI JSON response...');
-      horoscope = JSON.parse(aiResponse) as HoroscopeResponse;
+      const parsedHoroscope = parseAIJsonResponse<HoroscopeResponse>(aiResponse);
 
-      if (!horoscope) {
+      if (!parsedHoroscope) {
         console.error('[Horoscope API] Failed to parse AI response:', aiResponse?.substring(0, 200));
         throw new Error('Failed to parse AI response - invalid JSON');
       }
+
+      horoscope = parsedHoroscope;
       console.log('[Horoscope API] Successfully parsed horoscope');
     } catch (error) {
       console.error('[Horoscope API] AI generation/parse error:', error);

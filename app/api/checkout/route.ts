@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { stripe, ensureStripeConfigured } from "@/lib/stripe";
+import { getStripePriceIdForPlan } from "@/lib/stripe";
+import type { PlanType } from "@/lib/config/plans";
 import { createClient } from "@/lib/supabase/server";
 
 // Get base URL with fallback
@@ -43,13 +45,20 @@ export async function POST(req: NextRequest) {
     }
 
     const formData = await req.formData();
-    const priceId = formData.get("priceId") as string;
-    const currency = (formData.get("currency") as string) || 'bgn';
+    const plan = (formData.get("priceId") as string) as Exclude<PlanType, 'free'>; // 'basic' | 'ultimate'
+    const currency = ((formData.get("currency") as string) || 'bgn') as 'bgn' | 'eur';
 
     // Validate currency
     if (currency !== 'bgn' && currency !== 'eur') {
       return NextResponse.json(
         { error: "Invalid currency" },
+        { status: 400 }
+      );
+    }
+
+    if (plan !== 'basic' && plan !== 'ultimate') {
+      return NextResponse.json(
+        { error: "Invalid plan" },
         { status: 400 }
       );
     }
@@ -88,19 +97,8 @@ export async function POST(req: NextRequest) {
         .eq("user_id", user.id);
     }
 
-    // Map plan and currency to price ID
-    const priceIdMap: Record<string, Record<string, string>> = {
-      basic: {
-        bgn: process.env.STRIPE_BASIC_PRICE_ID_BGN || "",
-        eur: process.env.STRIPE_BASIC_PRICE_ID_EUR || "",
-      },
-      ultimate: {
-        bgn: process.env.STRIPE_ULTIMATE_PRICE_ID_BGN || "",
-        eur: process.env.STRIPE_ULTIMATE_PRICE_ID_EUR || "",
-      },
-    };
-
-    const stripePriceId = priceIdMap[priceId]?.[currency];
+    // Get Stripe price ID from centralized plan config
+    const stripePriceId = getStripePriceIdForPlan(plan, currency);
 
     if (!stripePriceId) {
       return NextResponse.json(
@@ -127,7 +125,8 @@ export async function POST(req: NextRequest) {
       cancel_url: `${baseUrl}/pricing`,
       metadata: {
         user_id: user.id,
-        plan_type: priceId,
+        plan_type: plan,
+        currency,
       },
     });
 

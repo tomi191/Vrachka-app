@@ -4,7 +4,8 @@ import { createClient as createServiceClient } from "@supabase/supabase-js";
 import { createFeatureCompletion } from "@/lib/ai/openrouter";
 import { TAROT_SYSTEM_PROMPT, getTarotPrompt } from "@/lib/ai/prompts";
 import { canReadTarot, incrementTarotUsage, checkFeatureAccess } from "@/lib/subscription";
-import { rateLimit, RATE_LIMITS, getClientIp, getRateLimitHeaders } from "@/lib/rate-limit";
+import { rateLimitAdaptive, RATE_LIMITS, getClientIp, getRateLimitHeaders } from "@/lib/rate-limit";
+import { parseAIJsonResponse } from "@/lib/ai/client";
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -69,7 +70,7 @@ export async function POST(req: NextRequest) {
   try {
     // IP-based rate limiting (protection against abuse)
     const clientIp = getClientIp(req);
-    const ipRateLimit = rateLimit(
+    const ipRateLimit = await rateLimitAdaptive(
       `tarot:${clientIp}`,
       RATE_LIMITS.tarot
     );
@@ -185,14 +186,16 @@ export async function POST(req: NextRequest) {
       aiResponse = response.choices[0]?.message?.content || '';
       console.log('[Tarot API] AI response received from', response.model_used, 'length:', aiResponse?.length);
 
-      // Parse JSON response
+      // Parse JSON response (handles markdown code blocks from AI)
       console.log('[Tarot API] Parsing AI JSON response...');
-      reading = JSON.parse(aiResponse) as TarotReading;
+      const parsedReading = parseAIJsonResponse<TarotReading>(aiResponse);
 
-      if (!reading) {
+      if (!parsedReading) {
         console.error('[Tarot API] Failed to parse AI response:', aiResponse?.substring(0, 200));
         throw new Error('Failed to parse AI tarot reading - invalid JSON');
       }
+
+      reading = parsedReading;
       console.log('[Tarot API] Successfully parsed tarot reading');
     } catch (error) {
       console.error('[Tarot API] AI generation/parse error:', error);

@@ -131,3 +131,42 @@ export function getClientIp(request: Request): string {
   // Fallback - should not happen in production
   return 'unknown';
 }
+
+// Optional: DB-backed rate limiting via Supabase RPC
+// Falls back to in-memory if env/service key not available
+import { createClient as createServiceClient } from '@supabase/supabase-js';
+
+export async function rateLimitAdaptive(
+  identifier: string,
+  config: RateLimitConfig
+): Promise<{ allowed: boolean; remaining: number; resetAt: number }> {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+  if (!url || !serviceKey) {
+    return rateLimit(identifier, config);
+  }
+
+  try {
+    const supabase = createServiceClient(url, serviceKey);
+    const windowSeconds = Math.max(1, Math.floor(config.interval / 1000));
+    const { data, error } = await supabase.rpc('rate_limit_increment', {
+      p_key: identifier,
+      p_window_seconds: windowSeconds,
+      p_max_requests: config.maxRequests,
+    });
+
+    if (error || !data) {
+      console.warn('[rateLimitAdaptive] RPC fallback to memory:', error?.message);
+      return rateLimit(identifier, config);
+    }
+
+    const allowed: boolean = data.allowed;
+    const remaining: number = data.remaining;
+    const resetAt: number = new Date(data.reset_at).getTime();
+    return { allowed, remaining, resetAt };
+  } catch (e) {
+    console.warn('[rateLimitAdaptive] Error, fallback to memory:', e);
+    return rateLimit(identifier, config);
+  }
+}

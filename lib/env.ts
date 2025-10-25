@@ -52,17 +52,14 @@ export function validateEnv() {
 
   // Log warnings
   if (warnings.length > 0) {
-    console.warn(
-      '⚠️  Optional environment variables missing:',
-      warnings.join(', ')
-    );
-    console.warn('   Some features may not work properly.');
+    console.warn('Optional environment variables missing:', warnings.join(', '));
+    console.warn('Some optional features may not work properly.');
   }
 
   // Throw error if required variables are missing
   if (missing.length > 0) {
     const errorMessage = [
-      '🔴 Missing required environment variables:',
+      'Missing required environment variables:',
       '',
       ...missing.map(key => `  - ${key}`),
       '',
@@ -73,7 +70,7 @@ export function validateEnv() {
     throw new Error(errorMessage);
   }
 
-  console.log('✅ All required environment variables are present');
+  console.log('All required environment variables are present');
 }
 
 // Auto-validate on import (only in Node.js environment)
@@ -85,3 +82,4 @@ if (typeof window === 'undefined') {
     throw error;
   }
 }
+

@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { canAskOracle, incrementOracleUsage, isPremiumUser } from "@/lib/subscription";
 import { createFeatureCompletion } from "@/lib/ai/openrouter";
 import { ORACLE_SYSTEM_PROMPT, getOraclePrompt } from "@/lib/ai/prompts";
-import { rateLimit, RATE_LIMITS, getClientIp, getRateLimitHeaders } from "@/lib/rate-limit";
+import { rateLimitAdaptive, RATE_LIMITS, getClientIp, getRateLimitHeaders } from "@/lib/rate-limit";
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
   try {
     // IP-based rate limiting (protection against abuse)
     const clientIp = getClientIp(req);
-    const ipRateLimit = rateLimit(
+    const ipRateLimit = await rateLimitAdaptive(
       `oracle:${clientIp}`,
       RATE_LIMITS.oracle
     );

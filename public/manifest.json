@@ -1,7 +1,7 @@
 {
-  "name": "Vrachka - Твоят Духовен Гид",
+  "name": "Vrachka - Астрология и таро с AI",
   "short_name": "Vrachka",
-  "description": "Персонализирани хороскопи, таро четения и AI оракул",
+  "description": "Лични AI предсказания, хороскопи и таро четения",
   "start_url": "/dashboard",
   "display": "standalone",
   "background_color": "#1a0b2e",

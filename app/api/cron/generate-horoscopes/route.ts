@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { createFeatureCompletion } from "@/lib/ai/openrouter";
 import { HOROSCOPE_SYSTEM_PROMPT, getHoroscopePrompt } from "@/lib/ai/prompts";
+import { parseAIJsonResponse } from "@/lib/ai/client";
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -133,10 +134,10 @@ export async function POST(req: NextRequest) {
         );
 
         const aiResponse = response.choices[0]?.message?.content || '';
-        const horoscope = JSON.parse(aiResponse) as HoroscopeResponse;
+        const horoscope = parseAIJsonResponse<HoroscopeResponse>(aiResponse);
 
         if (!horoscope) {
-          throw new Error("Failed to parse AI response");
+          throw new Error("Failed to parse AI response - invalid JSON");
         }
 
         console.log(`[Cron] Generated with ${response.model_used}`);
