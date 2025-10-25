@@ -179,7 +179,8 @@ export async function grantReferrerReward(
       .eq("id", referredUserId)
       .single();
 
-    const { data: referralCode } = await supabase
+    // Referral code not needed for email, but kept for potential future use
+    const { data: _referralCode } = await supabase
       .from("referral_codes")
       .select("code")
       .eq("referrer_user_id", redemption.referrer_user_id)

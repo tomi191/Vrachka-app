@@ -5,8 +5,8 @@ import { PLAN_CONFIGS, validateStripePriceIds, type PlanType } from "@/lib/confi
 const stripeKey = process.env.STRIPE_SECRET_KEY || "sk_test_placeholder_for_build";
 
 export const stripe = new Stripe(stripeKey, {
-  // Use a stable official API version
-  apiVersion: "2023-10-16",
+  // Use latest stable API version
+  apiVersion: "2025-02-24.acacia",
   typescript: true,
 });
 
