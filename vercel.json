@@ -2,27 +2,14 @@
   "crons": [
     {
       "path": "/api/cron/generate-horoscopes",
-      "schedule": "0 6 * * *"
+      "schedule": "0 6 * * *",
+      "comment": "Generate daily horoscopes at 6:00 AM"
     },
     {
       "path": "/api/cron/trial-expiring",
-      "schedule": "0 9 * * *"
-    },
-    {
-      "path": "/api/cron/daily-reminders",
-      "schedule": "0 8 * * *"
-    },
-    {
-      "path": "/api/cron/renewal-reminder",
-      "schedule": "0 10 * * *"
-    },
-    {
-      "path": "/api/cron/weekly-digest",
-      "schedule": "0 7 * * 1"
-    },
-    {
-      "path": "/api/cron/upsell-campaign",
-      "schedule": "0 12 * * 5"
+      "schedule": "0 9 * * *",
+      "comment": "Send trial expiration notifications at 9:00 AM"
     }
-  ]
+  ],
+  "_comment": "Removed 4 cron jobs (daily-reminders, renewal-reminder, weekly-digest, upsell-campaign) to comply with Vercel free tier limit (2 max). These can be re-enabled when upgrading to a paid plan or migrating to Supabase pg_cron."
 }
