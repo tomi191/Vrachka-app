@@ -20,7 +20,7 @@ export async function grantTrial(userId: string): Promise<boolean> {
     // Проверка дали потребителят вече има trial
     const { data: profile } = await supabase
       .from('profiles')
-      .select('trial_tier, trial_end')
+      .select('trial_tier, trial_end, full_name')
       .eq('id', userId)
       .single()
 

@@ -10,7 +10,7 @@ export const dynamic = 'force-dynamic';
  */
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const supabase = await createClient();
@@ -24,7 +24,7 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const chartId = params.id;
+    const { id: chartId } = await params;
 
     // Fetch natal chart (RLS will ensure user owns this chart)
     const { data: chart, error } = await supabase
@@ -59,7 +59,7 @@ export async function GET(
  */
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const supabase = await createClient();
@@ -73,7 +73,7 @@ export async function DELETE(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const chartId = params.id;
+    const { id: chartId } = await params;
 
     // Delete natal chart (RLS will ensure user owns this chart)
     const { error } = await supabase

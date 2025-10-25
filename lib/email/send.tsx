@@ -247,13 +247,11 @@ export async function sendReferralRewardEmail(
   to: string,
   {
     firstName,
-    referralCode,
-    rewardAmount,
+    rewardDays,
     referredUserName,
   }: {
     firstName: string;
-    referralCode: string;
-    rewardAmount: number;
+    rewardDays: number;
     referredUserName: string;
   }
 ) {
@@ -264,8 +262,7 @@ export async function sendReferralRewardEmail(
       subject: '🎁 Получи награда за препоръка!',
       react: ReferralRewardEmail({
         firstName,
-        referralCode,
-        rewardAmount,
+        rewardDays,
         referredUserName,
       }),
     });
@@ -322,14 +319,12 @@ export async function sendSubscriptionCancelledEmail(
   to: string,
   {
     firstName,
-    plan,
-    cancelDate,
-    reason,
+    planType,
+    endDate,
   }: {
     firstName: string;
-    plan: string;
-    cancelDate: string;
-    reason?: string;
+    planType: string;
+    endDate: string;
   }
 ) {
   try {
@@ -339,9 +334,8 @@ export async function sendSubscriptionCancelledEmail(
       subject: 'Твоят абонамент беше прекратен',
       react: SubscriptionCancelledEmail({
         firstName,
-        plan,
-        cancelDate,
-        reason,
+        planType,
+        endDate,
       }),
     });
 
@@ -361,12 +355,10 @@ export async function sendTrialExpiringEmail(
   to: string,
   {
     firstName,
-    expiryDate,
-    daysLeft,
+    expiresAt,
   }: {
     firstName: string;
-    expiryDate: string;
-    daysLeft: number;
+    expiresAt: string;
   }
 ) {
   try {
@@ -376,8 +368,7 @@ export async function sendTrialExpiringEmail(
       subject: '⏰ Пробният ти период изтича скоро!',
       react: TrialExpiringEmail({
         firstName,
-        expiryDate,
-        daysLeft,
+        expiresAt,
       }),
     });
 
@@ -397,14 +388,12 @@ export async function sendPaymentFailedEmail(
   to: string,
   {
     firstName,
-    plan,
-    amount,
-    retryDate,
+    planType,
+    nextRetry,
   }: {
     firstName: string;
-    plan: string;
-    amount: string;
-    retryDate: string;
+    planType: string;
+    nextRetry: string;
   }
 ) {
   try {
@@ -414,9 +403,8 @@ export async function sendPaymentFailedEmail(
       subject: '⚠️ Проблем с плащането на абонамента ти',
       react: PaymentFailedEmail({
         firstName,
-        plan,
-        amount,
-        retryDate,
+        planType,
+        nextRetry,
       }),
     });
 

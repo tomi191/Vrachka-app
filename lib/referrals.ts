@@ -194,8 +194,7 @@ export async function grantReferrerReward(
     if (referrerUser?.user?.email) {
       await sendReferralRewardEmail(referrerUser.user.email, {
         firstName: referrerProfile?.full_name?.split(' ')[0] || '',
-        referralCode: referralCode?.code || '',
-        rewardAmount: 7,
+        rewardDays: 7,
         referredUserName: referredUserProfile?.full_name || 'Един от приятелите ти',
       });
       console.log(`Referral reward email sent to ${referrerUser.user.email}`);

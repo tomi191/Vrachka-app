@@ -296,9 +296,8 @@ async function handleSubscriptionDeleted(
 
       await sendSubscriptionCancelledEmail(user.user.email, {
         firstName: profile?.full_name?.split(' ')[0] || '',
-        plan: planName,
-        cancelDate,
-        reason: subscription.cancellation_details?.reason || undefined,
+        planType: planName,
+        endDate: cancelDate,
       });
 
       console.log(`Subscription cancelled email sent to ${user.user.email}`);
@@ -360,9 +359,8 @@ async function handleInvoicePaymentFailed(
 
         await sendPaymentFailedEmail(user.user.email, {
           firstName: profile?.full_name?.split(' ')[0] || '',
-          plan: planName,
-          amount,
-          retryDate: retryDateFormatted,
+          planType: planName,
+          nextRetry: retryDateFormatted,
         });
 
         console.log(`Payment failed email sent to ${user.user.email}`);

@@ -71,8 +71,7 @@ export async function GET(req: NextRequest) {
 
           await sendTrialExpiringEmail(user.user.email, {
             firstName: profile.full_name?.split(' ')[0] || '',
-            expiryDate,
-            daysLeft,
+            expiresAt: expiryDate,
           });
 
           successCount++;

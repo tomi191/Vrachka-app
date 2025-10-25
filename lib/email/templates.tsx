@@ -764,7 +764,7 @@ export const ReferralRewardEmail = ({ firstName, referredUserName, rewardDays }:
 );
 
 // Referral Redeemed Email Template
-export const ReferralRedeemedEmail = ({ firstName, referralCode }: { firstName: string; referralCode: string }) => (
+export const ReferralRedeemedEmail = ({ firstName, referrerName, rewardAmount }: { firstName: string; referrerName: string; rewardAmount: number }) => (
   <EmailWrapper>
     <EmailHeader />
     <tr>
@@ -797,7 +797,7 @@ export const ReferralRedeemedEmail = ({ firstName, referralCode }: { firstName: 
           lineHeight: '24px',
           color: '#d4d4d8',
         }}>
-          Успешно активира референтния код <strong style={{ color: '#8b5cf6' }}>{referralCode}</strong>! 🎊
+          Успешно активира референтния код от <strong style={{ color: '#8b5cf6' }}>{referrerName}</strong>! 🎊
         </p>
 
         <div style={{
@@ -811,7 +811,7 @@ export const ReferralRedeemedEmail = ({ firstName, referralCode }: { firstName: 
             💡 Какво следва?
           </p>
           <p style={{ margin: 0, color: '#d4d4d8', fontSize: '14px', lineHeight: '20px' }}>
-            Когато премине към платен план (Basic или Ultimate), лицето което те препоръча ще получи {7} дни безплатен Ultimate достъп като благодарност!
+            Когато премине към платен план (Basic или Ultimate), лицето което те препоръча ще получи {rewardAmount} дни безплатен Ultimate достъп като благодарност!
           </p>
         </div>
 

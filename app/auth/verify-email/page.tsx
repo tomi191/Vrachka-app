@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 export default async function VerifyEmailPage({
   searchParams,
 }: {
-  searchParams: { resent?: string };
+  searchParams: Promise<{ resent?: string }>;
 }) {
   const supabase = await createClient();
 
@@ -29,6 +29,9 @@ export default async function VerifyEmailPage({
   if (user.email_confirmed_at) {
     redirect('/dashboard');
   }
+
+  // Await searchParams
+  const params = await searchParams;
 
   return (
     <div className="min-h-screen bg-gradient-dark flex items-center justify-center p-4">
@@ -53,7 +56,7 @@ export default async function VerifyEmailPage({
           </p>
 
           {/* Success Message */}
-          {searchParams.resent === 'true' && (
+          {params.resent === 'true' && (
             <div className="mb-6 p-4 bg-green-500/10 border border-green-500/20 rounded-lg">
               <div className="flex items-center gap-2 text-green-400">
                 <CheckCircle className="w-5 h-5" />

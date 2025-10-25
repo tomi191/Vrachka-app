@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 export default async function NatalChartDetailPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
   const supabase = await createClient();
 
@@ -30,11 +30,14 @@ export default async function NatalChartDetailPage({
     redirect('/auth/login?redirect=/natal-chart');
   }
 
+  // Await params
+  const { id } = await params;
+
   // Fetch natal chart
   const { data: chart, error } = await supabase
     .from('natal_charts')
     .select('*')
-    .eq('id', params.id)
+    .eq('id', id)
     .single();
 
   if (error || !chart) {

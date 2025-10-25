@@ -11,7 +11,7 @@ export const dynamic = 'force-dynamic';
  */
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const supabase = await createClient();
@@ -32,7 +32,7 @@ export async function DELETE(
       );
     }
 
-    const conversationId = params.id;
+    const { id: conversationId } = await params;
 
     // Delete the conversation
     // RLS policy ensures user can only delete their own conversations

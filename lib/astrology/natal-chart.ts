@@ -3,9 +3,8 @@
  * Uses circular-natal-horoscope-js for astronomical calculations
  */
 
-import Origin from 'circular-natal-horoscope-js';
-import { format } from 'date-fns';
-import { utcToZonedTime } from 'date-fns-tz';
+import * as OriginModule from 'circular-natal-horoscope-js';
+const Origin = (OriginModule as any).default || OriginModule;
 
 export interface BirthData {
   date: string; // YYYY-MM-DD
