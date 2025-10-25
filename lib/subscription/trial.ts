@@ -158,10 +158,18 @@ export async function getEffectiveSubscriptionTier(userId: string): Promise<Subs
   try {
     const supabase = await createClient()
 
+    // Get profile data (for trial info)
     const { data: profile } = await supabase
       .from('profiles')
-      .select('trial_tier, trial_end, subscription_tier, subscription_status')
+      .select('trial_tier, trial_end')
       .eq('id', userId)
+      .single()
+
+    // Get subscription data from subscriptions table
+    const { data: subscription } = await supabase
+      .from('subscriptions')
+      .select('plan_type, status')
+      .eq('user_id', userId)
       .single()
 
     if (!profile) {
@@ -182,10 +190,10 @@ export async function getEffectiveSubscriptionTier(userId: string): Promise<Subs
 
     // 2. Проверка за активен платен subscription
     if (
-      profile.subscription_tier &&
-      profile.subscription_status === 'active'
+      subscription?.plan_type &&
+      subscription?.status === 'active'
     ) {
-      return profile.subscription_tier as SubscriptionTier
+      return subscription.plan_type as SubscriptionTier
     }
 
     // 3. Default: free tier

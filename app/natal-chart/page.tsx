@@ -29,11 +29,19 @@ export default async function NatalChartPage() {
   // Get user profile to check plan
   const { data: profile } = await supabase
     .from('profiles')
-    .select('full_name, trial_tier, subscription_tier')
+    .select('full_name, trial_tier, trial_end')
     .eq('id', user.id)
     .single();
 
-  const userPlan = profile?.trial_tier || profile?.subscription_tier || 'free';
+  // Get subscription from subscriptions table
+  const { data: subscription } = await supabase
+    .from('subscriptions')
+    .select('plan_type, status')
+    .eq('user_id', user.id)
+    .single();
+
+  // Check trial first, then subscription
+  const userPlan = profile?.trial_tier || subscription?.plan_type || 'free';
   const hasAccess = userPlan === 'ultimate';
 
   // Get existing natal charts
