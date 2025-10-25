@@ -6,6 +6,7 @@ import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Toaster } from "@/components/ui/toaster";
 import { QueryProvider } from "@/lib/providers/query-provider";
 import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
+import "@/lib/env"; // Validate environment variables at startup
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -53,11 +54,11 @@ export const metadata: Metadata = {
     description: 'Персонализирани дневни хороскопи, таро четения и духовни консултации с AI Врачката. Присъедини се към 10,000+ потребители в тяхното духовно пътуване.',
     images: [
       {
-        url: '/og-image.png', // 1200x630 OG image
+        url: '/og-image.svg', // 1200x630 OG image (SVG for quality and size)
         width: 1200,
         height: 630,
         alt: 'Vrachka - Твоят Духовен Гид с AI Хороскопи и Таро Четения',
-        type: 'image/png',
+        type: 'image/svg+xml',
       }
     ],
   },

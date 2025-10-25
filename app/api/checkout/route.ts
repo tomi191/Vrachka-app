@@ -44,6 +44,15 @@ export async function POST(req: NextRequest) {
 
     const formData = await req.formData();
     const priceId = formData.get("priceId") as string;
+    const currency = (formData.get("currency") as string) || 'bgn';
+
+    // Validate currency
+    if (currency !== 'bgn' && currency !== 'eur') {
+      return NextResponse.json(
+        { error: "Invalid currency" },
+        { status: 400 }
+      );
+    }
 
     // Get or create Stripe customer
     const { data: subscription } = await supabase
@@ -79,17 +88,23 @@ export async function POST(req: NextRequest) {
         .eq("user_id", user.id);
     }
 
-    // Map plan to price ID
-    const priceIdMap: Record<string, string> = {
-      basic: process.env.STRIPE_BASIC_PRICE_ID || "",
-      ultimate: process.env.STRIPE_ULTIMATE_PRICE_ID || "",
+    // Map plan and currency to price ID
+    const priceIdMap: Record<string, Record<string, string>> = {
+      basic: {
+        bgn: process.env.STRIPE_BASIC_PRICE_ID_BGN || "",
+        eur: process.env.STRIPE_BASIC_PRICE_ID_EUR || "",
+      },
+      ultimate: {
+        bgn: process.env.STRIPE_ULTIMATE_PRICE_ID_BGN || "",
+        eur: process.env.STRIPE_ULTIMATE_PRICE_ID_EUR || "",
+      },
     };
 
-    const stripePriceId = priceIdMap[priceId];
+    const stripePriceId = priceIdMap[priceId]?.[currency];
 
     if (!stripePriceId) {
       return NextResponse.json(
-        { error: "Invalid plan" },
+        { error: "Invalid plan or currency" },
         { status: 400 }
       );
     }

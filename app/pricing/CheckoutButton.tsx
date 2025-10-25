@@ -4,10 +4,11 @@ import { useState } from "react";
 
 interface CheckoutButtonProps {
   priceId: string;
+  currency?: 'bgn' | 'eur';
   className?: string;
 }
 
-export function CheckoutButton({ priceId, className }: CheckoutButtonProps) {
+export function CheckoutButton({ priceId, currency = 'bgn', className }: CheckoutButtonProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -16,9 +17,10 @@ export function CheckoutButton({ priceId, className }: CheckoutButtonProps) {
       setLoading(true);
       setError(null);
 
-      // Create FormData to send priceId
+      // Create FormData to send priceId and currency
       const formData = new FormData();
       formData.append("priceId", priceId);
+      formData.append("currency", currency);
 
       // Call checkout API
       const response = await fetch("/api/checkout", {

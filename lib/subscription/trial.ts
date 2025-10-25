@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
+import { sendTrialGrantedEmail } from '@/lib/email/send'
 
 export type SubscriptionTier = 'free' | 'basic' | 'ultimate'
 
@@ -47,6 +48,22 @@ export async function grantTrial(userId: string): Promise<boolean> {
     }
 
     console.log(`[Trial] Granted 3-day Ultimate trial to user ${userId}, expires at ${trialEnd.toISOString()}`)
+
+    // Send trial granted email
+    try {
+      const { data: user } = await supabase.auth.admin.getUserById(userId)
+      if (user?.user?.email) {
+        await sendTrialGrantedEmail(user.user.email, {
+          firstName: profile?.full_name?.split(' ')[0] || '',
+          trialDays: 3,
+        })
+        console.log(`[Trial] Trial granted email sent to ${user.user.email}`)
+      }
+    } catch (emailError) {
+      console.error('[Trial] Error sending trial granted email:', emailError)
+      // Don't fail the trial grant if email fails
+    }
+
     return true
   } catch (error) {
     console.error('[Trial] Unexpected error in grantTrial:', error)

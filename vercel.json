@@ -3,6 +3,22 @@
     {
       "path": "/api/cron/daily-reminders",
       "schedule": "0 8 * * *"
+    },
+    {
+      "path": "/api/cron/weekly-digest",
+      "schedule": "0 9 * * 1"
+    },
+    {
+      "path": "/api/cron/upsell-campaign",
+      "schedule": "0 10 * * 3"
+    },
+    {
+      "path": "/api/cron/renewal-reminder",
+      "schedule": "0 8 * * *"
+    },
+    {
+      "path": "/api/cron/trial-expiring",
+      "schedule": "0 9 * * *"
     }
   ]
 }

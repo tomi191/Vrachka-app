@@ -19,11 +19,18 @@ export interface PlanLimits {
   canAccessNatalChart: boolean;
 }
 
+export interface PlanPrice {
+  bgn: number;
+  eur: number;
+}
+
 export interface PlanConfig {
   name: string;
-  price: number; // in EUR
-  currency: string;
-  stripePriceId: string;
+  price: PlanPrice;
+  stripePriceIds: {
+    bgn: string;
+    eur: string;
+  };
   limits: PlanLimits;
   features: string[]; // Human-readable features list
 }
@@ -66,9 +73,14 @@ export const PLAN_LIMITS: Record<PlanType, PlanLimits> = {
 export const PLAN_CONFIGS: Record<PlanType, PlanConfig> = {
   free: {
     name: 'Free',
-    price: 0,
-    currency: 'EUR',
-    stripePriceId: '',
+    price: {
+      bgn: 0,
+      eur: 0,
+    },
+    stripePriceIds: {
+      bgn: '',
+      eur: '',
+    },
     limits: PLAN_LIMITS.free,
     features: [
       'Дневен хороскоп',
@@ -78,9 +90,14 @@ export const PLAN_CONFIGS: Record<PlanType, PlanConfig> = {
   },
   basic: {
     name: 'Basic',
-    price: 4.99,
-    currency: 'EUR',
-    stripePriceId: process.env.STRIPE_BASIC_PRICE_ID || '',
+    price: {
+      bgn: 9.99,
+      eur: 4.99,
+    },
+    stripePriceIds: {
+      bgn: process.env.STRIPE_BASIC_PRICE_ID_BGN || '',
+      eur: process.env.STRIPE_BASIC_PRICE_ID_EUR || '',
+    },
     limits: PLAN_LIMITS.basic,
     features: [
       'Всичко от Free',
@@ -93,9 +110,14 @@ export const PLAN_CONFIGS: Record<PlanType, PlanConfig> = {
   },
   ultimate: {
     name: 'Ultimate',
-    price: 9.99,
-    currency: 'EUR',
-    stripePriceId: process.env.STRIPE_ULTIMATE_PRICE_ID || '',
+    price: {
+      bgn: 19.99,
+      eur: 9.99,
+    },
+    stripePriceIds: {
+      bgn: process.env.STRIPE_ULTIMATE_PRICE_ID_BGN || '',
+      eur: process.env.STRIPE_ULTIMATE_PRICE_ID_EUR || '',
+    },
     limits: PLAN_LIMITS.ultimate,
     features: [
       'Всичко от Basic',
@@ -134,24 +156,41 @@ export function hasPlanAccess(
 }
 
 /**
- * Get Stripe price ID for a plan
+ * Get Stripe price ID for a plan and currency
  */
-export function getStripePriceId(planType: PlanType): string {
-  return PLAN_CONFIGS[planType].stripePriceId;
+export function getStripePriceId(planType: PlanType, currency: 'bgn' | 'eur' = 'bgn'): string {
+  return PLAN_CONFIGS[planType].stripePriceIds[currency];
 }
 
 /**
- * Validate Stripe price IDs are configured
+ * Get formatted price for a plan in a specific currency
+ */
+export function getFormattedPrice(planType: PlanType, currency: 'bgn' | 'eur' = 'bgn'): string {
+  const price = PLAN_CONFIGS[planType].price[currency];
+  const symbol = currency === 'bgn' ? 'лв' : '€';
+  return `${price.toFixed(2)} ${symbol}`;
+}
+
+/**
+ * Validate Stripe price IDs are configured for both currencies
  */
 export function validateStripePriceIds(): { valid: boolean; missing: string[] } {
   const missing: string[] = [];
 
-  if (!PLAN_CONFIGS.basic.stripePriceId) {
-    missing.push('STRIPE_BASIC_PRICE_ID');
+  if (!PLAN_CONFIGS.basic.stripePriceIds.bgn) {
+    missing.push('STRIPE_BASIC_PRICE_ID_BGN');
   }
 
-  if (!PLAN_CONFIGS.ultimate.stripePriceId) {
-    missing.push('STRIPE_ULTIMATE_PRICE_ID');
+  if (!PLAN_CONFIGS.basic.stripePriceIds.eur) {
+    missing.push('STRIPE_BASIC_PRICE_ID_EUR');
+  }
+
+  if (!PLAN_CONFIGS.ultimate.stripePriceIds.bgn) {
+    missing.push('STRIPE_ULTIMATE_PRICE_ID_BGN');
+  }
+
+  if (!PLAN_CONFIGS.ultimate.stripePriceIds.eur) {
+    missing.push('STRIPE_ULTIMATE_PRICE_ID_EUR');
   }
 
   return {

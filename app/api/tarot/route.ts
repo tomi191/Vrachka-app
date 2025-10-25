@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createClient as createServiceClient } from "@supabase/supabase-js";
-import { ensureOpenAIConfigured, generateCompletion, parseAIJsonResponse } from "@/lib/ai/client";
+import { createFeatureCompletion } from "@/lib/ai/openrouter";
 import { TAROT_SYSTEM_PROMPT, getTarotPrompt } from "@/lib/ai/prompts";
 import { canReadTarot, incrementTarotUsage, checkFeatureAccess } from "@/lib/subscription";
 import { rateLimit, RATE_LIMITS, getClientIp, getRateLimitHeaders } from "@/lib/rate-limit";
@@ -87,7 +87,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    ensureOpenAIConfigured();
+    // AI configuration checked automatically by openrouter
 
     const supabase = await createClient();
     const {
@@ -166,38 +166,37 @@ export async function POST(req: NextRequest) {
     const prompt = getTarotPrompt(selectedCards, spreadType as SpreadType, question);
 
     let aiResponse;
+    let reading: TarotReading;
     try {
-      console.log('[Tarot API] Calling AI completion...');
-      aiResponse = await generateCompletion(
-        TAROT_SYSTEM_PROMPT,
-        prompt,
+      console.log('[Tarot API] Calling AI completion with Gemini Free...');
+      const response = await createFeatureCompletion(
+        'tarot',
+        [
+          { role: 'system', content: TAROT_SYSTEM_PROMPT },
+          { role: 'user', content: prompt },
+        ],
         {
           temperature: 0.85,
-          // Increased maxTokens for gpt-5-mini which uses reasoning tokens (typically 500-800)
           // 3-card spread gets more tokens for detailed interpretation
-          maxTokens: spreadType === 'single' ? 1800 : 2500,
-          responseFormat: 'json',
+          max_tokens: spreadType === 'single' ? 1800 : 2500,
         }
       );
-      console.log('[Tarot API] AI response received, length:', aiResponse?.length);
-    } catch (aiError) {
-      console.error('[Tarot API] AI generation error:', aiError);
-      throw new Error(`AI generation failed: ${aiError instanceof Error ? aiError.message : 'Unknown error'}`);
-    }
 
-    let reading;
-    try {
+      aiResponse = response.choices[0]?.message?.content || '';
+      console.log('[Tarot API] AI response received from', response.model_used, 'length:', aiResponse?.length);
+
+      // Parse JSON response
       console.log('[Tarot API] Parsing AI JSON response...');
-      reading = parseAIJsonResponse<TarotReading>(aiResponse);
+      reading = JSON.parse(aiResponse) as TarotReading;
 
       if (!reading) {
         console.error('[Tarot API] Failed to parse AI response:', aiResponse?.substring(0, 200));
         throw new Error('Failed to parse AI tarot reading - invalid JSON');
       }
       console.log('[Tarot API] Successfully parsed tarot reading');
-    } catch (parseError) {
-      console.error('[Tarot API] Parse error:', parseError);
-      throw new Error(`JSON parse failed: ${parseError instanceof Error ? parseError.message : 'Unknown error'}`);
+    } catch (error) {
+      console.error('[Tarot API] AI generation/parse error:', error);
+      throw new Error(`AI generation failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
 
     // Increment usage

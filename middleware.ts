@@ -58,6 +58,18 @@ export async function middleware(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
+  // Email verification enforcement
+  const isVerifyEmailRoute = request.nextUrl.pathname.startsWith('/auth/verify-email');
+  const isResendVerificationRoute = request.nextUrl.pathname.startsWith('/api/auth/resend-verification');
+  const isAuthCallback = request.nextUrl.pathname.startsWith('/auth/callback');
+  const isLogoutRoute = request.nextUrl.pathname.startsWith('/auth/logout');
+
+  // If user is logged in but email is not verified
+  if (user && !user.email_confirmed_at && !isVerifyEmailRoute && !isResendVerificationRoute && !isAuthCallback && !isLogoutRoute) {
+    console.log('[MIDDLEWARE] Email not verified, redirecting to /auth/verify-email');
+    return NextResponse.redirect(new URL('/auth/verify-email', request.url));
+  }
+
   // Admin routes - check for admin role
   const isAdminRoute = request.nextUrl.pathname.startsWith('/admin');
 

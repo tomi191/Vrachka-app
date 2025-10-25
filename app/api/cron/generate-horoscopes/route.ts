@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
-import { ensureOpenAIConfigured, generateCompletion, parseAIJsonResponse } from "@/lib/ai/client";
+import { createFeatureCompletion } from "@/lib/ai/openrouter";
 import { HOROSCOPE_SYSTEM_PROMPT, getHoroscopePrompt } from "@/lib/ai/prompts";
 
 export const runtime = 'nodejs';
@@ -65,7 +65,7 @@ export async function POST(req: NextRequest) {
     console.log("[Cron] Starting daily horoscope generation...");
     console.log(`[Cron] Date: ${new Date().toISOString()}`);
 
-    ensureOpenAIConfigured();
+    // AI configuration checked automatically by openrouter
 
     // Initialize Supabase admin client (bypasses RLS)
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -118,23 +118,28 @@ export async function POST(req: NextRequest) {
           continue;
         }
 
-        // Generate horoscope with AI
+        // Generate horoscope with AI (Gemini Free)
         const prompt = getHoroscopePrompt(zodiac, 'daily');
-        const aiResponse = await generateCompletion(
-          HOROSCOPE_SYSTEM_PROMPT,
-          prompt,
+        const response = await createFeatureCompletion(
+          'horoscope',
+          [
+            { role: 'system', content: HOROSCOPE_SYSTEM_PROMPT },
+            { role: 'user', content: prompt },
+          ],
           {
             temperature: 0.8,
-            maxTokens: 2000, // Increased for gpt-5-mini reasoning tokens
-            responseFormat: 'json',
+            max_tokens: 2000,
           }
         );
 
-        const horoscope = parseAIJsonResponse<HoroscopeResponse>(aiResponse);
+        const aiResponse = response.choices[0]?.message?.content || '';
+        const horoscope = JSON.parse(aiResponse) as HoroscopeResponse;
 
         if (!horoscope) {
           throw new Error("Failed to parse AI response");
         }
+
+        console.log(`[Cron] Generated with ${response.model_used}`);
 
         // Validate horoscope structure
         if (!horoscope.general || !horoscope.love || !horoscope.career || !horoscope.health) {

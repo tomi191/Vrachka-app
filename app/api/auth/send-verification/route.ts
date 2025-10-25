@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
-import { resend, FROM_EMAIL } from '@/lib/email/client';
-import { EmailVerificationTemplate } from '@/lib/email/templates';
+import { sendVerificationEmail } from '@/lib/email/send';
 
 export async function POST(request: Request) {
   try {
@@ -13,23 +12,18 @@ export async function POST(request: Request) {
       );
     }
 
-    // Send verification email
-    const { data, error } = await resend.emails.send({
-      from: FROM_EMAIL,
-      to: email,
-      subject: 'Потвърди имейл адреса си във Vrachka 📧',
-      react: EmailVerificationTemplate({ confirmationUrl }),
-    });
+    // Send verification email using centralized send function
+    const result = await sendVerificationEmail(email, confirmationUrl);
 
-    if (error) {
-      console.error('Error sending verification email:', error);
+    if (!result.success) {
+      console.error('Error sending verification email:', result.error);
       return NextResponse.json(
         { error: 'Failed to send verification email' },
         { status: 500 }
       );
     }
 
-    return NextResponse.json({ success: true, data });
+    return NextResponse.json({ success: true, data: result.data });
   } catch (error) {
     console.error('Error in send-verification route:', error);
     return NextResponse.json(

@@ -1,4 +1,5 @@
 import { SupabaseClient } from "@supabase/supabase-js";
+import { sendReferralRewardEmail } from "@/lib/email/send";
 
 /**
  * Generate a unique referral code from email
@@ -167,6 +168,41 @@ export async function grantReferrerReward(
 
   if (markError) {
     console.error("Error marking reward as granted:", markError);
+  }
+
+  // Send referral reward email to the referrer
+  try {
+    const { data: referrerUser } = await supabase.auth.admin.getUserById(redemption.referrer_user_id);
+    const { data: referredUserProfile } = await supabase
+      .from("profiles")
+      .select("full_name")
+      .eq("id", referredUserId)
+      .single();
+
+    const { data: referralCode } = await supabase
+      .from("referral_codes")
+      .select("code")
+      .eq("referrer_user_id", redemption.referrer_user_id)
+      .single();
+
+    const { data: referrerProfile } = await supabase
+      .from("profiles")
+      .select("full_name")
+      .eq("id", redemption.referrer_user_id)
+      .single();
+
+    if (referrerUser?.user?.email) {
+      await sendReferralRewardEmail(referrerUser.user.email, {
+        firstName: referrerProfile?.full_name?.split(' ')[0] || '',
+        referralCode: referralCode?.code || '',
+        rewardAmount: 7,
+        referredUserName: referredUserProfile?.full_name || 'Един от приятелите ти',
+      });
+      console.log(`Referral reward email sent to ${referrerUser.user.email}`);
+    }
+  } catch (emailError) {
+    console.error('Error sending referral reward email:', emailError);
+    // Don't fail the reward grant if email fails
   }
 
   return { success: true };

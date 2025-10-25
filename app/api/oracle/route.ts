@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { canAskOracle, incrementOracleUsage, isPremiumUser } from "@/lib/subscription";
-import { ensureOpenAIConfigured, generateCompletion } from "@/lib/ai/client";
+import { createFeatureCompletion } from "@/lib/ai/openrouter";
 import { ORACLE_SYSTEM_PROMPT, getOraclePrompt } from "@/lib/ai/prompts";
 import { rateLimit, RATE_LIMITS, getClientIp, getRateLimitHeaders } from "@/lib/rate-limit";
 
@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    ensureOpenAIConfigured();
+    // AI configuration checked automatically by openrouter
 
     const supabase = await createClient();
     const {
@@ -131,17 +131,21 @@ export async function POST(req: NextRequest) {
     console.log('[Oracle API] Generating response for user:', user.id, 'plan:', planType);
     let answer;
     try {
-      answer = await generateCompletion(
-        ORACLE_SYSTEM_PROMPT,
-        oraclePrompt,
+      const response = await createFeatureCompletion(
+        'oracle_basic', // Use basic or premium based on plan
+        [
+          { role: 'system', content: ORACLE_SYSTEM_PROMPT },
+          { role: 'user', content: oraclePrompt },
+        ],
         {
           temperature: 0.8,
-          // Increased maxTokens for gpt-5-mini which uses reasoning tokens (typically 500-800)
           // Ultimate gets more detailed answers
-          maxTokens: planType === 'ultimate' ? 2500 : 2000,
+          max_tokens: planType === 'ultimate' ? 2500 : 2000,
         }
       );
-      console.log('[Oracle API] AI response received, length:', answer?.length);
+
+      answer = response.choices[0]?.message?.content || '';
+      console.log('[Oracle API] AI response received from', response.model_used, 'length:', answer?.length);
     } catch (aiError) {
       console.error('[Oracle API] AI generation error:', aiError);
       throw new Error(`AI generation failed: ${aiError instanceof Error ? aiError.message : 'Unknown error'}`);

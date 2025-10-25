@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
-import { resend, FROM_EMAIL } from '@/lib/email/client';
-import { PasswordResetTemplate } from '@/lib/email/templates';
+import { sendPasswordResetEmail } from '@/lib/email/send';
 
 export async function POST(request: Request) {
   try {
@@ -13,23 +12,18 @@ export async function POST(request: Request) {
       );
     }
 
-    // Send password reset email
-    const { data, error } = await resend.emails.send({
-      from: FROM_EMAIL,
-      to: email,
-      subject: 'Нулиране на парола - Vrachka 🔐',
-      react: PasswordResetTemplate({ resetUrl }),
-    });
+    // Send password reset email using centralized send function
+    const result = await sendPasswordResetEmail(email, resetUrl);
 
-    if (error) {
-      console.error('Error sending password reset email:', error);
+    if (!result.success) {
+      console.error('Error sending password reset email:', result.error);
       return NextResponse.json(
         { error: 'Failed to send password reset email' },
         { status: 500 }
       );
     }
 
-    return NextResponse.json({ success: true, data });
+    return NextResponse.json({ success: true, data: result.data });
   } catch (error) {
     console.error('Error in send-password-reset route:', error);
     return NextResponse.json(

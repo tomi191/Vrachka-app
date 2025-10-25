@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { stripe, ensureStripeConfigured } from "@/lib/stripe";
 import { createClient } from "@supabase/supabase-js";
 import Stripe from "stripe";
-import { sendPaymentConfirmationEmail } from "@/lib/email/send";
+import { sendPaymentConfirmationEmail, sendPaymentFailedEmail, sendSubscriptionCancelledEmail } from "@/lib/email/send";
 import { grantReferrerReward } from "@/lib/referrals";
 import { syncSubscriptionToAnalytics } from "@/lib/stripe/analytics";
 
@@ -206,13 +206,25 @@ async function handleSubscriptionUpdated(
     return;
   }
 
-  // Determine plan type from price ID
+  // Determine plan type from price ID (supports both BGN and EUR)
   let planType = "free";
   const priceId = subscription.items.data[0].price.id;
 
-  if (priceId === process.env.STRIPE_BASIC_PRICE_ID) {
+  const basicPriceIds = [
+    process.env.STRIPE_BASIC_PRICE_ID_BGN,
+    process.env.STRIPE_BASIC_PRICE_ID_EUR,
+    process.env.STRIPE_BASIC_PRICE_ID, // Legacy
+  ];
+
+  const ultimatePriceIds = [
+    process.env.STRIPE_ULTIMATE_PRICE_ID_BGN,
+    process.env.STRIPE_ULTIMATE_PRICE_ID_EUR,
+    process.env.STRIPE_ULTIMATE_PRICE_ID, // Legacy
+  ];
+
+  if (basicPriceIds.includes(priceId)) {
     planType = "basic";
-  } else if (priceId === process.env.STRIPE_ULTIMATE_PRICE_ID) {
+  } else if (ultimatePriceIds.includes(priceId)) {
     planType = "ultimate";
   }
 
@@ -242,7 +254,7 @@ async function handleSubscriptionDeleted(
 
   const { data: existingSubscription } = await supabase
     .from("subscriptions")
-    .select("user_id")
+    .select("user_id, plan_type")
     .eq("stripe_customer_id", customerId)
     .single();
 
@@ -250,6 +262,8 @@ async function handleSubscriptionDeleted(
     console.error(`No subscription found for customer ${customerId}`);
     return;
   }
+
+  const previousPlan = existingSubscription.plan_type;
 
   // Downgrade to free plan
   await supabase
@@ -262,6 +276,37 @@ async function handleSubscriptionDeleted(
     .eq("user_id", existingSubscription.user_id);
 
   console.log(`Subscription canceled for customer ${customerId}`);
+
+  // Send subscription cancelled email
+  try {
+    const { data: user } = await supabase.auth.admin.getUserById(existingSubscription.user_id);
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("full_name")
+      .eq("id", existingSubscription.user_id)
+      .single();
+
+    if (user?.user?.email) {
+      const planName = previousPlan === 'basic' ? 'Basic' : 'Ultimate';
+      const cancelDate = new Date(subscription.current_period_end * 1000).toLocaleDateString('bg-BG', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+      });
+
+      await sendSubscriptionCancelledEmail(user.user.email, {
+        firstName: profile?.full_name?.split(' ')[0] || '',
+        plan: planName,
+        cancelDate,
+        reason: subscription.cancellation_details?.reason || undefined,
+      });
+
+      console.log(`Subscription cancelled email sent to ${user.user.email}`);
+    }
+  } catch (emailError) {
+    console.error('Error sending subscription cancelled email:', emailError);
+    // Don't fail the webhook if email fails
+  }
 }
 
 async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
@@ -278,7 +323,7 @@ async function handleInvoicePaymentFailed(
 
   const { data: existingSubscription } = await supabase
     .from("subscriptions")
-    .select("user_id")
+    .select("user_id, plan_type")
     .eq("stripe_customer_id", customerId)
     .single();
 
@@ -290,5 +335,41 @@ async function handleInvoicePaymentFailed(
       .eq("user_id", existingSubscription.user_id);
 
     console.log(`Payment failed for customer ${customerId}`);
+
+    // Send payment failed email
+    try {
+      const { data: user } = await supabase.auth.admin.getUserById(existingSubscription.user_id);
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("full_name")
+        .eq("id", existingSubscription.user_id)
+        .single();
+
+      if (user?.user?.email) {
+        const planName = existingSubscription.plan_type === 'basic' ? 'Basic' : 'Ultimate';
+        const amount = existingSubscription.plan_type === 'basic' ? '9.99 BGN' : '19.99 BGN';
+
+        // Calculate retry date (typically 3-7 days after first failure)
+        const retryDate = new Date();
+        retryDate.setDate(retryDate.getDate() + 3);
+        const retryDateFormatted = retryDate.toLocaleDateString('bg-BG', {
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric'
+        });
+
+        await sendPaymentFailedEmail(user.user.email, {
+          firstName: profile?.full_name?.split(' ')[0] || '',
+          plan: planName,
+          amount,
+          retryDate: retryDateFormatted,
+        });
+
+        console.log(`Payment failed email sent to ${user.user.email}`);
+      }
+    } catch (emailError) {
+      console.error('Error sending payment failed email:', emailError);
+      // Don't fail the webhook if email fails
+    }
   }
 }

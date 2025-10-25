@@ -7,6 +7,12 @@ import {
   UpsellEmail,
   EmailVerificationTemplate,
   PasswordResetTemplate,
+  TrialGrantedEmail,
+  ReferralRewardEmail,
+  ReferralRedeemedEmail,
+  SubscriptionCancelledEmail,
+  TrialExpiringEmail,
+  PaymentFailedEmail,
 } from './templates';
 
 export async function sendWelcomeEmail(to: string, firstName?: string) {
@@ -203,6 +209,225 @@ export async function sendPasswordResetEmail(to: string, resetUrl: string) {
     return { success: true, data };
   } catch (error) {
     console.error('Error sending password reset email:', error);
+    return { success: false, error };
+  }
+}
+
+export async function sendTrialGrantedEmail(
+  to: string,
+  {
+    firstName,
+    trialDays,
+  }: {
+    firstName: string;
+    trialDays: number;
+  }
+) {
+  try {
+    const { data, error } = await resend.emails.send({
+      from: FROM_EMAIL,
+      to,
+      subject: `🎉 Твоят ${trialDays}-дневен пробен период започна!`,
+      react: TrialGrantedEmail({ firstName, trialDays }),
+    });
+
+    if (error) {
+      console.error('Error sending trial granted email:', error);
+      return { success: false, error };
+    }
+
+    return { success: true, data };
+  } catch (error) {
+    console.error('Error sending trial granted email:', error);
+    return { success: false, error };
+  }
+}
+
+export async function sendReferralRewardEmail(
+  to: string,
+  {
+    firstName,
+    referralCode,
+    rewardAmount,
+    referredUserName,
+  }: {
+    firstName: string;
+    referralCode: string;
+    rewardAmount: number;
+    referredUserName: string;
+  }
+) {
+  try {
+    const { data, error } = await resend.emails.send({
+      from: FROM_EMAIL,
+      to,
+      subject: '🎁 Получи награда за препоръка!',
+      react: ReferralRewardEmail({
+        firstName,
+        referralCode,
+        rewardAmount,
+        referredUserName,
+      }),
+    });
+
+    if (error) {
+      console.error('Error sending referral reward email:', error);
+      return { success: false, error };
+    }
+
+    return { success: true, data };
+  } catch (error) {
+    console.error('Error sending referral reward email:', error);
+    return { success: false, error };
+  }
+}
+
+export async function sendReferralRedeemedEmail(
+  to: string,
+  {
+    firstName,
+    referrerName,
+    rewardAmount,
+  }: {
+    firstName: string;
+    referrerName: string;
+    rewardAmount: number;
+  }
+) {
+  try {
+    const { data, error } = await resend.emails.send({
+      from: FROM_EMAIL,
+      to,
+      subject: '✅ Успешно използва препоръчителен код!',
+      react: ReferralRedeemedEmail({
+        firstName,
+        referrerName,
+        rewardAmount,
+      }),
+    });
+
+    if (error) {
+      console.error('Error sending referral redeemed email:', error);
+      return { success: false, error };
+    }
+
+    return { success: true, data };
+  } catch (error) {
+    console.error('Error sending referral redeemed email:', error);
+    return { success: false, error };
+  }
+}
+
+export async function sendSubscriptionCancelledEmail(
+  to: string,
+  {
+    firstName,
+    plan,
+    cancelDate,
+    reason,
+  }: {
+    firstName: string;
+    plan: string;
+    cancelDate: string;
+    reason?: string;
+  }
+) {
+  try {
+    const { data, error } = await resend.emails.send({
+      from: FROM_EMAIL,
+      to,
+      subject: 'Твоят абонамент беше прекратен',
+      react: SubscriptionCancelledEmail({
+        firstName,
+        plan,
+        cancelDate,
+        reason,
+      }),
+    });
+
+    if (error) {
+      console.error('Error sending subscription cancelled email:', error);
+      return { success: false, error };
+    }
+
+    return { success: true, data };
+  } catch (error) {
+    console.error('Error sending subscription cancelled email:', error);
+    return { success: false, error };
+  }
+}
+
+export async function sendTrialExpiringEmail(
+  to: string,
+  {
+    firstName,
+    expiryDate,
+    daysLeft,
+  }: {
+    firstName: string;
+    expiryDate: string;
+    daysLeft: number;
+  }
+) {
+  try {
+    const { data, error } = await resend.emails.send({
+      from: FROM_EMAIL,
+      to,
+      subject: '⏰ Пробният ти период изтича скоро!',
+      react: TrialExpiringEmail({
+        firstName,
+        expiryDate,
+        daysLeft,
+      }),
+    });
+
+    if (error) {
+      console.error('Error sending trial expiring email:', error);
+      return { success: false, error };
+    }
+
+    return { success: true, data };
+  } catch (error) {
+    console.error('Error sending trial expiring email:', error);
+    return { success: false, error };
+  }
+}
+
+export async function sendPaymentFailedEmail(
+  to: string,
+  {
+    firstName,
+    plan,
+    amount,
+    retryDate,
+  }: {
+    firstName: string;
+    plan: string;
+    amount: string;
+    retryDate: string;
+  }
+) {
+  try {
+    const { data, error } = await resend.emails.send({
+      from: FROM_EMAIL,
+      to,
+      subject: '⚠️ Проблем с плащането на абонамента ти',
+      react: PaymentFailedEmail({
+        firstName,
+        plan,
+        amount,
+        retryDate,
+      }),
+    });
+
+    if (error) {
+      console.error('Error sending payment failed email:', error);
+      return { success: false, error };
+    }
+
+    return { success: true, data };
+  } catch (error) {
+    console.error('Error sending payment failed email:', error);
     return { success: false, error };
   }
 }

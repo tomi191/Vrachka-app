@@ -609,3 +609,473 @@ export const PasswordResetTemplate = ({ resetUrl }: { resetUrl: string }) => (
     <EmailFooter />
   </EmailWrapper>
 );
+
+// Trial Granted Email Template
+export const TrialGrantedEmail = ({ firstName, trialDays }: { firstName: string; trialDays: number }) => (
+  <EmailWrapper>
+    <EmailHeader />
+    <tr>
+      <td style={{
+        backgroundColor: '#18181b',
+        padding: '40px 30px',
+        borderRadius: '12px',
+      }}>
+        <h1 style={{
+          margin: '0 0 20px 0',
+          fontSize: '28px',
+          fontWeight: 'bold',
+          color: '#ffffff',
+        }}>
+          🎉 Твоят {trialDays}-дневен пробен период започна!
+        </h1>
+
+        <p style={{
+          margin: '0 0 16px 0',
+          fontSize: '16px',
+          lineHeight: '24px',
+          color: '#d4d4d8',
+        }}>
+          Здравей {firstName},
+        </p>
+
+        <p style={{
+          margin: '0 0 24px 0',
+          fontSize: '16px',
+          lineHeight: '24px',
+          color: '#d4d4d8',
+        }}>
+          Радваме се да ти съобщим, че получи {trialDays} дни безплатен достъп до <strong style={{ color: '#ffffff' }}>Ultimate</strong> плана на Vrachka!
+        </p>
+
+        <div style={{
+          margin: '24px 0',
+          padding: '20px',
+          backgroundColor: '#27272a',
+          borderRadius: '8px',
+          borderLeft: '4px solid #8b5cf6',
+        }}>
+          <p style={{ margin: '0 0 12px 0', fontSize: '14px', color: '#a1a1aa', fontWeight: 'bold' }}>
+            🌟 Какво можеш да правиш през пробния период:
+          </p>
+          <ul style={{ margin: 0, paddingLeft: '20px', color: '#d4d4d8', fontSize: '14px', lineHeight: '24px' }}>
+            <li>Неограничен брой таро четения</li>
+            <li>До 10 въпроса дневно към AI Врачката</li>
+            <li>Седмични и месечни хороскопи</li>
+            <li>Детайлна натална карта</li>
+            <li>Запазване на история за 90 дни</li>
+          </ul>
+        </div>
+
+        <div style={{ textAlign: 'center', margin: '30px 0' }}>
+          <Button href="https://vrachka.eu/dashboard">
+            Започни сега →
+          </Button>
+        </div>
+
+        <p style={{
+          margin: '24px 0 0 0',
+          padding: '16px',
+          backgroundColor: '#451a03',
+          borderRadius: '8px',
+          fontSize: '14px',
+          lineHeight: '20px',
+          color: '#fdba74',
+          borderLeft: '4px solid #f97316',
+        }}>
+          ⏰ Пробният ти период изтича след {trialDays} дни. След това ще преминеш автоматично към Безплатния план, освен ако не избереш да продължиш с Ultimate.
+        </p>
+      </td>
+    </tr>
+    <EmailFooter />
+  </EmailWrapper>
+);
+
+// Referral Reward Email Template
+export const ReferralRewardEmail = ({ firstName, referredUserName, rewardDays }: { firstName: string; referredUserName: string; rewardDays: number }) => (
+  <EmailWrapper>
+    <EmailHeader />
+    <tr>
+      <td style={{
+        backgroundColor: '#18181b',
+        padding: '40px 30px',
+        borderRadius: '12px',
+      }}>
+        <h1 style={{
+          margin: '0 0 20px 0',
+          fontSize: '28px',
+          fontWeight: 'bold',
+          color: '#ffffff',
+        }}>
+          🎁 Получи {rewardDays} дни безплатен Ultimate!
+        </h1>
+
+        <p style={{
+          margin: '0 0 16px 0',
+          fontSize: '16px',
+          lineHeight: '24px',
+          color: '#d4d4d8',
+        }}>
+          Браво, {firstName}!
+        </p>
+
+        <p style={{
+          margin: '0 0 24px 0',
+          fontSize: '16px',
+          lineHeight: '24px',
+          color: '#d4d4d8',
+        }}>
+          Някой, когото си препоръчал (<strong style={{ color: '#ffffff' }}>{referredUserName}</strong>), току-що премина към платен план на Vrachka! 🎉
+        </p>
+
+        <div style={{
+          margin: '24px 0',
+          padding: '24px',
+          backgroundColor: '#1e1b4b',
+          borderRadius: '12px',
+          textAlign: 'center',
+          border: '2px solid #6366f1',
+        }}>
+          <p style={{ margin: '0 0 8px 0', fontSize: '18px', color: '#a5b4fc', fontWeight: 'bold' }}>
+            Твоята награда
+          </p>
+          <p style={{ margin: '0', fontSize: '32px', color: '#ffffff', fontWeight: 'bold' }}>
+            +{rewardDays} дни Ultimate
+          </p>
+        </div>
+
+        <p style={{
+          margin: '24px 0',
+          fontSize: '16px',
+          lineHeight: '24px',
+          color: '#d4d4d8',
+        }}>
+          Абонаментът ти автоматично е удължен с {rewardDays} дни! Продължавай да споделяш Vrachka с приятели и получавай още награди. 🌟
+        </p>
+
+        <div style={{ textAlign: 'center', margin: '30px 0' }}>
+          <Button href="https://vrachka.eu/profile/referral">
+            Виж твоите препоръки →
+          </Button>
+        </div>
+      </td>
+    </tr>
+    <EmailFooter />
+  </EmailWrapper>
+);
+
+// Referral Redeemed Email Template
+export const ReferralRedeemedEmail = ({ firstName, referralCode }: { firstName: string; referralCode: string }) => (
+  <EmailWrapper>
+    <EmailHeader />
+    <tr>
+      <td style={{
+        backgroundColor: '#18181b',
+        padding: '40px 30px',
+        borderRadius: '12px',
+      }}>
+        <h1 style={{
+          margin: '0 0 20px 0',
+          fontSize: '28px',
+          fontWeight: 'bold',
+          color: '#ffffff',
+        }}>
+          ✅ Референтен код активиран!
+        </h1>
+
+        <p style={{
+          margin: '0 0 16px 0',
+          fontSize: '16px',
+          lineHeight: '24px',
+          color: '#d4d4d8',
+        }}>
+          Добре дошъл, {firstName}!
+        </p>
+
+        <p style={{
+          margin: '0 0 24px 0',
+          fontSize: '16px',
+          lineHeight: '24px',
+          color: '#d4d4d8',
+        }}>
+          Успешно активира референтния код <strong style={{ color: '#8b5cf6' }}>{referralCode}</strong>! 🎊
+        </p>
+
+        <div style={{
+          margin: '24px 0',
+          padding: '20px',
+          backgroundColor: '#27272a',
+          borderRadius: '8px',
+          borderLeft: '4px solid #10b981',
+        }}>
+          <p style={{ margin: '0 0 8px 0', fontSize: '14px', color: '#ffffff', fontWeight: 'bold' }}>
+            💡 Какво следва?
+          </p>
+          <p style={{ margin: 0, color: '#d4d4d8', fontSize: '14px', lineHeight: '20px' }}>
+            Когато премине към платен план (Basic или Ultimate), лицето което те препоръча ще получи {7} дни безплатен Ultimate достъп като благодарност!
+          </p>
+        </div>
+
+        <div style={{ textAlign: 'center', margin: '30px 0' }}>
+          <Button href="https://vrachka.eu/pricing">
+            Разгледай плановете →
+          </Button>
+        </div>
+      </td>
+    </tr>
+    <EmailFooter />
+  </EmailWrapper>
+);
+
+// Subscription Cancelled Email Template
+export const SubscriptionCancelledEmail = ({ firstName, planType, endDate }: { firstName: string; planType: string; endDate: string }) => (
+  <EmailWrapper>
+    <EmailHeader />
+    <tr>
+      <td style={{
+        backgroundColor: '#18181b',
+        padding: '40px 30px',
+        borderRadius: '12px',
+      }}>
+        <h1 style={{
+          margin: '0 0 20px 0',
+          fontSize: '28px',
+          fontWeight: 'bold',
+          color: '#ffffff',
+        }}>
+          Твоят абонамент беше прекратен
+        </h1>
+
+        <p style={{
+          margin: '0 0 16px 0',
+          fontSize: '16px',
+          lineHeight: '24px',
+          color: '#d4d4d8',
+        }}>
+          Здравей {firstName},
+        </p>
+
+        <p style={{
+          margin: '0 0 24px 0',
+          fontSize: '16px',
+          lineHeight: '24px',
+          color: '#d4d4d8',
+        }}>
+          Твоят <strong style={{ color: '#ffffff' }}>{planType}</strong> абонамент беше успешно прекратен.
+        </p>
+
+        <div style={{
+          margin: '24px 0',
+          padding: '20px',
+          backgroundColor: '#27272a',
+          borderRadius: '8px',
+        }}>
+          <p style={{ margin: '0 0 8px 0', fontSize: '14px', color: '#a1a1aa' }}>
+            📅 Достъп до {endDate}
+          </p>
+          <p style={{ margin: 0, color: '#d4d4d8', fontSize: '14px', lineHeight: '20px' }}>
+            Ще продължиш да имаш пълен достъп до премиум функциите до края на текущия платен период ({endDate}). След това автоматично ще преминеш към Безплатния план.
+          </p>
+        </div>
+
+        <p style={{
+          margin: '24px 0',
+          fontSize: '16px',
+          lineHeight: '24px',
+          color: '#d4d4d8',
+        }}>
+          Съжаляваме, че си решил да напуснеш! Ако имаш въпроси или обратна връзка, моля свържи се с нас.
+        </p>
+
+        <div style={{ textAlign: 'center', margin: '30px 0' }}>
+          <Button href="https://vrachka.eu/contact">
+            Свържи се с нас →
+          </Button>
+        </div>
+
+        <p style={{
+          margin: '24px 0 0 0',
+          padding: '16px',
+          backgroundColor: '#27272a',
+          borderRadius: '8px',
+          fontSize: '14px',
+          lineHeight: '20px',
+          color: '#a1a1aa',
+        }}>
+          💡 Винаги можеш да се върнеш! Твоята история и настройки ще останат запазени.
+        </p>
+      </td>
+    </tr>
+    <EmailFooter />
+  </EmailWrapper>
+);
+
+// Trial Expiring Email Template
+export const TrialExpiringEmail = ({ firstName, expiresAt }: { firstName: string; expiresAt: string }) => (
+  <EmailWrapper>
+    <EmailHeader />
+    <tr>
+      <td style={{
+        backgroundColor: '#18181b',
+        padding: '40px 30px',
+        borderRadius: '12px',
+      }}>
+        <h1 style={{
+          margin: '0 0 20px 0',
+          fontSize: '28px',
+          fontWeight: 'bold',
+          color: '#ffffff',
+        }}>
+          ⏰ Твоят пробен период скоро изтича!
+        </h1>
+
+        <p style={{
+          margin: '0 0 16px 0',
+          fontSize: '16px',
+          lineHeight: '24px',
+          color: '#d4d4d8',
+        }}>
+          Здравей {firstName},
+        </p>
+
+        <p style={{
+          margin: '0 0 24px 0',
+          fontSize: '16px',
+          lineHeight: '24px',
+          color: '#d4d4d8',
+        }}>
+          Това е напомняне, че твоят 3-дневен Ultimate пробен период изтича на <strong style={{ color: '#ffffff' }}>{expiresAt}</strong>.
+        </p>
+
+        <div style={{
+          margin: '24px 0',
+          padding: '20px',
+          backgroundColor: '#451a03',
+          borderRadius: '8px',
+          borderLeft: '4px solid #f97316',
+        }}>
+          <p style={{ margin: '0 0 8px 0', fontSize: '14px', color: '#fdba74', fontWeight: 'bold' }}>
+            ⚠️ Какво се случва след изтичането?
+          </p>
+          <p style={{ margin: 0, color: '#fdba74', fontSize: '14px', lineHeight: '20px' }}>
+            След {expiresAt} автоматично ще преминеш към Безплатния план. Ще загубиш достъп до неограничени таро четения, AI Врачката и детайлната натална карта.
+          </p>
+        </div>
+
+        <div style={{
+          margin: '24px 0',
+          padding: '20px',
+          backgroundColor: '#1e1b4b',
+          borderRadius: '8px',
+          borderLeft: '4px solid #8b5cf6',
+        }}>
+          <p style={{ margin: '0 0 12px 0', fontSize: '14px', color: '#ffffff', fontWeight: 'bold' }}>
+            🌟 Продължи с Ultimate за само 19.99 лв/месец:
+          </p>
+          <ul style={{ margin: 0, paddingLeft: '20px', color: '#d4d4d8', fontSize: '14px', lineHeight: '24px' }}>
+            <li>Неограничен брой таро четения</li>
+            <li>10 въпроса дневно към AI Врачката</li>
+            <li>Седмични и месечни хороскопи</li>
+            <li>Пълна натална карта с интерпретация</li>
+            <li>История за 90 дни</li>
+          </ul>
+        </div>
+
+        <div style={{ textAlign: 'center', margin: '30px 0' }}>
+          <Button href="https://vrachka.eu/pricing">
+            Продължи с Ultimate →
+          </Button>
+        </div>
+      </td>
+    </tr>
+    <EmailFooter />
+  </EmailWrapper>
+);
+
+// Payment Failed Email Template
+export const PaymentFailedEmail = ({ firstName, planType, nextRetry }: { firstName: string; planType: string; nextRetry: string }) => (
+  <EmailWrapper>
+    <EmailHeader />
+    <tr>
+      <td style={{
+        backgroundColor: '#18181b',
+        padding: '40px 30px',
+        borderRadius: '12px',
+      }}>
+        <h1 style={{
+          margin: '0 0 20px 0',
+          fontSize: '28px',
+          fontWeight: 'bold',
+          color: '#ffffff',
+        }}>
+          ❌ Проблем с плащането
+        </h1>
+
+        <p style={{
+          margin: '0 0 16px 0',
+          fontSize: '16px',
+          lineHeight: '24px',
+          color: '#d4d4d8',
+        }}>
+          Здравей {firstName},
+        </p>
+
+        <p style={{
+          margin: '0 0 24px 0',
+          fontSize: '16px',
+          lineHeight: '24px',
+          color: '#d4d4d8',
+        }}>
+          Имаше проблем при обработката на плащането за твоя <strong style={{ color: '#ffffff' }}>{planType}</strong> абонамент.
+        </p>
+
+        <div style={{
+          margin: '24px 0',
+          padding: '20px',
+          backgroundColor: '#7f1d1d',
+          borderRadius: '8px',
+          borderLeft: '4px solid #ef4444',
+        }}>
+          <p style={{ margin: '0 0 8px 0', fontSize: '14px', color: '#fca5a5', fontWeight: 'bold' }}>
+            ⚠️ Действие необходимо
+          </p>
+          <p style={{ margin: 0, color: '#fca5a5', fontSize: '14px', lineHeight: '20px' }}>
+            Моля, актуализирай данните си за плащане възможно най-скоро, за да избегнеш прекъсване на услугата. Ще направим автоматичен опит за събиране на плащането на {nextRetry}.
+          </p>
+        </div>
+
+        <p style={{
+          margin: '24px 0',
+          fontSize: '16px',
+          lineHeight: '24px',
+          color: '#d4d4d8',
+        }}>
+          Причини могат да включват:
+        </p>
+        <ul style={{ margin: '0 0 24px 0', paddingLeft: '20px', color: '#d4d4d8', fontSize: '14px', lineHeight: '24px' }}>
+          <li>Недостатъчно средства</li>
+          <li>Изтекла карта</li>
+          <li>Банката блокира транзакцията</li>
+        </ul>
+
+        <div style={{ textAlign: 'center', margin: '30px 0' }}>
+          <Button href="https://vrachka.eu/profile">
+            Актуализирай данните за плащане →
+          </Button>
+        </div>
+
+        <p style={{
+          margin: '24px 0 0 0',
+          padding: '16px',
+          backgroundColor: '#27272a',
+          borderRadius: '8px',
+          fontSize: '14px',
+          lineHeight: '20px',
+          color: '#a1a1aa',
+        }}>
+          💡 Имаш въпроси? Свържи се с нашия екип за поддръжка на support@vrachka.eu
+        </p>
+      </td>
+    </tr>
+    <EmailFooter />
+  </EmailWrapper>
+);

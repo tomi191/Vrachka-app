@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { validateReferralCode, redeemReferralCode } from "@/lib/referrals";
+import { sendReferralRedeemedEmail } from "@/lib/email/send";
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -55,6 +56,33 @@ export async function POST(req: NextRequest) {
         { error: redemption.error || "Failed to redeem code" },
         { status: 400 }
       );
+    }
+
+    // Send referral redeemed confirmation email to the referred user
+    try {
+      const { data: referredUserProfile } = await supabase
+        .from("profiles")
+        .select("full_name")
+        .eq("id", user.id)
+        .single();
+
+      const { data: referrerProfile } = await supabase
+        .from("profiles")
+        .select("full_name")
+        .eq("id", validation.referrer_user_id)
+        .single();
+
+      if (user.email) {
+        await sendReferralRedeemedEmail(user.email, {
+          firstName: referredUserProfile?.full_name?.split(' ')[0] || '',
+          referrerName: referrerProfile?.full_name || 'Приятел',
+          rewardAmount: 3,
+        });
+        console.log(`Referral redeemed email sent to ${user.email}`);
+      }
+    } catch (emailError) {
+      console.error('Error sending referral redeemed email:', emailError);
+      // Don't fail the redemption if email fails
     }
 
     return NextResponse.json({

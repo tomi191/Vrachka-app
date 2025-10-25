@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { ensureOpenAIConfigured, generateCompletion, parseAIJsonResponse } from "@/lib/ai/client";
+import { createFeatureCompletion } from "@/lib/ai/openrouter";
 import { HOROSCOPE_SYSTEM_PROMPT, getHoroscopePrompt } from "@/lib/ai/prompts";
 import { checkFeatureAccess } from "@/lib/subscription";
 import { rateLimit, RATE_LIMITS, getClientIp, getRateLimitHeaders } from "@/lib/rate-limit";
@@ -42,7 +42,7 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    ensureOpenAIConfigured();
+    // AI configuration checked automatically by openrouter
 
     const supabase = await createClient();
     const {
@@ -116,38 +116,36 @@ export async function GET(req: NextRequest) {
     const prompt = getHoroscopePrompt(zodiacSign, period);
 
     let aiResponse;
+    let horoscope: HoroscopeResponse;
     try {
-      console.log('[Horoscope API] Calling AI completion...');
-      aiResponse = await generateCompletion(
-        HOROSCOPE_SYSTEM_PROMPT,
-        prompt,
+      console.log('[Horoscope API] Calling AI completion with Gemini Free...');
+      const response = await createFeatureCompletion(
+        'horoscope',
+        [
+          { role: 'system', content: HOROSCOPE_SYSTEM_PROMPT },
+          { role: 'user', content: prompt },
+        ],
         {
           temperature: 0.8,
-          // Increased maxTokens for gpt-5-mini which uses reasoning tokens (typically 500-800)
-          // Total needed: reasoning tokens + completion tokens
-          maxTokens: period === 'daily' ? 2000 : period === 'weekly' ? 2500 : 3500,
-          responseFormat: 'json',
+          max_tokens: period === 'daily' ? 2000 : period === 'weekly' ? 2500 : 3500,
         }
       );
-      console.log('[Horoscope API] AI response received, length:', aiResponse?.length);
-    } catch (aiError) {
-      console.error('[Horoscope API] AI generation error:', aiError);
-      throw new Error(`AI generation failed: ${aiError instanceof Error ? aiError.message : 'Unknown error'}`);
-    }
 
-    let horoscope;
-    try {
+      aiResponse = response.choices[0]?.message?.content || '';
+      console.log('[Horoscope API] AI response received from', response.model_used, 'length:', aiResponse?.length);
+
+      // Parse JSON response
       console.log('[Horoscope API] Parsing AI JSON response...');
-      horoscope = parseAIJsonResponse<HoroscopeResponse>(aiResponse);
+      horoscope = JSON.parse(aiResponse) as HoroscopeResponse;
 
       if (!horoscope) {
         console.error('[Horoscope API] Failed to parse AI response:', aiResponse?.substring(0, 200));
         throw new Error('Failed to parse AI response - invalid JSON');
       }
       console.log('[Horoscope API] Successfully parsed horoscope');
-    } catch (parseError) {
-      console.error('[Horoscope API] Parse error:', parseError);
-      throw new Error(`JSON parse failed: ${parseError instanceof Error ? parseError.message : 'Unknown error'}`);
+    } catch (error) {
+      console.error('[Horoscope API] AI generation/parse error:', error);
+      throw new Error(`AI generation failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
 
     // Save to database for caching
