@@ -1,17 +1,24 @@
 /**
  * AI Cost Tracking System
  * Logs all AI API usage and calculates costs for financial monitoring
+ *
+ * HYBRID AI STRATEGY:
+ * - FREE tier: Gemini 2.0 Flash ($0) - 90% cost reduction!
+ * - PREMIUM tier: Claude 3.5 Sonnet ($3-15/1M tokens)
+ * - FALLBACK: DeepSeek ($0.14-0.28/1M tokens)
  */
 
 import { createClient } from "@/lib/supabase/server";
 
 /**
- * OpenRouter Pricing (as of 2025)
- * https://openrouter.ai/models/openai/gpt-4-mini
+ * OpenRouter Pricing (Updated 2025-10-25)
+ * https://openrouter.ai/docs/models
  *
- * GPT-4.1-mini (openai/gpt-4.1-mini):
- * - Input:  $0.15 per 1M tokens
- * - Output: $0.60 per 1M tokens
+ * Current Models in Use:
+ * - Gemini 2.0 Flash: FREE (horoscopes, tarot, basic oracle)
+ * - Claude 3.5 Sonnet: $3 input, $15 output per 1M tokens (premium oracle, natal chart)
+ * - DeepSeek Chat: $0.14 input, $0.28 output per 1M tokens (fallback)
+ * - GPT-4: $30 input, $60 output per 1M tokens (emergency fallback)
  */
 
 const MODEL_PRICING: Record<string, { input: number; output: number }> = {
@@ -31,7 +38,32 @@ const MODEL_PRICING: Record<string, { input: number; output: number }> = {
     input: 10.0 / 1_000_000,  // $10 per 1M tokens
     output: 30.0 / 1_000_000, // $30 per 1M tokens
   },
-  // Add more models as needed
+
+  // FREE MODELS (100% cost optimization!)
+  "google/gemini-2.0-flash-exp:free": {
+    input: 0,   // FREE
+    output: 0,  // FREE
+  },
+  "google/gemini-flash-1.5": {
+    input: 0,   // FREE (fallback name)
+    output: 0,  // FREE
+  },
+
+  // CLAUDE MODELS (Premium quality)
+  "anthropic/claude-3.5-sonnet": {
+    input: 3.0 / 1_000_000,   // $3 per 1M tokens
+    output: 15.0 / 1_000_000, // $15 per 1M tokens
+  },
+  "anthropic/claude-3-sonnet": {
+    input: 3.0 / 1_000_000,   // $3 per 1M tokens
+    output: 15.0 / 1_000_000, // $15 per 1M tokens
+  },
+
+  // DEEPSEEK (Budget alternative)
+  "deepseek/deepseek-chat": {
+    input: 0.14 / 1_000_000,  // $0.14 per 1M tokens
+    output: 0.28 / 1_000_000, // $0.28 per 1M tokens
+  },
 };
 
 export interface AIUsageLog {

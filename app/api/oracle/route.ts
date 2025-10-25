@@ -129,10 +129,17 @@ export async function POST(req: NextRequest) {
     ) + conversationContext;
 
     console.log('[Oracle API] Generating response for user:', user.id, 'plan:', planType);
+
+    // Determine AI feature type based on subscription plan
+    // Ultimate users get Claude Sonnet (oracle_premium)
+    // Basic users get Gemini Flash (oracle_basic)
+    const featureType = planType === 'ultimate' ? 'oracle_premium' : 'oracle_basic';
+    console.log('[Oracle API] Using AI feature:', featureType);
+
     let answer;
     try {
       const response = await createFeatureCompletion(
-        'oracle_basic', // Use basic or premium based on plan
+        featureType, // Dynamic: oracle_premium for Ultimate, oracle_basic for Basic
         [
           { role: 'system', content: ORACLE_SYSTEM_PROMPT },
           { role: 'user', content: oraclePrompt },
@@ -146,6 +153,12 @@ export async function POST(req: NextRequest) {
 
       answer = response.choices[0]?.message?.content || '';
       console.log('[Oracle API] AI response received from', response.model_used, 'length:', answer?.length);
+
+      // Verify Ultimate users received premium model
+      if (planType === 'ultimate' && response.model_used && !response.model_used.includes('claude')) {
+        console.warn('[Oracle API] ⚠️ Ultimate user did not receive Claude model! Got:', response.model_used);
+        // This is okay if Claude failed and fallback was used, but should be monitored
+      }
     } catch (aiError) {
       console.error('[Oracle API] AI generation error:', aiError);
       throw new Error(`AI generation failed: ${aiError instanceof Error ? aiError.message : 'Unknown error'}`);

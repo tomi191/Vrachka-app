@@ -209,6 +209,26 @@ Comprehensive guide за тестване на всички функционал
 - "Как да намеря вътрешен мир?"
 - "Какво казва вселената за моята кариера?"
 
+**IMPORTANT - Verify Model Selection (FIXED 2025-10-25):**
+
+1. **Basic Plan Test:**
+   - Subscribe to Basic plan
+   - Ask Oracle question
+   - Check browser console / Vercel logs for: `Using AI feature: oracle_basic`
+   - Verify: `AI response received from google/gemini-2.0-flash-exp:free`
+   - Expected: Gemini Flash responses (FREE)
+
+2. **Ultimate Plan Test:**
+   - Subscribe to Ultimate plan
+   - Ask Oracle question
+   - Check browser console / Vercel logs for: `Using AI feature: oracle_premium`
+   - Verify: `AI response received from anthropic/claude-3.5-sonnet`
+   - Expected: Claude Sonnet responses (premium quality)
+
+3. **Fallback Test:**
+   - If Claude Sonnet unavailable, should fallback to Gemini Flash
+   - Warning should appear: `⚠️ Ultimate user did not receive Claude model!`
+
 ---
 
 ### 7. 🌟 **Natal Chart** (NEW - BETA)
