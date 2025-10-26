@@ -4,8 +4,9 @@
  */
 
 import * as OriginModule from 'circular-natal-horoscope-js';
-// Be resilient to different module export shapes: default, named Origin, or module itself
+// Try to resolve classes from different export shapes
 const OriginClass: any = (OriginModule as any).Origin || (OriginModule as any).default || (OriginModule as any);
+const HoroscopeClass: any = (OriginModule as any).Horoscope || (OriginModule as any).default?.Horoscope;
 
 export interface BirthData {
   date: string; // YYYY-MM-DD
@@ -94,10 +95,32 @@ export async function calculateNatalChart(birthData: BirthData): Promise<NatalCh
       }
     }
 
+    // Build horoscope object from origin (library exposes Horoscope separate from Origin)
+    let horoscope: any | null = null;
+    if (HoroscopeClass) {
+      try {
+        horoscope = new HoroscopeClass({
+          origin,
+          houseSystem: 'placidus',
+          zodiac: 'tropical',
+          aspectPoints: ['sun','moon','mercury','venus','mars','jupiter','saturn','uranus','neptune','pluto'],
+          angles: ['ascendant'],
+        });
+      } catch (e) {
+        // ignore, will try fallbacks from origin below
+      }
+    }
+
     // Get planetary positions with fallbacks for different API shapes
-    const celestialBodies = (origin as any).CelestialBodies || (origin as any).celestialBodies || (origin as any)?.positions?.celestialBodies;
-    const housesObj = (origin as any).Houses || (origin as any).houses || (origin as any)?.positions?.houses || (origin as any)?.houses;
-    const aspectsObj = (origin as any).Aspects || (origin as any).aspects || (origin as any)?.positions?.aspects || (origin as any)?.aspects;
+    const celestialBodies = (horoscope as any)?.CelestialBodies || (horoscope as any)?.celestialBodies ||
+                            (origin as any)?.CelestialBodies || (origin as any)?.celestialBodies ||
+                            (horoscope as any)?.positions?.celestialBodies || (origin as any)?.positions?.celestialBodies;
+    const housesObj = (horoscope as any)?.Houses || (horoscope as any)?.houses ||
+                      (origin as any)?.Houses || (origin as any)?.houses ||
+                      (horoscope as any)?.positions?.houses || (origin as any)?.positions?.houses;
+    const aspectsObj = (horoscope as any)?.Aspects || (horoscope as any)?.aspects ||
+                       (origin as any)?.Aspects || (origin as any)?.aspects ||
+                       (horoscope as any)?.positions?.aspects || (origin as any)?.positions?.aspects;
 
     if (!celestialBodies) {
       const keys = Object.keys(origin || {});
