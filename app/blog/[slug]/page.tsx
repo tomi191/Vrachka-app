@@ -76,55 +76,85 @@ export default async function BlogPostPage({ params }: Props) {
 
   return (
     <div className="min-h-screen bg-brand-950">
-      <div className="container mx-auto px-6 py-12">
-        <Link href="/blog" className="inline-flex items-center gap-2 text-zinc-400 hover:text-zinc-50 transition-colors mb-8">
+      {/* Mobile-optimized container */}
+      <div className="container mx-auto px-4 sm:px-6 py-8 sm:py-12">
+        <Link href="/blog" className="inline-flex items-center gap-2 text-zinc-400 hover:text-zinc-50 transition-colors mb-6 sm:mb-8">
           <ArrowLeft className="w-4 h-4" />
-          Назад към блога
+          <span className="text-sm sm:text-base">Назад към блога</span>
         </Link>
 
         <article className="max-w-4xl mx-auto">
+          {/* Mobile-optimized hero image */}
           {post.featured_image_url && (
-            <div className="w-full h-[400px] overflow-hidden rounded-lg mb-8">
-              <img src={post.featured_image_url} alt={post.title} className="w-full h-full object-cover" />
+            <div className="w-full h-[250px] sm:h-[350px] md:h-[450px] overflow-hidden rounded-lg mb-6 sm:mb-8">
+              <img
+                src={post.featured_image_url}
+                alt={post.title}
+                className="w-full h-full object-cover"
+                loading="eager"
+              />
             </div>
           )}
 
           {post.category && (
-            <span className="inline-block text-sm px-3 py-1 rounded-full bg-accent-500/10 text-accent-400 border border-accent-500/20 mb-4">
+            <span className="inline-block text-xs sm:text-sm px-3 py-1 rounded-full bg-accent-500/10 text-accent-400 border border-accent-500/20 mb-3 sm:mb-4">
               {categoryLabels[post.category]}
             </span>
           )}
 
-          <h1 className="text-4xl md:text-5xl font-bold text-zinc-50 mb-6">{post.title}</h1>
+          {/* Mobile-optimized title */}
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-zinc-50 mb-4 sm:mb-6 leading-tight">
+            {post.title}
+          </h1>
 
-          <div className="flex items-center gap-6 text-sm text-zinc-400 mb-8 pb-8 border-b border-zinc-800">
+          {/* Mobile-optimized meta info */}
+          <div className="flex flex-wrap items-center gap-3 sm:gap-6 text-xs sm:text-sm text-zinc-400 mb-6 sm:mb-8 pb-6 sm:pb-8 border-b border-zinc-800">
             {post.published_at && (
-              <div className="flex items-center gap-2">
-                <Calendar className="w-4 h-4" />
-                {new Date(post.published_at).toLocaleDateString('bg-BG', { year: 'numeric', month: 'long', day: 'numeric' })}
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <Calendar className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                <span className="hidden sm:inline">
+                  {new Date(post.published_at).toLocaleDateString('bg-BG', { year: 'numeric', month: 'long', day: 'numeric' })}
+                </span>
+                <span className="sm:hidden">
+                  {new Date(post.published_at).toLocaleDateString('bg-BG', { month: 'short', day: 'numeric' })}
+                </span>
               </div>
             )}
             {post.reading_time && (
-              <div className="flex items-center gap-2">
-                <Clock className="w-4 h-4" />
-                {post.reading_time} мин четене
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                {post.reading_time} мин
               </div>
             )}
             {post.view_count > 0 && (
-              <div className="flex items-center gap-2">
-                <Eye className="w-4 h-4" />
-                {post.view_count.toLocaleString('bg-BG')} прегледи
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <Eye className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                {post.view_count > 1000 ? `${(post.view_count / 1000).toFixed(1)}k` : post.view_count}
               </div>
             )}
           </div>
 
-          <div className="prose prose-invert prose-zinc prose-lg max-w-none" dangerouslySetInnerHTML={{ __html: processContentWithCTAs(post.content) }} />
+          {/* Mobile-optimized content with better typography */}
+          <div
+            className="prose prose-invert prose-zinc prose-sm sm:prose-base md:prose-lg max-w-none
+              prose-headings:font-bold prose-headings:text-zinc-50
+              prose-p:text-zinc-300 prose-p:leading-relaxed
+              prose-a:text-accent-400 prose-a:no-underline hover:prose-a:underline
+              prose-strong:text-zinc-100 prose-strong:font-semibold
+              prose-ul:list-disc prose-ol:list-decimal
+              prose-li:text-zinc-300 prose-li:my-1
+              prose-img:rounded-lg prose-img:shadow-lg prose-img:my-8
+              prose-blockquote:border-l-accent-500 prose-blockquote:italic
+              [&>*]:break-words"
+            dangerouslySetInnerHTML={{ __html: processContentWithCTAs(post.content) }}
+          />
 
+          {/* Mobile-optimized tags */}
           {post.tags && post.tags.length > 0 && (
-            <div className="mt-12 pt-8 border-t border-zinc-800">
+            <div className="mt-8 sm:mt-12 pt-6 sm:pt-8 border-t border-zinc-800">
               <div className="flex flex-wrap gap-2">
                 {post.tags.map((tag: string, i: number) => (
-                  <span key={i} className="text-sm px-3 py-1 bg-zinc-800 text-zinc-300 rounded-full">
+                  <span key={i} className="text-xs sm:text-sm px-2.5 sm:px-3 py-1 bg-zinc-800 text-zinc-300 rounded-full">
                     #{tag}
                   </span>
                 ))}

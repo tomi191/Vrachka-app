@@ -11,6 +11,8 @@ export type AIFeature =
   | 'natal_chart'
   | 'synastry'
   | 'personal_horoscope'
+  | 'blog_content'
+  | 'blog_images'
   | 'general';
 
 export interface AIModel {
@@ -82,6 +84,20 @@ export const AI_MODELS: Record<string, AIModel> = {
     contextWindow: 128_000,
     strengths: ['reliable', 'accurate'],
   },
+
+  // Image Generation: Gemini 2.5 Flash Image
+  gemini_image: {
+    id: 'google/gemini-2.5-flash-image',
+    name: 'Gemini 2.5 Flash Image',
+    provider: 'Google',
+    costPer1M: {
+      input: 0,
+      output: 0,
+    },
+    maxTokens: 8192,
+    contextWindow: 1_048_576,
+    strengths: ['image-generation', 'free', 'fast', 'creative'],
+  },
 };
 
 /**
@@ -108,6 +124,12 @@ export const FEATURE_MODEL_MAP: Record<AIFeature, string[]> = {
 
   // Personal Horoscope - CLAUDE (premium transit analysis)
   personal_horoscope: ['claude_sonnet', 'gemini_flash', 'deepseek'],
+
+  // Blog Content - FREE Gemini (creative writing)
+  blog_content: ['gemini_flash', 'claude_sonnet', 'deepseek'],
+
+  // Blog Images - FREE Gemini Image model
+  blog_images: ['gemini_image'],
 
   // General fallback
   general: ['gemini_flash', 'deepseek', 'claude_sonnet', 'gpt4_turbo'],

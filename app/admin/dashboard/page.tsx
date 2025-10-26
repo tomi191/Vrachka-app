@@ -1,5 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { AdminTabs } from "@/components/admin/AdminTabs";
+import { BlogCreatorTab } from "@/components/admin/BlogCreatorTab";
 import {
   Users,
   Crown,
@@ -7,7 +9,9 @@ import {
   CreditCard,
   MessageSquare,
   FileText,
-  Database
+  Database,
+  Sparkles,
+  BarChart3
 } from "lucide-react";
 
 export default async function AdminDashboardPage() {
@@ -36,14 +40,9 @@ export default async function AdminDashboardPage() {
     supabase.from("tarot_readings").select("*, profiles(full_name)").order("created_at", { ascending: false }).limit(5),
   ]);
 
-  return (
-    <div className="min-h-screen bg-brand-950 p-6">
-      <div className="max-w-7xl mx-auto space-y-6">
-        {/* Header */}
-        <div className="space-y-2">
-          <h1 className="text-3xl font-bold text-zinc-50">Admin Dashboard</h1>
-          <p className="text-zinc-400">Управление на Vrachka платформата</p>
-        </div>
+  // Dashboard Stats Tab Content
+  const dashboardTab = (
+    <div className="space-y-6">
 
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -213,23 +212,53 @@ export default async function AdminDashboardPage() {
           </CardContent>
         </Card>
 
-        {/* Quick Actions */}
-        <Card className="glass-card border-accent-500/30">
-          <CardHeader>
-            <CardTitle className="text-zinc-50 flex items-center gap-2">
-              <Database className="w-5 h-5 text-accent-400" />
-              Бързи действия
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              <ActionButton label="Потребители" href="/admin/users" />
-              <ActionButton label="Абонаменти" href="/admin/subscriptions" />
-              <ActionButton label="Съдържание" href="/admin/content" />
-              <ActionButton label="Настройки" href="/admin/settings" />
-            </div>
-          </CardContent>
-        </Card>
+      {/* Quick Actions */}
+      <Card className="glass-card border-accent-500/30">
+        <CardHeader>
+          <CardTitle className="text-zinc-50 flex items-center gap-2">
+            <Database className="w-5 h-5 text-accent-400" />
+            Бързи действия
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <ActionButton label="Потребители" href="/admin/users" />
+            <ActionButton label="Абонаменти" href="/admin/subscriptions" />
+            <ActionButton label="Съдържание" href="/admin/content" />
+            <ActionButton label="Настройки" href="/admin/settings" />
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+
+  return (
+    <div className="min-h-screen bg-brand-950 p-6">
+      <div className="max-w-7xl mx-auto space-y-6">
+        {/* Header */}
+        <div className="space-y-2">
+          <h1 className="text-3xl font-bold text-zinc-50">Admin Dashboard</h1>
+          <p className="text-zinc-400">Управление на Vrachka платформата</p>
+        </div>
+
+        {/* Tabs */}
+        <AdminTabs
+          defaultTab="overview"
+          tabs={[
+            {
+              id: 'overview',
+              label: 'Преглед',
+              icon: <BarChart3 className="w-4 h-4" />,
+              content: dashboardTab,
+            },
+            {
+              id: 'blog-creator',
+              label: 'AI Blog Creator',
+              icon: <Sparkles className="w-4 h-4" />,
+              content: <BlogCreatorTab />,
+            },
+          ]}
+        />
       </div>
     </div>
   );
