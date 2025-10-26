@@ -94,10 +94,15 @@ export async function calculateNatalChart(birthData: BirthData): Promise<NatalCh
       }
     }
 
-    // Get planetary positions
-    const celestialBodies = origin.CelestialBodies;
-    const houses = origin.Houses;
-    const aspects = origin.Aspects;
+    // Get planetary positions with fallbacks for different API shapes
+    const celestialBodies = (origin as any).CelestialBodies || (origin as any).celestialBodies || (origin as any)?.positions?.celestialBodies;
+    const housesObj = (origin as any).Houses || (origin as any).houses || (origin as any)?.positions?.houses || (origin as any)?.houses;
+    const aspectsObj = (origin as any).Aspects || (origin as any).aspects || (origin as any)?.positions?.aspects || (origin as any)?.aspects;
+
+    if (!celestialBodies) {
+      const keys = Object.keys(origin || {});
+      throw new Error(`Natal chart engine returned no celestialBodies. Origin keys: ${keys.join(', ')}`);
+    }
 
     // Map planets with Bulgarian names and emojis
     const planetMap: Record<string, { emoji: string; bg: string }> = {
@@ -148,8 +153,8 @@ export async function calculateNatalChart(birthData: BirthData): Promise<NatalCh
       moon: mapPlanet('moon', celestialBodies.moon),
       rising: {
         name: 'Възходящ знак',
-        sign: zodiacMap[houses.Houses[0].Sign.key.toLowerCase()] || 'Unknown',
-        degree: Math.round(houses.Houses[0].ChartPosition.StartPosition.Ecliptic.DecimalDegrees * 100) / 100,
+        sign: zodiacMap[((housesObj as any).Houses?.[0] || (housesObj as any)?.[0])?.Sign?.key?.toLowerCase?.() || ''] || 'Unknown',
+        degree: Math.round((((housesObj as any).Houses?.[0] || (housesObj as any)?.[0])?.ChartPosition?.StartPosition?.Ecliptic?.DecimalDegrees || 0) * 100) / 100,
         house: 1,
         retrograde: false,
         emoji: '⬆️',
@@ -162,17 +167,17 @@ export async function calculateNatalChart(birthData: BirthData): Promise<NatalCh
       uranus: mapPlanet('uranus', celestialBodies.uranus),
       neptune: mapPlanet('neptune', celestialBodies.neptune),
       pluto: mapPlanet('pluto', celestialBodies.pluto),
-      houses: houses.Houses.map((house: any, index: number) => ({
+      houses: (((housesObj as any).Houses) || (housesObj as any) || ((housesObj as any)?.houses) || []).map((house: any, index: number) => ({
         number: index + 1,
         sign: zodiacMap[house.Sign.key.toLowerCase()] || 'Unknown',
         degree: Math.round(house.ChartPosition.StartPosition.Ecliptic.DecimalDegrees * 100) / 100,
       })),
-      aspects: aspects.all.map((aspect: any) => ({
+      aspects: (((aspectsObj as any)?.all) || (aspectsObj as any) || []).map((aspect: any) => ({
         planet1: planetMap[aspect.firstPlanetName]?.bg || aspect.firstPlanetName,
         planet2: planetMap[aspect.secondPlanetName]?.bg || aspect.secondPlanetName,
-        type: aspect.name.toLowerCase(),
-        angle: Math.round(aspect.angle * 100) / 100,
-        orb: Math.round(aspect.orb * 100) / 100,
+        type: aspect.name?.toLowerCase?.() || String(aspect.name || ''),
+        angle: Math.round((aspect.angle || 0) * 100) / 100,
+        orb: Math.round((aspect.orb || 0) * 100) / 100,
       })),
       calculated_at: new Date().toISOString(),
     };
