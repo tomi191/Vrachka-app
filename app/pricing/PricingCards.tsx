@@ -163,7 +163,8 @@ export function PricingCards({ user }: PricingCardsProps) {
               <Feature text="Неограничени таро четения" included />
               <Feature text="10 въпроса към Oracle/ден" included />
               <Feature text="Седмични и месечни прогнози" included />
-              <Feature text="Персонализирани съвети" included />
+              <Feature text="Натална астрологична карта" included />
+              <Feature text="Синастрия - съвместимост с партньор" included />
               <Feature text="VIP поддръжка" included />
             </ul>
             {user ? (

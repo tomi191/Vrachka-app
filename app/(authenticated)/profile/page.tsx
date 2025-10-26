@@ -131,7 +131,14 @@ export default async function ProfilePage() {
       <div className="space-y-2">
         <MenuButton icon={<History />} label="История на четенията" href="/profile/history" />
         {hasUltimatePlan && (
-          <MenuButton icon={<Star />} label="Моята натална карта" href="/natal-chart" />
+          <>
+            <MenuButton icon={<Star />} label="Моята натална карта" href="/natal-chart" />
+            <MenuButton
+              icon={<span className="text-red-400">❤️</span>}
+              label="Синастрия (съвместимост)"
+              href="/synastry"
+            />
+          </>
         )}
         <MenuButton icon={<User />} label="Редакция на профила" href="/profile/edit" />
         <MenuButton icon={<Settings />} label="Настройки" href="/profile/settings" />

@@ -271,3 +271,55 @@ function getRisingTraits(sign: string): string {
 
   return traits[sign] || 'интересен човек';
 }
+
+/**
+ * Generate Synastry interpretation prompt for AI
+ */
+export function getSynastryPrompt(
+  synastryData: any,
+  name1: string,
+  name2: string
+): string {
+  return `Направи детайлна астрологична интерпретация на синастрията (съвместимостта) между ${name1} и ${name2}.
+
+**СИНАСТРИЯ ДАННИ:**
+
+**Compatibility Scores:**
+- Обща съвместимост: ${synastryData.compatibility_score}%
+- Любовна съвместимост: ${synastryData.love_score}%
+- Комуникация: ${synastryData.communication_score}%
+- Сексуална съвместимост: ${synastryData.sexual_score}%
+- Дългосрочна връзка: ${synastryData.longevity_score}%
+
+**Основни аспекти между картите:**
+${synastryData.aspects.slice(0, 10).map((a: any) =>
+  `- ${a.planet1} ${getAspectSymbol(a.type)} ${a.planet2} (${a.angle}°, ${a.nature}, ${a.strength})`
+).join('\n')}
+
+---
+
+Моля, структурирай отговора по следния начин на БЪЛГАРСКИ ЕЗИК:
+
+## OVERVIEW
+(2-3 параграфа обща оценка на връзката - какво прави тази връзка уникална, основни силни страни и предизвикателства)
+
+## LOVE_COMPATIBILITY
+(2 параграфа за любовната съвместимост - романтика, емоционална връзка, привличане)
+
+## COMMUNICATION
+(2 параграфа за комуникацията - как се разбират, споделят ли ценности, интелектуална връзка)
+
+## SEXUAL_CHEMISTRY
+(2 параграфа за сексуалната химия - физическо привличане, сексуална съвместимост, страст)
+
+## CHALLENGES
+(2 параграфа за основните предизвикателства в тази връзка и как да ги преодолеят)
+
+## LONGEVITY
+(2 параграфа за дългосрочния потенциал - какво трябва да развиват, за да продължи връзката)
+
+## ADVICE
+(Кратки съвети - 5-6 bullet points за успешна връзка)
+
+ВАЖНО: Пиши на БЪЛГАРСКИ език, естествено и топло. Използвай "ти" и "вие" форма. Бъди позитивен но реалистичен.`;
+}

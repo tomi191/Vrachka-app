@@ -2,7 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getGreeting, getDayOfWeek, formatDate } from "@/lib/utils";
 import { zodiacSigns, type ZodiacSign } from "@/lib/zodiac";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Sparkles, CreditCard, Star } from "lucide-react";
+import { Sparkles, CreditCard, Star, Heart } from "lucide-react";
 import { HoroscopeCard } from "@/components/HoroscopeCard";
 import { PushNotificationPrompt } from "@/components/PushNotificationPrompt";
 import Link from "next/link";
@@ -56,24 +56,45 @@ export default async function DashboardPage() {
         />
       )}
 
-      {/* Natal Chart Card - Only for Ultimate users */}
+      {/* Ultimate Plan Features */}
       {hasUltimatePlan && (
-        <Card className="glass-card border-accent-500/30">
-          <CardHeader>
-            <CardTitle className="text-zinc-50 flex items-center gap-2">
-              <Star className="w-5 h-5 text-accent-400" />
-              Натална Карта
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-zinc-300 mb-4">
-              Открий своята астрологична карта на раждането и разбери планетарните влияния в живота ти
-            </p>
-            <Link href="/natal-chart" className="block w-full px-4 py-3 bg-accent-600 hover:bg-accent-700 text-white rounded-lg transition-colors text-center font-semibold">
-              Изчисли картата
-            </Link>
-          </CardContent>
-        </Card>
+        <div className="space-y-4">
+          {/* Natal Chart Card */}
+          <Card className="glass-card border-accent-500/30">
+            <CardHeader>
+              <CardTitle className="text-zinc-50 flex items-center gap-2">
+                <Star className="w-5 h-5 text-accent-400" />
+                Натална Карта
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-zinc-300 mb-4">
+                Открий своята астрологична карта на раждането и разбери планетарните влияния в живота ти
+              </p>
+              <Link href="/natal-chart" className="block w-full px-4 py-3 bg-accent-600 hover:bg-accent-700 text-white rounded-lg transition-colors text-center font-semibold">
+                Изчисли картата
+              </Link>
+            </CardContent>
+          </Card>
+
+          {/* Synastry Card */}
+          <Card className="glass-card border-red-500/30">
+            <CardHeader>
+              <CardTitle className="text-zinc-50 flex items-center gap-2">
+                <Heart className="w-5 h-5 text-red-400" />
+                Синастрия
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-zinc-300 mb-4">
+                Открий астрологичната ви съвместимост с партньор. Любов, комуникация, сексуална химия и дългосрочен потенциал.
+              </p>
+              <Link href="/synastry" className="block w-full px-4 py-3 bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 text-white rounded-lg transition-colors text-center font-semibold">
+                Анализирай съвместимостта
+              </Link>
+            </CardContent>
+          </Card>
+        </div>
       )}
 
       {/* Card of the Day Teaser */}
