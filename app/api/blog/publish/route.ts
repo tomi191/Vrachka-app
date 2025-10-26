@@ -1,0 +1,157 @@
+import { createClient } from '@/lib/supabase/server';
+import { NextResponse } from 'next/server';
+
+export async function POST(request: Request) {
+  try {
+    const supabase = await createClient();
+
+    // Auth check
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Admin check
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('is_admin')
+      .eq('id', user.id)
+      .single();
+
+    if (!profile?.is_admin) {
+      return NextResponse.json({ error: 'Unauthorized - Admin only' }, { status: 403 });
+    }
+
+    // Parse request body
+    const body = await request.json();
+    const {
+      title,
+      slug,
+      content,
+      excerpt,
+      metaTitle,
+      metaDescription,
+      keywords,
+      category,
+      contentType,
+      readingTime,
+      wordCount,
+      status,
+      featuredImageUrl,
+      tags,
+    } = body;
+
+    // Validation
+    if (!title || !slug || !content) {
+      return NextResponse.json(
+        { error: 'Missing required fields: title, slug, content' },
+        { status: 400 }
+      );
+    }
+
+    // Check if slug already exists
+    const { data: existingPost } = await supabase
+      .from('blog_posts')
+      .select('id')
+      .eq('slug', slug)
+      .single();
+
+    if (existingPost) {
+      return NextResponse.json(
+        { error: `Slug "${slug}" already exists. Please choose a different title.` },
+        { status: 400 }
+      );
+    }
+
+    // Insert blog post
+    const { data: blogPost, error: insertError } = await supabase
+      .from('blog_posts')
+      .insert({
+        title,
+        slug,
+        content,
+        excerpt: excerpt || null,
+        featured_image_url: featuredImageUrl || null,
+        meta_title: metaTitle || title,
+        meta_description: metaDescription || excerpt || null,
+        keywords: keywords || [],
+        tags: tags || [],
+        category: category || 'general',
+        content_type: contentType || 'tofu',
+        reading_time: readingTime || null,
+        word_count: wordCount || null,
+        status: status || 'draft',
+        published_at: status === 'published' ? new Date().toISOString() : null,
+        ai_generated: true,
+        model_used: 'claude-3.5-sonnet',
+        created_by: user.id,
+      })
+      .select()
+      .single();
+
+    if (insertError) {
+      console.error('Supabase insert error:', insertError);
+      return NextResponse.json(
+        { error: 'Failed to save blog post', details: insertError.message },
+        { status: 500 }
+      );
+    }
+
+    // Generate JSON-LD schema (for SEO)
+    const schemaMarkup = {
+      '@context': 'https://schema.org',
+      '@type': 'Article',
+      headline: title,
+      description: metaDescription || excerpt,
+      author: {
+        '@type': 'Organization',
+        name: 'Vrachka',
+        url: 'https://vrachka.bg',
+      },
+      publisher: {
+        '@type': 'Organization',
+        name: 'Vrachka',
+        logo: {
+          '@type': 'ImageObject',
+          url: 'https://vrachka.bg/logo.svg',
+        },
+      },
+      datePublished: blogPost.published_at || blogPost.created_at,
+      dateModified: blogPost.updated_at,
+      mainEntityOfPage: {
+        '@type': 'WebPage',
+        '@id': `https://vrachka.bg/blog/${slug}`,
+      },
+    };
+
+    // Update with schema markup
+    await supabase
+      .from('blog_posts')
+      .update({ schema_markup: schemaMarkup })
+      .eq('id', blogPost.id);
+
+    return NextResponse.json({
+      success: true,
+      data: {
+        id: blogPost.id,
+        slug: blogPost.slug,
+        status: blogPost.status,
+        publishedAt: blogPost.published_at,
+        url: `/blog/${blogPost.slug}`,
+      },
+      message: status === 'published' ? 'Blog post published successfully' : 'Blog post saved as draft',
+    });
+  } catch (error) {
+    console.error('Blog publish error:', error);
+    return NextResponse.json(
+      {
+        error: 'Internal server error',
+        details: error instanceof Error ? error.message : 'Unknown error',
+      },
+      { status: 500 }
+    );
+  }
+}
