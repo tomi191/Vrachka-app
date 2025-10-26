@@ -63,6 +63,24 @@ export default async function BlogPostPage({ params }: Props) {
     general: 'Общо',
   };
 
+  // Parse content if it's JSON (backward compatibility fix)
+  const parseContent = (rawContent: string): string => {
+    // Try to detect if content is JSON
+    const trimmed = rawContent.trim();
+    if (trimmed.startsWith('{') && trimmed.includes('"content"')) {
+      try {
+        const parsed = JSON.parse(trimmed);
+        // If it's JSON with a content field, extract it
+        if (parsed.content && typeof parsed.content === 'string') {
+          return parsed.content;
+        }
+      } catch {
+        // Not valid JSON, return as is
+      }
+    }
+    return rawContent;
+  };
+
   const processContentWithCTAs = (htmlContent: string) => {
     return htmlContent
       .replace(/<!-- CTA:soft -->/g, '<div class="my-8 p-6 bg-accent-500/10 border border-accent-500/20 rounded-lg text-center"><p class="text-zinc-300 mb-4">Искаш да научиш повече за себе си?</p><a href="/natal-chart" class="inline-block px-6 py-3 bg-accent-600 hover:bg-accent-700 text-white rounded-lg transition-colors font-semibold">Изчисли безплатната си натална карта</a></div>')
@@ -146,7 +164,7 @@ export default async function BlogPostPage({ params }: Props) {
               prose-img:rounded-lg prose-img:shadow-lg prose-img:my-8
               prose-blockquote:border-l-accent-500 prose-blockquote:italic
               [&>*]:break-words"
-            dangerouslySetInnerHTML={{ __html: processContentWithCTAs(post.content) }}
+            dangerouslySetInnerHTML={{ __html: processContentWithCTAs(parseContent(post.content)) }}
           />
 
           {/* Mobile-optimized tags */}
