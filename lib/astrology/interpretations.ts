@@ -71,19 +71,19 @@ function buildInterpretationPrompt(chart: NatalChart, firstName?: string): strin
 
 **НАТАЛНА КАРТА:**
 
-${chart.sun.emoji} **Слънце:** ${chart.sun.sign} ${chart.sun.degree}° (Къща ${chart.sun.house})
-${chart.moon.emoji} **Луна:** ${chart.moon.sign} ${chart.moon.degree}° (Къща ${chart.moon.house})
+${chart.sun.emoji} **Слънце:** ${chart.sun.sign} ${chart.sun.degree}° (Дом ${chart.sun.house})
+${chart.moon.emoji} **Луна:** ${chart.moon.sign} ${chart.moon.degree}° (Дом ${chart.moon.house})
 ⬆️ **Възходящ знак:** ${chart.rising.sign} ${chart.rising.degree}°
 
 **Планети:**
-${chart.mercury.emoji} Меркурий: ${chart.mercury.sign} ${chart.mercury.degree}° (Къща ${chart.mercury.house})
-${chart.venus.emoji} Венера: ${chart.venus.sign} ${chart.venus.degree}° (Къща ${chart.venus.house})
-${chart.mars.emoji} Марс: ${chart.mars.sign} ${chart.mars.degree}° (Къща ${chart.mars.house})
-${chart.jupiter.emoji} Юпитер: ${chart.jupiter.sign} ${chart.jupiter.degree}° (Къща ${chart.jupiter.house})
-${chart.saturn.emoji} Сатурн: ${chart.saturn.sign} ${chart.saturn.degree}° (Къща ${chart.saturn.house})
-${chart.uranus.emoji} Уран: ${chart.uranus.sign} ${chart.uranus.degree}° (Къща ${chart.uranus.house})
-${chart.neptune.emoji} Нептун: ${chart.neptune.sign} ${chart.neptune.degree}° (Къща ${chart.neptune.house})
-${chart.pluto.emoji} Плутон: ${chart.pluto.sign} ${chart.pluto.degree}° (Къща ${chart.pluto.house})
+${chart.mercury.emoji} Меркурий: ${chart.mercury.sign} ${chart.mercury.degree}° (Дом ${chart.mercury.house})
+${chart.venus.emoji} Венера: ${chart.venus.sign} ${chart.venus.degree}° (Дом ${chart.venus.house})
+${chart.mars.emoji} Марс: ${chart.mars.sign} ${chart.mars.degree}° (Дом ${chart.mars.house})
+${chart.jupiter.emoji} Юпитер: ${chart.jupiter.sign} ${chart.jupiter.degree}° (Дом ${chart.jupiter.house})
+${chart.saturn.emoji} Сатурн: ${chart.saturn.sign} ${chart.saturn.degree}° (Дом ${chart.saturn.house})
+${chart.uranus.emoji} Уран: ${chart.uranus.sign} ${chart.uranus.degree}° (Дом ${chart.uranus.house})
+${chart.neptune.emoji} Нептун: ${chart.neptune.sign} ${chart.neptune.degree}° (Дом ${chart.neptune.house})
+${chart.pluto.emoji} Плутон: ${chart.pluto.sign} ${chart.pluto.degree}° (Дом ${chart.pluto.house})
 
 **Важни аспекти:**
 ${chart.aspects.slice(0, 5).map(a => `- ${a.planet1} ${getAspectSymbol(a.type)} ${a.planet2} (${a.angle}°)`).join('\n')}
@@ -96,10 +96,10 @@ ${chart.aspects.slice(0, 5).map(a => `- ${a.planet1} ${getAspectSymbol(a.type)} 
 (2-3 параграфа обща интерпретация на картата)
 
 ## SUN_INTERPRETATION
-(Детайлна интерпретация на Слънцето в този знак и къща - 2 параграфа)
+(Детайлна интерпретация на Слънцето в този знак и дом - 2 параграфа)
 
 ## MOON_INTERPRETATION
-(Детайлна интерпретация на Луната в този знак и къща - 2 параграфа)
+(Детайлна интерпретация на Луната в този знак и дом - 2 параграфа)
 
 ## RISING_INTERPRETATION
 (Детайлна интерпретация на Възходящия знак - 2 параграфа)

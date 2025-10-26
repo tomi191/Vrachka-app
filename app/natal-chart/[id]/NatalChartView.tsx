@@ -78,7 +78,7 @@ export function NatalChartView({ chart }: { chart: ChartData }) {
   const tabs = [
     { id: 'overview', label: 'Преглед', icon: Sparkles },
     { id: 'planets', label: 'Планети', icon: Star },
-    { id: 'houses', label: 'Къщи', icon: Sun },
+    { id: 'houses', label: 'Домове', icon: Sun },
     { id: 'aspects', label: 'Аспекти', icon: Moon },
   ] as const;
 
@@ -96,7 +96,7 @@ export function NatalChartView({ chart }: { chart: ChartData }) {
             </div>
           </div>
           <p className="text-2xl font-bold text-accent-400">{safeNum(chartData.sun.degree).toFixed(2)}°</p>
-          <p className="text-sm text-zinc-500 mt-1">Къща {safeNum(chartData.sun.house)}</p>
+          <p className="text-sm text-zinc-500 mt-1">Дом {safeNum(chartData.sun.house)}</p>
         </div>
 
         {/* Moon Card */}
@@ -109,7 +109,7 @@ export function NatalChartView({ chart }: { chart: ChartData }) {
             </div>
           </div>
           <p className="text-2xl font-bold text-accent-400">{safeNum(chartData.moon.degree).toFixed(2)}°</p>
-          <p className="text-sm text-zinc-500 mt-1">Къща {safeNum(chartData.moon.house)}</p>
+          <p className="text-sm text-zinc-500 mt-1">Дом {safeNum(chartData.moon.house)}</p>
         </div>
 
         {/* Rising Card */}
@@ -225,7 +225,7 @@ export function NatalChartView({ chart }: { chart: ChartData }) {
                         )}
                       </div>
                       <p className="text-sm text-zinc-400">
-                        {String(value.sign || '')} {safeNum(value.degree).toFixed(2)}° • къща {safeNum(value.house)}
+                        {String(value.sign || '')} {safeNum(value.degree).toFixed(2)}° • дом {safeNum(value.house)}
                       </p>
                     </div>
                   </div>
@@ -237,12 +237,12 @@ export function NatalChartView({ chart }: { chart: ChartData }) {
 
         {activeTab === 'houses' && (
           <div>
-            <h2 className="text-2xl font-bold text-zinc-50 mb-6">Астрологични къщи</h2>
+            <h2 className="text-2xl font-bold text-zinc-50 mb-6">Астрологични домове</h2>
             <div className="grid md:grid-cols-2 gap-4">
               {chartData.houses.map((house: any, i: number) => (
                 <div key={house.number || i} className="p-4 bg-zinc-900/50 rounded-lg">
                   <div className="flex items-center justify-between mb-2">
-                    <h3 className="font-bold text-zinc-50">Къща {safeNum(house.number)}</h3>
+                    <h3 className="font-bold text-zinc-50">Дом {safeNum(house.number)}</h3>
                     <span className="text-accent-400">{safeNum(house.degree).toFixed(2)}°</span>
                   </div>
                   <p className="text-sm text-zinc-400">{String(house.sign || '')}</p>

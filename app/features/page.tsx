@@ -81,19 +81,6 @@ const features = [
     borderColor: 'border-indigo-500/30',
   },
   {
-    icon: TrendingUp,
-    title: 'Нумерологичен Анализ',
-    description: 'Разбери скритите послания в числата на твоя живот. Анализ на твоето име, дата на раждане и житейски път.',
-    details: [
-      'Life Path Number калкулация',
-      'Personality Number анализ',
-      'Destiny Number значение',
-      'Ежемесечни нумерологични прогнози',
-    ],
-    color: 'from-green-500/20 to-teal-500/20',
-    borderColor: 'border-green-500/30',
-  },
-  {
     icon: Zap,
     title: 'Бързи и Точни',
     description: 'AI моделите ни генерират отговори за секунди, без да чакаш дни за консултация с астролог.',

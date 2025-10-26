@@ -52,6 +52,7 @@ export default async function DashboardPage() {
           zodiacSign={profile.zodiac_sign}
           zodiacEmoji={zodiac.emoji}
           zodiacName={zodiac.name}
+          userPlan={userPlan as 'free' | 'basic' | 'ultimate'}
         />
       )}
 

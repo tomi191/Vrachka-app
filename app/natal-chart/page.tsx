@@ -100,7 +100,7 @@ export default async function NatalChartPage() {
                     <div>
                       <p className="text-zinc-200 font-medium">Пълна астрологична карта</p>
                       <p className="text-sm text-zinc-400">
-                        Позиции на всички планети, къщи и аспекти
+                        Позиции на всички планети, домове и аспекти
                       </p>
                     </div>
                   </div>

@@ -124,7 +124,7 @@ export function BentoFeatures() {
                     <span className="text-xs px-3 py-1 rounded-full bg-accent-500/20 text-accent-300 font-medium">ULTIMATE ONLY</span>
                   </div>
                   <p className="text-zinc-400 leading-relaxed">
-                    Пълна астрологична карта с всички планети, къщи и аспекти. Задълбочен анализ на личността ти.
+                    Пълна астрологична карта с всички планети, домове и аспекти. Задълбочен анализ на личността ти.
                   </p>
                 </div>
               </div>
