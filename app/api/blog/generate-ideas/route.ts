@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { callAI } from '@/lib/ai/openrouter';
+import { createOpenRouterCompletion } from '@/lib/ai/openrouter';
 
 const IDEAS_GENERATION_PROMPT = `Ти си опитен content strategist и SEO специалист за VRACHKA - водеща българска платформа за астрология, таро и духовност.
 
@@ -108,7 +108,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Call Gemini Free (no cost!)
-    const response = await callAI({
+    const response = await createOpenRouterCompletion({
       model: 'google/gemini-2.0-flash-exp:free',
       messages: [
         {
@@ -123,7 +123,7 @@ export async function POST(req: NextRequest) {
     // Parse response
     let ideas;
     try {
-      const content = response.content.trim();
+      const content = response.choices[0].message.content.trim();
       // Remove markdown code blocks if present
       const cleanContent = content
         .replace(/^```json\s*/i, '')
@@ -132,7 +132,7 @@ export async function POST(req: NextRequest) {
       ideas = JSON.parse(cleanContent);
     } catch (parseError) {
       console.error('Failed to parse AI response:', parseError);
-      console.log('Raw response:', response.content.substring(0, 500));
+      console.log('Raw response:', response.choices[0]?.message?.content?.substring(0, 500) || 'No content');
       return NextResponse.json(
         { error: 'AI response was not valid JSON' },
         { status: 500 }
