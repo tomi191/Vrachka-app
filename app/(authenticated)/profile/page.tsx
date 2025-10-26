@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { zodiacSigns, type ZodiacSign } from "@/lib/zodiac";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { User, Settings, LogOut, Crown, Flame, History } from "lucide-react";
+import { User, Settings, LogOut, Crown, Flame, History, Star } from "lucide-react";
 import { signOut } from "@/app/actions/auth";
 import { ManageSubscriptionButton } from "@/components/ManageSubscriptionButton";
 import Link from "next/link";
@@ -27,6 +27,10 @@ export default async function ProfilePage() {
 
   const zodiac = profile ? zodiacSigns[profile.zodiac_sign as ZodiacSign] : null;
   const isPremium = subscription?.plan_type !== "free";
+
+  // Check if user has Ultimate plan for natal chart access
+  const userPlan = profile?.trial_tier || subscription?.plan_type || 'free';
+  const hasUltimatePlan = userPlan === 'ultimate';
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -126,6 +130,9 @@ export default async function ProfilePage() {
       {/* Menu Items */}
       <div className="space-y-2">
         <MenuButton icon={<History />} label="История на четенията" href="/profile/history" />
+        {hasUltimatePlan && (
+          <MenuButton icon={<Star />} label="Моята натална карта" href="/natal-chart" />
+        )}
         <MenuButton icon={<User />} label="Редакция на профила" href="/profile/edit" />
         <MenuButton icon={<Settings />} label="Настройки" href="/profile/settings" />
         <MenuButton icon={<Crown />} label="Покани приятел" href="/profile/referral" />

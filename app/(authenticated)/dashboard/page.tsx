@@ -2,7 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getGreeting, getDayOfWeek, formatDate } from "@/lib/utils";
 import { zodiacSigns, type ZodiacSign } from "@/lib/zodiac";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Sparkles, CreditCard } from "lucide-react";
+import { Sparkles, CreditCard, Star } from "lucide-react";
 import { HoroscopeCard } from "@/components/HoroscopeCard";
 import { PushNotificationPrompt } from "@/components/PushNotificationPrompt";
 import Link from "next/link";
@@ -18,6 +18,17 @@ export default async function DashboardPage() {
     .select("*")
     .eq("id", user!.id)
     .single();
+
+  // Get subscription to check if user has Ultimate plan
+  const { data: subscription } = await supabase
+    .from("subscriptions")
+    .select("plan_type, status")
+    .eq("user_id", user!.id)
+    .single();
+
+  // Check if user has Ultimate plan (trial takes priority)
+  const userPlan = profile?.trial_tier || subscription?.plan_type || 'free';
+  const hasUltimatePlan = userPlan === 'ultimate';
 
   const zodiac = profile ? zodiacSigns[profile.zodiac_sign as ZodiacSign] : null;
   const greeting = getGreeting();
@@ -42,6 +53,26 @@ export default async function DashboardPage() {
           zodiacEmoji={zodiac.emoji}
           zodiacName={zodiac.name}
         />
+      )}
+
+      {/* Natal Chart Card - Only for Ultimate users */}
+      {hasUltimatePlan && (
+        <Card className="glass-card border-accent-500/30">
+          <CardHeader>
+            <CardTitle className="text-zinc-50 flex items-center gap-2">
+              <Star className="w-5 h-5 text-accent-400" />
+              Натална Карта
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-zinc-300 mb-4">
+              Открий своята астрологична карта на раждането и разбери планетарните влияния в живота ти
+            </p>
+            <Link href="/natal-chart" className="block w-full px-4 py-3 bg-accent-600 hover:bg-accent-700 text-white rounded-lg transition-colors text-center font-semibold">
+              Изчисли картата
+            </Link>
+          </CardContent>
+        </Card>
       )}
 
       {/* Card of the Day Teaser */}

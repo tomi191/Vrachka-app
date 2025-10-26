@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Sparkles, Heart, Brain, TrendingUp, Zap, Lock, Smartphone, Crown } from 'lucide-react';
+import { Sparkles, Heart, Brain, TrendingUp, Zap, Lock, Smartphone, Crown, Star } from 'lucide-react';
 import { Navigation } from '@/components/Navigation';
 import { Footer } from '@/components/Footer';
 import { MysticBackground } from '@/components/background/MysticBackground';
@@ -66,6 +66,19 @@ const features = [
     ],
     color: 'from-blue-500/20 to-purple-500/20',
     borderColor: 'border-blue-500/30',
+  },
+  {
+    icon: Star,
+    title: 'Натална Астрологична Карта',
+    description: 'Изчисли своята натална карта базирана на точната ти дата, час и място на раждане. AI анализира планетарните позиции и техните влияния.',
+    details: [
+      'Точни позиции на Слънце, Луна и Асцендент',
+      'Анализ на планетите в астрологичните домове',
+      'Важни аспекти между планетите',
+      'Детайлна AI интерпретация на картата',
+    ],
+    color: 'from-indigo-500/20 to-purple-500/20',
+    borderColor: 'border-indigo-500/30',
   },
   {
     icon: TrendingUp,
