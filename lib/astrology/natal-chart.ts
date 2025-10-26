@@ -4,7 +4,8 @@
  */
 
 import * as OriginModule from 'circular-natal-horoscope-js';
-const Origin = (OriginModule as any).default || OriginModule;
+// Be resilient to different module export shapes: default, named Origin, or module itself
+const OriginClass: any = (OriginModule as any).Origin || (OriginModule as any).default || (OriginModule as any);
 
 export interface BirthData {
   date: string; // YYYY-MM-DD
@@ -63,16 +64,35 @@ export async function calculateNatalChart(birthData: BirthData): Promise<NatalCh
     const [year, month, day] = birthData.date.split('-').map(Number);
     const [hour, minute] = birthData.time.split(':').map(Number);
 
-    // Create origin (birth data)
-    const origin = new Origin({
-      year,
-      month: month - 1, // Month is 0-indexed in the library
-      date: day,
-      hour,
-      minute,
-      latitude: birthData.latitude,
-      longitude: birthData.longitude,
-    });
+    // Create origin (birth data) — try 0-indexed month first, then 1-indexed as fallback
+    let origin: any;
+    let lastError: unknown;
+    try {
+      origin = new OriginClass({
+        year,
+        month: month - 1,
+        date: day,
+        hour,
+        minute,
+        latitude: birthData.latitude,
+        longitude: birthData.longitude,
+      });
+    } catch (e) {
+      lastError = e;
+      try {
+        origin = new OriginClass({
+          year,
+          month, // some builds expect 1-12
+          date: day,
+          hour,
+          minute,
+          latitude: birthData.latitude,
+          longitude: birthData.longitude,
+        });
+      } catch (e2) {
+        throw lastError || e2;
+      }
+    }
 
     // Get planetary positions
     const celestialBodies = origin.CelestialBodies;
@@ -160,7 +180,11 @@ export async function calculateNatalChart(birthData: BirthData): Promise<NatalCh
     return natalChart;
   } catch (error) {
     console.error('[Natal Chart] Calculation error:', error);
-    throw new Error('Failed to calculate natal chart. Please check birth data.');
+    // Preserve original error message in development for easier debugging
+    const msg = process.env.NODE_ENV !== 'production'
+      ? `Failed to calculate natal chart: ${error instanceof Error ? error.message : String(error)}`
+      : 'Failed to calculate natal chart. Please check birth data.';
+    throw new Error(msg);
   }
 }
 

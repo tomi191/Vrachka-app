@@ -8,6 +8,9 @@ const withPWA = require('next-pwa')({
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  transpilePackages: [
+    'circular-natal-horoscope-js',
+  ],
   images: {
     remotePatterns: [
       {
