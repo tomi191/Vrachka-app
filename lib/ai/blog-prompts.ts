@@ -195,8 +195,9 @@ SEO ИЗИСКВАНИЯ
 OUTPUT FORMAT
 ====================
 
-Върни резултата в следния JSON format:
+ВАЖНО: Върни САМО валиден JSON без никакъв друг текст, markdown или обяснения!
 
+Формат:
 {
   "title": "Заглавието на статията (50-60 chars)",
   "metaTitle": "SEO meta title (може да е различно от title, 50-60 chars)",
@@ -206,13 +207,15 @@ OUTPUT FORMAT
   "keywords": ["${keywords[0] || topic}", "${keywords[1] || 'астрология'}", "${keywords[2] || 'окултизъм'}"]
 }
 
-ВАЖНО:
+ПРАВИЛА:
+- Върни САМО JSON object - никакъв markdown (```)
 - Съдържанието трябва да е валиден HTML
-- Използвай bulgarian quotes „" вместо "", ако цитираш
-- CTA markers са коментари: <!-- CTA:soft -->, <!-- CTA:medium -->, <!-- CTA:strong -->, <!-- CTA:free -->, <!-- CTA:feature -->, <!-- CTA:conversion -->, <!-- CTA:urgent -->
-- НЕ пиши финално заглавие <h1> в content - то се подава отделно
+- Escape-вай правилно quotes в JSON (използвай \\" за quotes в HTML)
+- Използвай bulgarian quotes „" вместо "" ако цитираш В СЪДЪРЖАНИЕТО
+- CTA markers: <!-- CTA:soft -->, <!-- CTA:medium -->, <!-- CTA:strong -->, <!-- CTA:free -->, <!-- CTA:feature -->, <!-- CTA:conversion -->, <!-- CTA:urgent -->
+- НЕ пиши <h1> в content - то се подава отделно
 
-Започни да пишеш!`;
+Започни ДИРЕКТНО с { и завърши с }. Никакъв друг текст!`;
 }
 
 // Helper function to extract content from AI response
@@ -224,24 +227,59 @@ export function parseAIBlogResponse(aiResponse: string): {
   content: string;
   keywords: string[];
 } {
-  try {
-    // Try to parse as JSON first
-    const parsed = JSON.parse(aiResponse);
-    return parsed;
-  } catch {
-    // If not JSON, try to extract from markdown-style response
-    console.error('AI response is not valid JSON, attempting fallback parsing');
+  // Remove markdown code blocks if present (```json ... ``` or ```...```)
+  let cleanResponse = aiResponse.trim();
 
-    // Fallback: extract title, content, etc. from text
-    const titleMatch = aiResponse.match(/title[":]+\s*"([^"]+)"/i);
-    const contentMatch = aiResponse.match(/content[":]+\s*"([\s\S]+?)"/i);
+  // Remove markdown code block markers
+  cleanResponse = cleanResponse.replace(/^```json\s*/i, '').replace(/^```\s*/, '').replace(/\s*```$/, '');
+
+  try {
+    // Try to parse as JSON
+    const parsed = JSON.parse(cleanResponse);
+
+    // Validate required fields
+    if (!parsed.title || !parsed.content) {
+      throw new Error('Missing required fields in JSON response');
+    }
 
     return {
-      title: titleMatch?.[1] || 'Без заглавие',
-      metaTitle: titleMatch?.[1] || 'Без заглавие',
+      title: parsed.title,
+      metaTitle: parsed.metaTitle || parsed.title,
+      metaDescription: parsed.metaDescription || parsed.excerpt || 'Генерирана статия от Vrachka AI',
+      excerpt: parsed.excerpt || parsed.metaDescription || '',
+      content: parsed.content,
+      keywords: Array.isArray(parsed.keywords) ? parsed.keywords : [],
+    };
+  } catch (error) {
+    // If not valid JSON, try to extract from text
+    console.error('AI response is not valid JSON, attempting fallback parsing', error);
+    console.log('Raw AI response:', cleanResponse.substring(0, 500));
+
+    // Try to find JSON within the response
+    const jsonMatch = cleanResponse.match(/\{[\s\S]*"title"[\s\S]*\}/);
+    if (jsonMatch) {
+      try {
+        const parsed = JSON.parse(jsonMatch[0]);
+        return {
+          title: parsed.title || 'Без заглавие',
+          metaTitle: parsed.metaTitle || parsed.title || 'Без заглавие',
+          metaDescription: parsed.metaDescription || 'Генерирана статия от Vrachka AI',
+          excerpt: parsed.excerpt || '',
+          content: parsed.content || '',
+          keywords: Array.isArray(parsed.keywords) ? parsed.keywords : [],
+        };
+      } catch {
+        // Continue to fallback
+      }
+    }
+
+    // Last resort fallback
+    return {
+      title: 'Генерирана статия',
+      metaTitle: 'Генерирана статия',
       metaDescription: 'Генерирана статия от Vrachka AI',
-      excerpt: 'Генерирана статия от Vrachka AI',
-      content: contentMatch?.[1] || aiResponse,
+      excerpt: '',
+      content: cleanResponse,
       keywords: [],
     };
   }

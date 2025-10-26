@@ -1,6 +1,7 @@
 import { MetadataRoute } from 'next'
+import { createClient } from '@supabase/supabase-js'
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.vrachka.eu'
 
   // Static routes (only public pages - exclude auth pages)
@@ -10,6 +11,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/privacy',
     '/terms',
     '/contact',
+    '/features',
+    '/blog',
   ].map((route) => ({
     url: `${baseUrl}${route}`,
     lastModified: new Date(),
@@ -30,8 +33,37 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.9, // High priority for SEO
   }))
 
+  // Fetch blog posts for dynamic sitemap
+  let blogRoutes: MetadataRoute.Sitemap = []
+  try {
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+    if (supabaseUrl && supabaseAnonKey) {
+      const supabase = createClient(supabaseUrl, supabaseAnonKey)
+
+      const { data: blogPosts } = await supabase
+        .from('blog_posts')
+        .select('slug, updated_at')
+        .eq('published', true)
+        .order('updated_at', { ascending: false })
+
+      if (blogPosts) {
+        blogRoutes = blogPosts.map((post) => ({
+          url: `${baseUrl}/blog/${post.slug}`,
+          lastModified: new Date(post.updated_at),
+          changeFrequency: 'weekly' as const,
+          priority: 0.7,
+        }))
+      }
+    }
+  } catch (error) {
+    console.error('[Sitemap] Failed to fetch blog posts:', error)
+  }
+
   return [
     ...routes,
     ...zodiacRoutes,
+    ...blogRoutes,
   ]
 }
