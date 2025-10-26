@@ -49,7 +49,11 @@ export default async function BlogPostPage({ params }: Props) {
     notFound();
   }
 
-  await supabase.rpc('increment', { row_id: post.id, table_name: 'blog_posts', column_name: 'view_count' }).catch(() => {});
+  // Increment view count
+  await supabase
+    .from('blog_posts')
+    .update({ view_count: (post.view_count || 0) + 1 })
+    .eq('id', post.id);
 
   const categoryLabels: Record<string, string> = {
     astrology: 'Астрология',
