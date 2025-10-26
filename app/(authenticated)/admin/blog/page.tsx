@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { FileText, Plus, Eye, Pencil, Trash2, TrendingUp, Clock, Target } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { AddImagesButton } from '@/components/admin/AddImagesButton';
 
 export default async function AdminBlogPage() {
   const supabase = await createClient();
@@ -254,6 +255,10 @@ export default async function AdminBlogPage() {
                     </td>
                     <td className="py-4 px-4">
                       <div className="flex items-center justify-end gap-2">
+                        <AddImagesButton
+                          slug={post.slug}
+                          hasFeaturedImage={!!post.featured_image_url}
+                        />
                         {post.status === 'published' && (
                           <Link
                             href={`/blog/${post.slug}`}
