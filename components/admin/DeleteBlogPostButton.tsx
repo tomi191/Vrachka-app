@@ -53,7 +53,7 @@ export function DeleteBlogPostButton({ postId, postTitle, onDelete }: DeleteBlog
                 Сигурен ли си че искаш да изтриеш тази статия?
               </p>
               <p className="text-sm font-semibold text-zinc-300">
-                "{postTitle}"
+                &ldquo;{postTitle}&rdquo;
               </p>
               <p className="text-xs text-red-400 mt-2">
                 Това действие е необратимо!
