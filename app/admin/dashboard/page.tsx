@@ -1,7 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { AdminTabs } from "@/components/admin/AdminTabs";
-import { BlogCreatorTab } from "@/components/admin/BlogCreatorTab";
 import {
   Users,
   Crown,
@@ -9,9 +7,7 @@ import {
   CreditCard,
   MessageSquare,
   FileText,
-  Database,
-  Sparkles,
-  BarChart3
+  Database
 } from "lucide-react";
 
 export default async function AdminDashboardPage() {
@@ -241,24 +237,8 @@ export default async function AdminDashboardPage() {
           <p className="text-zinc-400">Управление на Vrachka платформата</p>
         </div>
 
-        {/* Tabs */}
-        <AdminTabs
-          defaultTab="overview"
-          tabs={[
-            {
-              id: 'overview',
-              label: 'Преглед',
-              icon: <BarChart3 className="w-4 h-4" />,
-              content: dashboardTab,
-            },
-            {
-              id: 'blog-creator',
-              label: 'AI Blog Creator',
-              icon: <Sparkles className="w-4 h-4" />,
-              content: <BlogCreatorTab />,
-            },
-          ]}
-        />
+        {/* Dashboard Content */}
+        {dashboardTab}
       </div>
     </div>
   );

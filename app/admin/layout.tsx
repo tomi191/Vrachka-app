@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { LayoutDashboard, Users, Crown, FileText, Settings, DollarSign } from "lucide-react";
+import { LayoutDashboard, Users, Crown, FileText, Settings, DollarSign, Sparkles } from "lucide-react";
 
 export default function AdminLayout({
   children,
@@ -22,6 +22,11 @@ export default function AdminLayout({
             href="/admin/dashboard"
             icon={<LayoutDashboard className="w-5 h-5" />}
             label="Dashboard"
+          />
+          <NavLink
+            href="/admin/blog"
+            icon={<Sparkles className="w-5 h-5" />}
+            label="Blog"
           />
           <NavLink
             href="/admin/financial"
@@ -72,6 +77,11 @@ export default function AdminLayout({
             label="Dashboard"
           />
           <MobileNavLink
+            href="/admin/blog"
+            icon={<Sparkles className="w-5 h-5" />}
+            label="Blog"
+          />
+          <MobileNavLink
             href="/admin/financial"
             icon={<DollarSign className="w-5 h-5" />}
             label="Финанси"
@@ -80,11 +90,6 @@ export default function AdminLayout({
             href="/admin/users"
             icon={<Users className="w-5 h-5" />}
             label="Users"
-          />
-          <MobileNavLink
-            href="/admin/subscriptions"
-            icon={<Crown className="w-5 h-5" />}
-            label="Subs"
           />
         </div>
       </nav>
