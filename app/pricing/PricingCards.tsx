@@ -165,6 +165,7 @@ export function PricingCards({ user }: PricingCardsProps) {
               <Feature text="Седмични и месечни прогнози" included />
               <Feature text="Натална астрологична карта" included />
               <Feature text="Синастрия - съвместимост с партньор" included />
+              <Feature text="Личен хороскоп (месечен и годишен)" included />
               <Feature text="VIP поддръжка" included />
             </ul>
             {user ? (

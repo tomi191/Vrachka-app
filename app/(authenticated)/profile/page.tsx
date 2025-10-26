@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { zodiacSigns, type ZodiacSign } from "@/lib/zodiac";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { User, Settings, LogOut, Crown, Flame, History, Star } from "lucide-react";
+import { User, Settings, LogOut, Crown, Flame, History, Star, TrendingUp } from "lucide-react";
 import { signOut } from "@/app/actions/auth";
 import { ManageSubscriptionButton } from "@/components/ManageSubscriptionButton";
 import Link from "next/link";
@@ -137,6 +137,11 @@ export default async function ProfilePage() {
               icon={<span className="text-red-400">❤️</span>}
               label="Синастрия (съвместимост)"
               href="/synastry"
+            />
+            <MenuButton
+              icon={<TrendingUp className="text-purple-400" />}
+              label="Личен хороскоп (транзити)"
+              href="/personal-horoscope"
             />
           </>
         )}

@@ -323,3 +323,105 @@ ${synastryData.aspects.slice(0, 10).map((a: any) =>
 
 ВАЖНО: Пиши на БЪЛГАРСКИ език, естествено и топло. Използвай "ти" и "вие" форма. Бъди позитивен но реалистичен.`;
 }
+
+/**
+ * Synastry System Prompt
+ */
+export const SYNASTRY_SYSTEM_PROMPT = `Ти си опитна астроложка специализирана в синастрия (анализ на съвместимост между партньори) на български език.
+
+ВАЖНО:
+- Пиши на съвършен български език
+- Използвай топъл, подкрепящ тон
+- Фокусирай се върху растежа на връзката
+- Представяй предизвикателствата като възможности за развитие
+- Бъди практична и конкретна
+- Избягвай фатализъм - всяка връзка има потенциал`;
+
+/**
+ * Generate Personal Horoscope interpretation prompt for AI
+ */
+export function getPersonalHoroscopePrompt(
+  horoscopeData: any,
+  userName: string,
+  forecastType: 'monthly' | 'yearly'
+): string {
+  const period = forecastType === 'monthly' ? 'месец' : 'година';
+  const periodCaps = forecastType === 'monthly' ? 'МЕСЕЧЕН' : 'ГОДИШЕН';
+
+  return `Направи детайлна астрологична интерпретация на ${period}ната прогноза за ${userName} базирана на натална карта и текущи транзити.
+
+**${periodCaps} ХОРОСКОП:**
+
+**Период:** ${new Date(horoscopeData.start_date).toLocaleDateString('bg-BG')} - ${new Date(horoscopeData.end_date).toLocaleDateString('bg-BG')}
+
+**Натална Карта:**
+- Слънце: ${horoscopeData.natal_chart.sun.sign} ${horoscopeData.natal_chart.sun.degree}°
+- Луна: ${horoscopeData.natal_chart.moon.sign} ${horoscopeData.natal_chart.moon.degree}°
+- Асцендент: ${horoscopeData.natal_chart.rising.sign} ${horoscopeData.natal_chart.rising.degree}°
+
+**Текущи Планетни Позиции:**
+${Object.entries(horoscopeData.current_planets).map(([planet, pos]: [string, any]) =>
+  `- ${planet}: ${pos.sign} ${pos.degree.toFixed(1)}°`
+).join('\n')}
+
+**Важни Транзити (${horoscopeData.transits.length} активни):**
+${horoscopeData.transits.slice(0, 8).map((t: any) =>
+  `- ${t.transiting_planet} ${getAspectSymbol(t.aspect_type)} натален ${t.natal_planet} (${t.strength}, ${t.nature}): ${t.influence}`
+).join('\n')}
+
+**Оценки на Теми:**
+- Кариера: ${horoscopeData.themes.career.toFixed(1)}/10
+- Любов: ${horoscopeData.themes.love.toFixed(1)}/10
+- Здраве: ${horoscopeData.themes.health.toFixed(1)}/10
+- Финанси: ${horoscopeData.themes.finances.toFixed(1)}/10
+- Личностен растеж: ${horoscopeData.themes.personal_growth.toFixed(1)}/10
+
+**Highlights:**
+${horoscopeData.highlights.map((h: string) => `- ${h}`).join('\n')}
+
+**Challenges:**
+${horoscopeData.challenges.map((c: string) => `- ${c}`).join('\n')}
+
+---
+
+Моля, структурирай отговора по следния начин на БЪЛГАРСКИ ЕЗИК:
+
+## OVERVIEW
+(2-3 параграфа обща оценка на ${period}а - главни теми, енергия, какво да очаква ${userName})
+
+## CAREER
+(2 параграфа за кариера и професионален живот - възможности, предизвикателства, съвети)
+
+## LOVE
+(2 параграфа за любовен живот - връзки, романтика, социални отношения)
+
+## HEALTH
+(1-2 параграфа за здраве и жизненост - на какво да обърне внимание, как да се грижи за себе си)
+
+## FINANCES
+(1-2 параграфа за финанси и материален живот - разходи, приходи, инвестиции)
+
+## PERSONAL_GROWTH
+(2 параграфа за личностно развитие - духовен растеж, трансформация, саморазвитие)
+
+## KEY_DATES
+(3-5 важни дати или периоди през ${period}а - когато транзитите са най-силни)
+
+## ADVICE
+(Практични съвети - 5-6 bullet points за успешен ${period})
+
+ВАЖНО: Пиши на БЪЛГАРСКИ език, директно и лично към ${userName}. Използвай "ти" форма. Бъди позитивен, вдъхновяващ и практичен.`;
+}
+
+/**
+ * Personal Horoscope System Prompt
+ */
+export const PERSONAL_HOROSCOPE_SYSTEM_PROMPT = `Ти си опитна астроложка специализирана в транзити и лични прогнози на български език.
+
+ВАЖНО:
+- Пиши на съвършен български език
+- Използвай топъл, вдъхновяващ тон
+- Фокусирай се върху личностното развитие и възможности
+- Представяй транзитите като космически "weather" - нещо което можем да навигираме
+- Бъди конкретна с дати и съвети
+- Избягвай страх - дори "трудните" транзити са възможности за растеж`;

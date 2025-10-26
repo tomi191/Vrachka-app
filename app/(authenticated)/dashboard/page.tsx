@@ -2,7 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getGreeting, getDayOfWeek, formatDate } from "@/lib/utils";
 import { zodiacSigns, type ZodiacSign } from "@/lib/zodiac";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Sparkles, CreditCard, Star, Heart } from "lucide-react";
+import { Sparkles, CreditCard, Star, Heart, TrendingUp } from "lucide-react";
 import { HoroscopeCard } from "@/components/HoroscopeCard";
 import { PushNotificationPrompt } from "@/components/PushNotificationPrompt";
 import Link from "next/link";
@@ -91,6 +91,24 @@ export default async function DashboardPage() {
               </p>
               <Link href="/synastry" className="block w-full px-4 py-3 bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 text-white rounded-lg transition-colors text-center font-semibold">
                 Анализирай съвместимостта
+              </Link>
+            </CardContent>
+          </Card>
+
+          {/* Personal Horoscope Card */}
+          <Card className="glass-card border-purple-500/30">
+            <CardHeader>
+              <CardTitle className="text-zinc-50 flex items-center gap-2">
+                <TrendingUp className="w-5 h-5 text-purple-400" />
+                Личен Хороскоп
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-zinc-300 mb-4">
+                Персонализирана месечна или годишна прогноза базирана на твоята натална карта и текущи транзити.
+              </p>
+              <Link href="/personal-horoscope" className="block w-full px-4 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white rounded-lg transition-colors text-center font-semibold">
+                Генерирай прогноза
               </Link>
             </CardContent>
           </Card>
