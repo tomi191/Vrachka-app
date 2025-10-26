@@ -1,0 +1,31 @@
+<svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Vrachka mark">
+  <defs>
+    <linearGradient id="vm-grad" x1="0" y1="0" x2="128" y2="0" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#9333ea"/>
+      <stop offset="50%" stop-color="#ec4899"/>
+      <stop offset="100%" stop-color="#9333ea"/>
+    </linearGradient>
+    <radialGradient id="vm-glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+    <mask id="vm-crescent" maskUnits="userSpaceOnUse">
+      <rect width="128" height="128" fill="black"/>
+      <circle cx="64" cy="64" r="36" fill="white"/>
+      <circle cx="78" cy="56" r="34" fill="black"/>
+    </mask>
+  </defs>
+
+  <!-- background (transparent) -->
+  <!-- ring -->
+  <circle cx="64" cy="64" r="48" fill="none" stroke="url(#vm-grad)" stroke-width="4"/>
+  <circle cx="64" cy="64" r="40" fill="url(#vm-glow)" opacity="0.2"/>
+  <!-- crescent -->
+  <g mask="url(#vm-crescent)">
+    <circle cx="64" cy="64" r="36" fill="url(#vm-grad)"/>
+  </g>
+  <!-- star -->
+  <g transform="translate(84,36)">
+    <path d="M10 0 L13 6.5 L20 7.3 L15 12 L16.5 19 L10 15.5 L3.5 19 L5 12 L0 7.3 L7 6.5 Z" fill="#EDE9FE"/>
+  </g>
+</svg>
