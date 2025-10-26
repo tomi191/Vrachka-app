@@ -90,12 +90,43 @@ export async function POST(req: NextRequest) {
 
     // Calculate natal chart
     console.log('[Natal Chart] Calculating chart for user:', user.id);
-    const chart = await calculateNatalChart(birthData);
+    console.log('[Natal Chart] Birth data:', JSON.stringify(birthData, null, 2));
+
+    let chart;
+    try {
+      chart = await calculateNatalChart(birthData);
+      console.log('[Natal Chart] Chart calculated successfully');
+    } catch (chartError) {
+      console.error('[Natal Chart] Chart calculation failed:', chartError);
+      return NextResponse.json(
+        { error: 'Failed to calculate natal chart. Please check birth data and try again.' },
+        { status: 500 }
+      );
+    }
 
     // Generate AI interpretation
     console.log('[Natal Chart] Generating AI interpretation...');
     const firstName = profile?.full_name?.split(' ')[0];
-    const interpretation = await generateNatalChartInterpretation(chart, firstName);
+
+    let interpretation;
+    try {
+      interpretation = await generateNatalChartInterpretation(chart, firstName);
+      console.log('[Natal Chart] Interpretation generated successfully');
+    } catch (interpError) {
+      console.error('[Natal Chart] Interpretation generation failed:', interpError);
+      // Still save chart even if interpretation fails
+      interpretation = {
+        overview: 'Интерпретацията временно не е налична. Моля, опитайте отново по-късно.',
+        sun_interpretation: '',
+        moon_interpretation: '',
+        rising_interpretation: '',
+        major_aspects: '',
+        life_path: '',
+        strengths: [],
+        challenges: [],
+        recommendations: [],
+      };
+    }
 
     // Save to database
     const { data: savedChart, error: saveError } = await supabase
