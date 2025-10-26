@@ -9,6 +9,8 @@ export type AIFeature =
   | 'oracle_basic'
   | 'oracle_premium'
   | 'natal_chart'
+  | 'synastry'
+  | 'personal_horoscope'
   | 'general';
 
 export interface AIModel {
@@ -100,6 +102,12 @@ export const FEATURE_MODEL_MAP: Record<AIFeature, string[]> = {
 
   // Natal Chart - CLAUDE (best quality)
   natal_chart: ['claude_sonnet', 'gemini_flash', 'deepseek'],
+
+  // Synastry - CLAUDE (premium compatibility analysis)
+  synastry: ['claude_sonnet', 'gemini_flash', 'deepseek'],
+
+  // Personal Horoscope - CLAUDE (premium transit analysis)
+  personal_horoscope: ['claude_sonnet', 'gemini_flash', 'deepseek'],
 
   // General fallback
   general: ['gemini_flash', 'deepseek', 'claude_sonnet', 'gpt4_turbo'],

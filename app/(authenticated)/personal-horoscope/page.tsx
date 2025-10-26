@@ -24,7 +24,7 @@ export default async function PersonalHoroscopePage() {
   const { data: subscription } = await supabase
     .from('subscriptions')
     .select('plan_type, status')
-    .eq('id', user.id)
+    .eq('user_id', user.id)
     .single();
 
   // Check if user has Ultimate plan

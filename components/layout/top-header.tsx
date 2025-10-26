@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { Flame, Bell } from "lucide-react";
 import { NotificationsDropdown } from "@/components/NotificationsDropdown";
 
@@ -44,12 +45,56 @@ export function TopHeader({ streak = 0, showNotifications = true }: TopHeaderPro
     <header className="sticky top-0 z-40 bg-mystic-950/95 backdrop-blur-lg border-b border-mystic-800">
       <div className="container max-w-lg mx-auto px-4 h-16 flex items-center justify-between">
         {/* Logo */}
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-mystic-500 to-cosmic-500 flex items-center justify-center text-white font-bold text-sm">
-            V
+        <Link href="/dashboard" className="flex items-center gap-2 group">
+          <div className="relative">
+            {/* SVG Logo */}
+            <svg width="32" height="32" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="transition-all duration-300 group-hover:scale-110">
+              <defs>
+                <radialGradient id="logo-grad" cx="50%" cy="40%" r="60%">
+                  <stop offset="0%" stop-color="#e879f9"/>
+                  <stop offset="30%" stop-color="#c084fc"/>
+                  <stop offset="70%" stop-color="#8b5cf6"/>
+                  <stop offset="100%" stop-color="#7c3aed"/>
+                </radialGradient>
+                <radialGradient id="logo-glow" cx="50%" cy="50%" r="50%">
+                  <stop offset="0%" stop-color="#ffffff" stop-opacity="0.4"/>
+                  <stop offset="50%" stop-color="#e879f9" stop-opacity="0.2"/>
+                  <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+                </radialGradient>
+                <mask id="logo-mask" maskUnits="userSpaceOnUse">
+                  <rect width="48" height="48" fill="black"/>
+                  <circle cx="24" cy="24" r="18" fill="white"/>
+                  <ellipse cx="20" cy="20" rx="6" ry="8" fill="black"/>
+                </mask>
+              </defs>
+
+              {/* Outer glow */}
+              <circle cx="24" cy="24" r="22" fill="url(#logo-glow)" opacity="0.3"/>
+
+              {/* Crystal ball */}
+              <g mask="url(#logo-mask)">
+                <circle cx="24" cy="24" r="18" fill="url(#logo-grad)"/>
+              </g>
+
+              {/* Central star */}
+              <g transform="translate(24,24) scale(0.6)">
+                <path d="M0 -6 L1.8 -1.8 L6 0 L1.8 1.8 L0 6 L-1.8 1.8 L-6 0 L-1.8 -1.8 Z" fill="#fef3c7"/>
+              </g>
+
+              {/* Sparkles */}
+              <circle cx="8" cy="14" r="1" fill="#fbbf24" opacity="0.7">
+                <animate attributeName="opacity" values="0.3;1;0.3" dur="2s" repeatCount="indefinite"/>
+              </circle>
+              <circle cx="40" cy="18" r="0.8" fill="#fbbf24" opacity="0.6">
+                <animate attributeName="opacity" values="0.5;1;0.5" dur="3s" repeatCount="indefinite"/>
+              </circle>
+            </svg>
+
+            {/* Glow effect on hover */}
+            <div className="absolute inset-0 rounded-full bg-gradient-to-br from-purple-400/20 to-pink-400/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-sm"></div>
           </div>
-          <span className="font-bold text-lg gradient-text">Vrachka</span>
-        </div>
+          <span className="font-bold text-lg gradient-text group-hover:text-white transition-colors duration-300">Vrachka</span>
+        </Link>
 
         {/* Right side */}
         <div className="flex items-center gap-4">

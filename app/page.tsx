@@ -10,6 +10,7 @@ import { HoverCardWrapper } from '@/components/ui/hover-card-wrapper'
 import { GradientText } from '@/components/ui/gradient-text'
 import { BentoHero } from '@/components/landing/BentoHero'
 import { ProblemSolution } from '@/components/landing/ProblemSolution'
+import { VrachkaStory } from '@/components/landing/VrachkaStory'
 import { StatsBar } from '@/components/landing/StatsBar'
 import { BentoFeatures } from '@/components/landing/BentoFeatures'
 import { ComparisonTable } from '@/components/landing/ComparisonTable'
@@ -205,7 +206,7 @@ export default async function LandingPage() {
 
             {/* Social Proof */}
             <p className="text-sm text-zinc-500 pt-4">
-              Присъедини се към 10,000+ потребители в тяхното духовно пътуване
+              Присъедини се към 5,000+ потребители в тяхното духовно пътуване
             </p>
           </div>
 
@@ -219,6 +220,9 @@ export default async function LandingPage() {
 
       {/* Problem → Solution Section */}
       <ProblemSolution />
+
+      {/* Vrachka Story Section */}
+      <VrachkaStory />
 
       {/* Free Horoscopes Section */}
       <section className="py-20 px-6">

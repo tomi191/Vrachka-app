@@ -20,11 +20,55 @@ export function Navigation() {
     <>
       <nav className="fixed top-0 w-full z-50 border-b border-zinc-800/50 bg-brand-950/80 backdrop-blur-xl">
         <div className="container mx-auto px-6 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2" onClick={closeMobileMenu}>
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-accent-500 to-accent-700 flex items-center justify-center">
-              <Sparkles className="w-5 h-5 text-white" />
+          <Link href="/" className="flex items-center gap-2 group" onClick={closeMobileMenu}>
+            <div className="relative">
+              {/* SVG Logo */}
+              <svg width="32" height="32" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="transition-all duration-300 group-hover:scale-110">
+                <defs>
+                  <radialGradient id="nav-logo-grad" cx="50%" cy="40%" r="60%">
+                    <stop offset="0%" stop-color="#e879f9"/>
+                    <stop offset="30%" stop-color="#c084fc"/>
+                    <stop offset="70%" stop-color="#8b5cf6"/>
+                    <stop offset="100%" stop-color="#7c3aed"/>
+                  </radialGradient>
+                  <radialGradient id="nav-logo-glow" cx="50%" cy="50%" r="50%">
+                    <stop offset="0%" stop-color="#ffffff" stop-opacity="0.4"/>
+                    <stop offset="50%" stop-color="#e879f9" stop-opacity="0.2"/>
+                    <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+                  </radialGradient>
+                  <mask id="nav-logo-mask" maskUnits="userSpaceOnUse">
+                    <rect width="48" height="48" fill="black"/>
+                    <circle cx="24" cy="24" r="18" fill="white"/>
+                    <ellipse cx="20" cy="20" rx="6" ry="8" fill="black"/>
+                  </mask>
+                </defs>
+
+                {/* Outer glow */}
+                <circle cx="24" cy="24" r="22" fill="url(#nav-logo-glow)" opacity="0.3"/>
+
+                {/* Crystal ball */}
+                <g mask="url(#nav-logo-mask)">
+                  <circle cx="24" cy="24" r="18" fill="url(#nav-logo-grad)"/>
+                </g>
+
+                {/* Central star */}
+                <g transform="translate(24,24) scale(0.6)">
+                  <path d="M0 -6 L1.8 -1.8 L6 0 L1.8 1.8 L0 6 L-1.8 1.8 L-6 0 L-1.8 -1.8 Z" fill="#fef3c7"/>
+                </g>
+
+                {/* Sparkles */}
+                <circle cx="8" cy="14" r="1" fill="#fbbf24" opacity="0.7">
+                  <animate attributeName="opacity" values="0.3;1;0.3" dur="2s" repeatCount="indefinite"/>
+                </circle>
+                <circle cx="40" cy="18" r="0.8" fill="#fbbf24" opacity="0.6">
+                  <animate attributeName="opacity" values="0.5;1;0.5" dur="3s" repeatCount="indefinite"/>
+                </circle>
+              </svg>
+
+              {/* Glow effect on hover */}
+              <div className="absolute inset-0 rounded-full bg-gradient-to-br from-purple-400/20 to-pink-400/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-sm"></div>
             </div>
-            <span className="font-semibold text-lg text-zinc-50">Vrachka</span>
+            <span className="font-semibold text-lg text-zinc-50 group-hover:text-white transition-colors duration-300">Vrachka</span>
           </Link>
 
           {/* Desktop Menu */}

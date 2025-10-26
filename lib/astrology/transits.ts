@@ -5,7 +5,13 @@
  * Те показват текущи влияния, възможности и предизвикателства.
  */
 
-import type { NatalChart, PlanetPosition } from './calculations';
+import type { NatalChart } from './natal-chart';
+
+export interface PlanetPosition {
+  sign: string;
+  degree: number;
+  house: number;
+}
 
 export interface Transit {
   transiting_planet: string;
@@ -251,7 +257,20 @@ export function calculateTransits(
   const transits: Transit[] = [];
 
   for (const [transitingPlanetName, transitingPos] of Object.entries(currentPlanets)) {
-    for (const [natalPlanetName, natalPos] of Object.entries(natalChart.planets)) {
+    // Iterate through all planets in the natal chart
+    const planetKeys = ['sun', 'moon', 'mercury', 'venus', 'mars', 'jupiter', 'saturn', 'uranus', 'neptune', 'pluto'] as const;
+
+    for (const natalPlanetKey of planetKeys) {
+      const natalPlanet = natalChart[natalPlanetKey];
+      if (!natalPlanet) continue;
+
+      // Convert Planet to PlanetPosition for calculation
+      const natalPos: PlanetPosition = {
+        sign: natalPlanet.sign,
+        degree: natalPlanet.degree,
+        house: natalPlanet.house,
+      };
+
       const transitingDegree = getAbsoluteDegree(transitingPos);
       const natalDegree = getAbsoluteDegree(natalPos);
 
@@ -260,13 +279,13 @@ export function calculateTransits(
       if (aspect) {
         transits.push({
           transiting_planet: transitingPlanetName,
-          natal_planet: natalPlanetName,
+          natal_planet: natalPlanet.name,
           angle: ASPECT_ANGLES[aspect.type],
           aspect_type: aspect.type,
           orb: aspect.orb,
           strength: aspect.strength,
           nature: getAspectNature(aspect.type),
-          influence: getTransitInfluence(transitingPlanetName, natalPlanetName, aspect.type),
+          influence: getTransitInfluence(transitingPlanetName, natalPlanet.name, aspect.type),
         });
       }
     }
