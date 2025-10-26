@@ -14,11 +14,19 @@ import { OracleConversationsTab } from "@/components/admin/OracleConversationsTa
 export default async function AdminContentPage() {
   const supabase = await createClient();
 
+  // Debug: Check auth session
+  const { data: { user }, error: authError } = await supabase.auth.getUser();
+  console.log('[ADMIN CONTENT] Auth check:', {
+    userId: user?.id,
+    email: user?.email,
+    authError
+  });
+
   const [
-    { data: dailyContent },
-    { data: tarotCards },
-    { data: tarotReadings },
-    { data: oracleConversations },
+    { data: dailyContent, error: dailyError },
+    { data: tarotCards, error: cardsError },
+    { data: tarotReadings, error: readingsError },
+    { data: oracleConversations, error: oracleError },
   ] = await Promise.all([
     supabase
       .from("daily_content")
@@ -37,6 +45,20 @@ export default async function AdminContentPage() {
       .order("asked_at", { ascending: false })
       .limit(100),
   ]);
+
+  // Debug: Log query results
+  console.log('[ADMIN CONTENT] Query results:', {
+    dailyContent: dailyContent?.length || 0,
+    tarotCards: tarotCards?.length || 0,
+    tarotReadings: tarotReadings?.length || 0,
+    oracleConversations: oracleConversations?.length || 0,
+    errors: {
+      dailyError,
+      cardsError,
+      readingsError,
+      oracleError
+    }
+  });
 
   // Count total items
   const { count: totalDailyContent } = await supabase
