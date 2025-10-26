@@ -208,10 +208,10 @@ OUTPUT FORMAT
 }
 
 ПРАВИЛА:
-- Върни САМО JSON object - никакъв markdown (```)
+- Върни САМО JSON object - никакъв markdown или code blocks
 - Съдържанието трябва да е валиден HTML
-- Escape-вай правилно quotes в JSON (използвай \\" за quotes в HTML)
-- Използвай bulgarian quotes „" вместо "" ако цитираш В СЪДЪРЖАНИЕТО
+- Escape quotes properly in JSON (използвай \\" за quotes в HTML strings)
+- Use standard quotes for all citations
 - CTA markers: <!-- CTA:soft -->, <!-- CTA:medium -->, <!-- CTA:strong -->, <!-- CTA:free -->, <!-- CTA:feature -->, <!-- CTA:conversion -->, <!-- CTA:urgent -->
 - НЕ пиши <h1> в content - то се подава отделно
 
