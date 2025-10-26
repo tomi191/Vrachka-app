@@ -14,19 +14,39 @@ import { OracleConversationsTab } from "@/components/admin/OracleConversationsTa
 export default async function AdminContentPage() {
   const supabase = await createClient();
 
-  // Debug: Check auth session
-  const { data: { user }, error: authError } = await supabase.auth.getUser();
-  console.log('[ADMIN CONTENT] Auth check:', {
-    userId: user?.id,
-    email: user?.email,
-    authError
-  });
+  // Verify user is admin (security check)
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    throw new Error('Unauthorized');
+  }
+
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('is_admin')
+    .eq('id', user.id)
+    .single();
+
+  if (!profile?.is_admin) {
+    throw new Error('Forbidden - Admin access required');
+  }
+
+  // Fetch oracle conversations using RPC function (includes user emails)
+  const { data: oracleConversationsRaw } = await supabase
+    .rpc('get_oracle_conversations_admin', { limit_count: 100 });
+
+  // Map to expected format for OracleConversationsTab component
+  const oracleConversations = oracleConversationsRaw?.map((conv: any) => ({
+    ...conv,
+    profiles: {
+      full_name: conv.user_full_name,
+      email: conv.user_email,
+    }
+  })) || [];
 
   const [
-    { data: dailyContent, error: dailyError },
-    { data: tarotCards, error: cardsError },
-    { data: tarotReadings, error: readingsError },
-    { data: oracleConversations, error: oracleError },
+    { data: dailyContent },
+    { data: tarotCards },
+    { data: tarotReadings },
   ] = await Promise.all([
     supabase
       .from("daily_content")
@@ -36,29 +56,10 @@ export default async function AdminContentPage() {
     supabase.from("tarot_cards").select("*").order("id", { ascending: true }),
     supabase
       .from("tarot_readings")
-      .select("*, profiles(full_name, email)")
+      .select("*, profiles(full_name)")
       .order("read_at", { ascending: false })
       .limit(50),
-    supabase
-      .from("oracle_conversations")
-      .select("*, profiles(full_name, email)")
-      .order("asked_at", { ascending: false })
-      .limit(100),
   ]);
-
-  // Debug: Log query results
-  console.log('[ADMIN CONTENT] Query results:', {
-    dailyContent: dailyContent?.length || 0,
-    tarotCards: tarotCards?.length || 0,
-    tarotReadings: tarotReadings?.length || 0,
-    oracleConversations: oracleConversations?.length || 0,
-    errors: {
-      dailyError,
-      cardsError,
-      readingsError,
-      oracleError
-    }
-  });
 
   // Count total items
   const { count: totalDailyContent } = await supabase
@@ -73,9 +74,7 @@ export default async function AdminContentPage() {
     .from("tarot_readings")
     .select("*", { count: "exact", head: true });
 
-  const { count: totalOracleConversations } = await supabase
-    .from("oracle_conversations")
-    .select("*", { count: "exact", head: true });
+  const totalOracleConversations = oracleConversations?.length || 0;
 
   return (
     <div className="min-h-screen bg-brand-950 p-6">
