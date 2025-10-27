@@ -64,7 +64,7 @@ const nextConfig = {
               // Remove 'unsafe-eval' to harden security; keep 'unsafe-inline' temporarily
               "script-src 'self' 'unsafe-inline' https://vercel.live https://va.vercel-scripts.com https://www.googletagmanager.com",
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-              "img-src 'self' data: blob: https://*.supabase.co https://vercel.live",
+              "img-src 'self' data: blob: https://*.supabase.co https://vercel.live https://source.unsplash.com https://images.unsplash.com",
               "font-src 'self' https://fonts.gstatic.com",
               "connect-src 'self' https://*.supabase.co https://openrouter.ai https://api.stripe.com https://vercel.live wss://*.supabase.co https://*.google-analytics.com https://analytics.google.com",
               "frame-src 'self' https://js.stripe.com https://hooks.stripe.com",

@@ -108,17 +108,38 @@ export async function POST(req: NextRequest) {
     }
 
     // Call Claude Haiku (fast and cheap - $0.0002 per request)
-    const response = await createOpenRouterCompletion({
-      model: 'anthropic/claude-3-haiku',
-      messages: [
+    let response;
+    try {
+      response = await createOpenRouterCompletion({
+        model: 'anthropic/claude-3-haiku',
+        messages: [
+          {
+            role: 'user',
+            content: customPrompt,
+          },
+        ],
+        temperature: 0.9, // More creative for ideas
+        max_tokens: 4000,
+      });
+    } catch (aiError) {
+      console.error('OpenRouter API call failed:', aiError);
+      return NextResponse.json(
         {
-          role: 'user',
-          content: customPrompt,
+          error: 'AI service error',
+          details: aiError instanceof Error ? aiError.message : 'Failed to generate ideas'
         },
-      ],
-      temperature: 0.9, // More creative for ideas
-      max_tokens: 4000,
-    });
+        { status: 500 }
+      );
+    }
+
+    // Validate response structure
+    if (!response || !response.choices || !response.choices[0]?.message?.content) {
+      console.error('Invalid AI response structure:', response);
+      return NextResponse.json(
+        { error: 'Invalid AI response - no content returned' },
+        { status: 500 }
+      );
+    }
 
     // Parse response
     let ideas;
@@ -129,12 +150,17 @@ export async function POST(req: NextRequest) {
         .replace(/^```json\s*/i, '')
         .replace(/^```\s*/, '')
         .replace(/\s*```$/, '');
+
+      console.log('[Ideas] Parsing AI response, length:', cleanContent.length);
       ideas = JSON.parse(cleanContent);
     } catch (parseError) {
       console.error('Failed to parse AI response:', parseError);
       console.log('Raw response:', response.choices[0]?.message?.content?.substring(0, 500) || 'No content');
       return NextResponse.json(
-        { error: 'AI response was not valid JSON' },
+        {
+          error: 'AI response was not valid JSON',
+          details: parseError instanceof Error ? parseError.message : 'Parse error'
+        },
         { status: 500 }
       );
     }

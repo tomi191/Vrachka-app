@@ -74,7 +74,8 @@ CTA СТРАТЕГИЯ:
 • 1 CTA marker в средата (soft): <!-- CTA:soft --> (примерно след 40% от съдържанието)
 • 1 CTA marker в края (medium): <!-- CTA:medium --> (преди заключението)
 
-ДЪЛЖИНА: ${targetWordCount} думи (± 10%)
+ДЪЛЖИНА: ТОЧНО ${targetWordCount} думи (минимум ${Math.floor(targetWordCount * 0.9)} думи, максимум ${Math.ceil(targetWordCount * 1.1)} думи)
+ВАЖНО: Брой думите си преди да отговориш! Текстът ТРЯБВА да е между ${Math.floor(targetWordCount * 0.9)}-${Math.ceil(targetWordCount * 1.1)} думи!
 
 HOOK ПРИМЕРИ:
 - Започни с интригуващ въпрос
@@ -96,7 +97,8 @@ CTA СТРАТЕГИЯ:
 • 2 CTA markers в средата (features): <!-- CTA:feature --> (след основни секции)
 • 1 CTA marker в края (strong): <!-- CTA:strong --> (преди заключението)
 
-ДЪЛЖИНА: ${targetWordCount} думи (± 10%)
+ДЪЛЖИНА: ТОЧНО ${targetWordCount} думи (минимум ${Math.floor(targetWordCount * 0.9)} думи, максимум ${Math.ceil(targetWordCount * 1.1)} думи)
+ВАЖНО: Брой думите си преди да отговориш! Текстът ТРЯБВА да е между ${Math.floor(targetWordCount * 0.9)}-${Math.ceil(targetWordCount * 1.1)} думи!
 
 СТРУКТУРА:
 1. Кратко въведение (защо е важно)
@@ -123,7 +125,8 @@ CTA СТРАТЕГИЯ:
 • CTA след всяка основна секция
 • Финален силен CTA в края
 
-ДЪЛЖИНА: ${targetWordCount} думи (± 10%)
+ДЪЛЖИНА: ТОЧНО ${targetWordCount} думи (минимум ${Math.floor(targetWordCount * 0.9)} думи, максимум ${Math.ceil(targetWordCount * 1.1)} думи)
+ВАЖНО: Брой думите си преди да отговориш! Текстът ТРЯБВА да е между ${Math.floor(targetWordCount * 0.9)}-${Math.ceil(targetWordCount * 1.1)} думи!
 
 ЕЛЕМЕНТИ:
 • "Какво получаваш" секция
@@ -147,7 +150,8 @@ CTA СТРАТЕГИЯ:
 • Repetition на ключово benefit
 • Всеки CTA звучи по различен начин
 
-ДЪЛЖИНА: ${targetWordCount} думи (± 10%)
+ДЪЛЖИНА: ТОЧНО ${targetWordCount} думи (минимум ${Math.floor(targetWordCount * 0.9)} думи, максимум ${Math.ceil(targetWordCount * 1.1)} думи)
+ВАЖНО: Брой думите си преди да отговориш! Текстът ТРЯБВА да е между ${Math.floor(targetWordCount * 0.9)}-${Math.ceil(targetWordCount * 1.1)} думи!
 
 СТРУКТУРА:
 1. Hook - емоционална ситуация (100 думи)
@@ -233,8 +237,15 @@ export function parseAIBlogResponse(aiResponse: string): {
   // Remove markdown code block markers
   cleanResponse = cleanResponse.replace(/^```json\s*/i, '').replace(/^```\s*/, '').replace(/\s*```$/, '');
 
+  // Fix common JSON issues with control characters
+  // First, try to extract JSON object if there's extra text
+  const jsonMatch = cleanResponse.match(/\{[\s\S]*\}/);
+  if (jsonMatch) {
+    cleanResponse = jsonMatch[0];
+  }
+
   try {
-    // Try to parse as JSON
+    // Try to parse as JSON directly
     const parsed = JSON.parse(cleanResponse);
 
     // Validate required fields
@@ -251,29 +262,71 @@ export function parseAIBlogResponse(aiResponse: string): {
       keywords: Array.isArray(parsed.keywords) ? parsed.keywords : [],
     };
   } catch (error) {
-    // If not valid JSON, try to extract from text
-    console.error('AI response is not valid JSON, attempting fallback parsing', error);
-    console.log('Raw AI response:', cleanResponse.substring(0, 500));
+    // If parsing failed, try to fix control characters and malformed JSON
+    console.error('AI response is not valid JSON, attempting repair', error);
+    console.log('Raw AI response (first 500 chars):', cleanResponse.substring(0, 500));
 
-    // Try to find JSON within the response
-    const jsonMatch = cleanResponse.match(/\{[\s\S]*"title"[\s\S]*\}/);
-    if (jsonMatch) {
-      try {
-        const parsed = JSON.parse(jsonMatch[0]);
+    try {
+      // Attempt to fix common JSON issues:
+      // 1. Replace literal newlines in strings with \n
+      // 2. Replace literal tabs with \t
+      // 3. Remove any control characters
+      let repairedJson = cleanResponse;
+
+      // Try to intelligently fix string values with control characters
+      // This is a heuristic approach - find "key": "value" patterns and escape them
+      repairedJson = repairedJson.replace(
+        /"(content|excerpt|metaDescription|metaTitle|title)":\s*"([\s\S]*?)"/g,
+        (match, key, value) => {
+          // Escape control characters in the value
+          const escapedValue = value
+            .replace(/\\/g, '\\\\')  // Escape existing backslashes first
+            .replace(/"/g, '\\"')    // Escape quotes
+            .replace(/\n/g, '\\n')   // Escape newlines
+            .replace(/\r/g, '\\r')   // Escape carriage returns
+            .replace(/\t/g, '\\t')   // Escape tabs
+            .replace(/[\x00-\x1F\x7F]/g, ''); // Remove other control chars
+
+          return `"${key}": "${escapedValue}"`;
+        }
+      );
+
+      const parsed = JSON.parse(repairedJson);
+
+      if (parsed.title && parsed.content) {
         return {
-          title: parsed.title || 'Без заглавие',
-          metaTitle: parsed.metaTitle || parsed.title || 'Без заглавие',
-          metaDescription: parsed.metaDescription || 'Генерирана статия от Vrachka AI',
-          excerpt: parsed.excerpt || '',
-          content: parsed.content || '',
+          title: parsed.title,
+          metaTitle: parsed.metaTitle || parsed.title,
+          metaDescription: parsed.metaDescription || parsed.excerpt || 'Генерирана статия от Vrachka AI',
+          excerpt: parsed.excerpt || parsed.metaDescription || '',
+          content: parsed.content,
           keywords: Array.isArray(parsed.keywords) ? parsed.keywords : [],
         };
-      } catch {
-        // Continue to fallback
       }
+    } catch (repairError) {
+      console.error('JSON repair also failed:', repairError);
     }
 
-    // Last resort fallback
+    // Last resort: Try to manually extract fields using regex
+    try {
+      const titleMatch = cleanResponse.match(/"title":\s*"([^"]+)"/);
+      const contentMatch = cleanResponse.match(/"content":\s*"([\s\S]*?)"\s*,\s*"keywords"/);
+
+      if (titleMatch && contentMatch) {
+        return {
+          title: titleMatch[1],
+          metaTitle: titleMatch[1],
+          metaDescription: 'Генерирана статия от Vrachka AI',
+          excerpt: '',
+          content: contentMatch[1].replace(/\\n/g, '\n').replace(/\\"/g, '"'),
+          keywords: [],
+        };
+      }
+    } catch (extractError) {
+      console.error('Manual extraction also failed:', extractError);
+    }
+
+    // Final fallback - return the whole response as content
     return {
       title: 'Генерирана статия',
       metaTitle: 'Генерирана статия',
