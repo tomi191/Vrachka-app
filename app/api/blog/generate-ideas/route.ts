@@ -107,9 +107,9 @@ export async function POST(req: NextRequest) {
       customPrompt += `\nПРИОРИТЕТ КЪМ КАТЕГОРИЯ: ${category}\n`;
     }
 
-    // Call Gemini Free (no cost!)
+    // Call Claude Haiku (fast and cheap - $0.0002 per request)
     const response = await createOpenRouterCompletion({
-      model: 'google/gemini-2.0-flash-exp:free',
+      model: 'anthropic/claude-3-haiku',
       messages: [
         {
           role: 'user',
@@ -152,8 +152,8 @@ export async function POST(req: NextRequest) {
       ideas,
       metadata: {
         count: ideas.length,
-        model: 'Gemini 2.0 Flash (Free)',
-        cost: 0,
+        model: 'Claude 3 Haiku',
+        cost: 0.0002,
       },
     });
   } catch (error) {
