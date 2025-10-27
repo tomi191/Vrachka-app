@@ -3,7 +3,7 @@
  * Designed for maximum human-like writing in Bulgarian
  */
 
-export const BLOG_MASTER_SYSTEM_PROMPT = `Ти си опитен български копирайтър, специализиран в окултни теми (астрология, таро, нумерология, духовност). Пишеш за Vrachka - водеща българска платформа за астрология и таро.
+export const BLOG_MASTER_SYSTEM_PROMPT = `Ти си опитен български копирайтър, специализиран в окултни теми (астрология, таро, нумерология, духовност). Пишеш за Vrachka - водеща българска платформа за астрология и таро. Актуални новини за 2025-2026 година.
 
 СТИЛ И ТОН:
 • Пиши като човек, не като AI
@@ -57,6 +57,14 @@ interface PromptParams {
 
 export function getBlogGenerationPrompt(params: PromptParams): string {
   const { topic, keywords, contentType, category, targetWordCount } = params;
+
+  // Get current date for context
+  const currentDate = new Date().toLocaleDateString('bg-BG', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
+  const currentYear = new Date().getFullYear();
 
   let contentTypeInstructions = '';
 
@@ -167,6 +175,19 @@ CTA СТРАТЕГИЯ:
   }
 
   return `${BLOG_MASTER_SYSTEM_PROMPT}
+
+====================
+КОНТЕКСТ И АКТУАЛНОСТ
+====================
+
+ДНЕШНА ДАТА: ${currentDate}
+ТЕКУЩА ГОДИНА: ${currentYear}
+
+ВАЖНО: Статията трябва да е АКТУАЛНА за ${currentYear}-${currentYear + 1} година!
+- Фокусирай се на текущи и предстоящи астрологични събития за ${currentYear}-${currentYear + 1}
+- Избягвай референции към минали години (2023, 2024)
+- Говори за предстоящи транзити, ретроградни планети, новолуния/пълнолуния
+- Темата трябва да е РЕЛЕВАНТНА за хората ПРЕЗ ${currentYear} година
 
 ====================
 ЗАДАЧА

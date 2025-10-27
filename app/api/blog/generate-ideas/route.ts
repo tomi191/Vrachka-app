@@ -2,9 +2,26 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { createOpenRouterCompletion } from '@/lib/ai/openrouter';
 
-const IDEAS_GENERATION_PROMPT = `Ти си опитен content strategist и SEO специалист за VRACHKA - водеща българска платформа за астрология, таро и духовност.
+function getIdeasGenerationPrompt(): string {
+  const currentDate = new Date().toLocaleDateString('bg-BG', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
+  const currentYear = new Date().getFullYear();
 
-ТВОЯТА ЗАДАЧА: Генерирай 10 конкретни и привлек атели идеи за blog статии.
+  return `ДНЕШНА ДАТА: ${currentDate}
+ТЕКУЩА ГОДИНА: ${currentYear}
+
+Ти си опитен content strategist и SEO специалист за VRACHKA - водеща българска платформа за астрология, таро и духовност.
+
+ВАЖНО: Всички идеи трябва да са АКТУАЛНИ за ${currentYear}-${currentYear + 1} година!
+- Фокусирай се на текущи и предстоящи астрологични събития, транзити, енергии
+- Избягвай остарели статии за минали години (2023, 2024)
+- Пиши за предстоящи ретроградни планети, новолуния/пълнолуния, сезонни енергии за ${currentYear}-${currentYear + 1}
+- Темите трябва да са РЕЛЕВАНТНИ ЗА ХОРАТА ПРЕЗ ${currentYear} ГОДИНА
+
+ТВОЯТА ЗАДАЧА: Генерирай 10 конкретни и привлекателни идеи за blog статии.
 
 ИЗИСКВАНИЯ ЗА ВСЯКА ИДЕЯ:
 1. **Заглавие** (50-60 символа):
@@ -72,6 +89,7 @@ OUTPUT FORMAT:
 ]
 
 Генерирай 10 КОНКРЕТНИ идеи СЕГА:`;
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -99,7 +117,7 @@ export async function POST(req: NextRequest) {
     const { focus, category } = body;
 
     // Build custom prompt based on focus
-    let customPrompt = IDEAS_GENERATION_PROMPT;
+    let customPrompt = getIdeasGenerationPrompt();
     if (focus) {
       customPrompt += `\n\nСПЕЦИАЛЕН ФОКУС: ${focus}\n`;
     }
