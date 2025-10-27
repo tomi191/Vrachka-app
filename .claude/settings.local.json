@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:openrouter.ai)",
+      "WebSearch",
+      "Bash(npx tsc:*)",
+      "mcp__supabase__list_projects",
+      "mcp__supabase__list_tables",
+      "mcp__supabase__execute_sql",
+      "Bash(npm run build:*)",
+      "Bash(findstr:*)",
+      "Bash(npx tsx:*)",
+      "Bash(npm install:*)",
+      "Bash(npx supabase db execute:*)",
+      "Bash(npm update)",
+      "Bash(git add:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

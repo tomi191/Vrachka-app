@@ -109,6 +109,41 @@ export async function POST(request: Request) {
     // Calculate generation time
     const generationTime = Math.round((Date.now() - startTime) / 1000);
 
+    // Word count quality control
+    const requestedWordCount = targetWordCount || 2000;
+    const warnings: string[] = [];
+    let wordCountQuality = 100;
+
+    // Check if content meets minimum word count requirement
+    if (wordCount < requestedWordCount) {
+      const percentageReached = Math.round((wordCount / requestedWordCount) * 100);
+      wordCountQuality = Math.max(0, percentageReached);
+
+      warnings.push(
+        `⚠️ Съдържанието е ${wordCount} думи вместо минимум ${requestedWordCount} думи (достигнати ${percentageReached}%)`
+      );
+
+      console.warn(`[Blog Gen] Word count below target: ${wordCount}/${requestedWordCount} (${percentageReached}%)`);
+    } else if (wordCount < requestedWordCount * 0.9) {
+      // Below 90% of target
+      warnings.push(
+        `⚠️ Съдържанието е близо до минимума: ${wordCount} думи (минимум: ${requestedWordCount})`
+      );
+    }
+
+    // Check for optimal length (target * 1.2)
+    const optimalWordCount = Math.ceil(requestedWordCount * 1.2);
+    if (wordCount >= optimalWordCount) {
+      console.log(`[Blog Gen] ✓ Optimal word count reached: ${wordCount}/${optimalWordCount}`);
+    }
+
+    // Overall quality score based on word count
+    const overallQuality = Math.min(100, Math.round(
+      (wordCountQuality * 0.4) + // 40% weight on word count
+      (85 * 0.3) + // 30% weight on readability (placeholder)
+      (90 * 0.3)   // 30% weight on SEO (placeholder)
+    ));
+
     // Return structured response
     return NextResponse.json({
       success: true,
@@ -125,11 +160,18 @@ export async function POST(request: Request) {
           keywords: parsed.keywords,
         },
         qualityScore: {
-          overall: 85, // TODO: Implement actual quality scoring
-          readability: 80,
-          seo: 90,
+          overall: overallQuality,
+          wordCountQuality,
+          readability: 85, // Placeholder
+          seo: 90, // Placeholder
           aiDetectionRisk: 'low',
-          warnings: [],
+          warnings,
+          metrics: {
+            wordCount,
+            targetWordCount: requestedWordCount,
+            optimalWordCount,
+            percentageOfTarget: Math.round((wordCount / requestedWordCount) * 100),
+          },
         },
       },
       generationTime,

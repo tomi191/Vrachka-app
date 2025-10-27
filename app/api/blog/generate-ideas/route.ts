@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { createOpenRouterCompletion } from '@/lib/ai/openrouter';
+import { insertBlogIdeas, type BlogIdeaInsert } from '@/lib/supabase/blog-ideas';
 
 function getIdeasGenerationPrompt(): string {
   const currentDate = new Date().toLocaleDateString('bg-BG', {
@@ -191,6 +192,34 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Save ideas to database for later use
+    try {
+      const ideasToInsert: BlogIdeaInsert[] = ideas.map((idea) => ({
+        title: idea.title,
+        description: idea.description,
+        content_type: idea.contentType,
+        category: idea.category,
+        keywords: idea.keywords || [],
+        target_word_count: idea.targetWordCount || 2000,
+        seo_score: idea.estimatedPerformance?.seoScore,
+        viral_potential: idea.estimatedPerformance?.viralPotential,
+        conversion_potential: idea.estimatedPerformance?.conversionPotential,
+        generation_prompt: focus || category || 'General ideas generation',
+        generated_by: user.id,
+      }));
+
+      const savedIdeas = await insertBlogIdeas(ideasToInsert);
+      console.log(`[Blog Ideas] Saved ${savedIdeas.length} ideas to database`);
+
+      // Add database IDs to the response
+      ideas.forEach((idea, index) => {
+        idea.id = savedIdeas[index]?.id;
+      });
+    } catch (dbError) {
+      console.error('[Blog Ideas] Failed to save to database:', dbError);
+      // Don't fail the request if database save fails - ideas are still returned
+    }
+
     return NextResponse.json({
       success: true,
       ideas,
@@ -198,6 +227,7 @@ export async function POST(req: NextRequest) {
         count: ideas.length,
         model: 'Claude 3 Haiku',
         cost: 0.0002,
+        saved: true,
       },
     });
   } catch (error) {

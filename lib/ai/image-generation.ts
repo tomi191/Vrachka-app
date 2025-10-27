@@ -1,7 +1,11 @@
 /**
- * Blog Image Generation using Unsplash API (FREE)
- * High-quality stock photos perfect for blog posts
+ * Blog Image Generation using Gemini 2.5 Flash Image via OpenRouter
+ * AI-generated images stored in Supabase Storage
  */
+
+import { openai } from './client';
+import { AI_MODELS } from './models';
+import { uploadImage } from '@/lib/supabase/storage';
 
 interface ImageGenerationOptions {
   prompt: string;
@@ -13,40 +17,108 @@ export interface GeneratedImage {
   url: string;
   prompt: string;
   model: string;
+  storagePath?: string;
 }
 
 /**
- * Generate a single image using Unsplash API
- * IMPORTANT: This is FREE!
+ * Convert aspect ratio to Gemini format
+ */
+function getGeminiAspectRatio(aspectRatio?: string): string {
+  const ratioMap: Record<string, string> = {
+    '1:1': '1:1',
+    '16:9': '16:9',
+    '9:16': '9:16',
+    '4:3': '4:3',
+    '3:4': '3:4',
+  };
+  return ratioMap[aspectRatio || '16:9'] || '16:9';
+}
+
+/**
+ * Generate a single image using Gemini 2.5 Flash Image via OpenRouter
+ * Uploads to Supabase Storage and returns public URL
  */
 export async function generateImage(
   options: ImageGenerationOptions
 ): Promise<GeneratedImage> {
-  const { prompt } = options;
+  const { prompt, style, aspectRatio } = options;
 
   try {
-    // Extract keywords from prompt for better Unsplash search
-    const keywords = prompt
-      .replace(/[^\w\s]/g, ' ')
-      .split(' ')
-      .filter((word) => word.length > 3)
-      .slice(0, 3)
-      .join(',');
+    // Build enhanced prompt with style
+    const enhancedPrompt = style
+      ? `${prompt}\n\nStyle: ${style}. Professional, high-quality, blog-ready image.`
+      : `${prompt}\n\nProfessional, high-quality, blog-ready image with mystical and spiritual atmosphere.`;
 
-    // Fallback to general mystical/spiritual keywords if extraction fails
-    const searchQuery = keywords || 'mystical,spiritual,astrology';
+    console.log('[Image Gen] Generating image with Gemini 2.5 Flash Image...');
+    console.log('[Image Gen] Prompt:', enhancedPrompt);
 
-    // Use Unsplash Source API for random high-quality images
-    // This is completely FREE and doesn't require an API key for basic usage
-    const unsplashUrl = `https://source.unsplash.com/1600x900/?${encodeURIComponent(searchQuery)}`;
+    // Call OpenRouter with Gemini 2.5 Flash Image model
+    const response = await openai.chat.completions.create({
+      model: AI_MODELS.gemini_image.id,
+      messages: [
+        {
+          role: 'user',
+          content: enhancedPrompt,
+        },
+      ],
+      // @ts-expect-error OpenRouter supports modalities for image generation but not in OpenAI SDK types
+      modalities: ['image', 'text'],
+      image_config: {
+        aspect_ratio: getGeminiAspectRatio(aspectRatio),
+      },
+      max_tokens: 8192,
+    });
+
+    // Extract generated image from response
+    const message = response.choices[0]?.message;
+    // @ts-expect-error OpenRouter returns images array in message but not in OpenAI SDK types
+    const images = message?.images;
+
+    if (!images || images.length === 0) {
+      throw new Error('No image generated in response');
+    }
+
+    // Get first image (base64 data URL)
+    const imageDataUrl = images[0]?.image_url?.url;
+
+    if (!imageDataUrl || !imageDataUrl.startsWith('data:image')) {
+      throw new Error('Invalid image data URL');
+    }
+
+    console.log('[Image Gen] Image generated successfully, uploading to Supabase...');
+
+    // Extract base64 data and content type
+    const matches = imageDataUrl.match(/^data:image\/(\w+);base64,(.+)$/);
+    if (!matches) {
+      throw new Error('Failed to parse base64 image data');
+    }
+
+    const [, format, base64Data] = matches;
+    const buffer = Buffer.from(base64Data, 'base64');
+    const contentType = `image/${format}`;
+    const filename = `generated-${Date.now()}.${format}`;
+
+    // Upload to Supabase Storage
+    const uploadedImage = await uploadImage({
+      buffer,
+      filename,
+      contentType,
+      metadata: {
+        prompt,
+        altText: prompt,
+      },
+    });
+
+    console.log('[Image Gen] Image uploaded to Supabase:', uploadedImage.url);
 
     return {
-      url: unsplashUrl,
+      url: uploadedImage.url,
       prompt: prompt,
-      model: 'Unsplash (Free Stock Photos)',
+      model: AI_MODELS.gemini_image.name,
+      storagePath: uploadedImage.path,
     };
   } catch (error) {
-    console.error('Image generation failed:', error);
+    console.error('[Image Gen] Image generation failed:', error);
     throw new Error(
       error instanceof Error ? error.message : 'Image generation failed'
     );
@@ -90,40 +162,43 @@ export async function generateBlogImages(
 ): Promise<GeneratedImage[]> {
   const prompts: string[] = [];
 
+  // Base style for all images - NO TEXT!
+  const noTextRequirement = 'NO TEXT, NO LETTERS, NO WORDS, NO TYPOGRAPHY on the image. Pure visual, symbolic, abstract or realistic imagery only.';
+
   // Hero image (always first)
   prompts.push(
-    `Hero banner image for blog post titled: "${blogTitle}". Eye-catching, professional, represents the main theme. Mystical and spiritual atmosphere.`
+    `Hero banner image for blog post titled: "${blogTitle}". Eye-catching, professional, represents the main theme. Mystical and spiritual atmosphere. ${noTextRequirement}`
   );
 
   // Additional in-article images based on count
   if (count >= 2) {
     prompts.push(
-      `Illustrative image representing: ${blogKeywords[0] || blogTitle}. Artistic, symbolic, visually appealing. Suitable for blog article.`
+      `Illustrative image representing: ${blogKeywords[0] || blogTitle}. Artistic, symbolic, visually appealing. Suitable for blog article. ${noTextRequirement}`
     );
   }
 
   if (count >= 3) {
     prompts.push(
-      `Supporting visual for article about: ${blogKeywords[1] || blogKeywords[0] || blogTitle}. Elegant, mysterious, professional quality.`
+      `Supporting visual for article about: ${blogKeywords[1] || blogKeywords[0] || blogTitle}. Elegant, mysterious, professional quality. ${noTextRequirement}`
     );
   }
 
   if (count >= 4) {
     prompts.push(
-      `Conceptual image showing: ${blogKeywords[2] || blogKeywords[1] || 'spirituality'}. Abstract or realistic, high quality, blog-ready.`
+      `Conceptual image showing: ${blogKeywords[2] || blogKeywords[1] || 'spirituality'}. Abstract or realistic, high quality, blog-ready. ${noTextRequirement}`
     );
   }
 
   if (count >= 5) {
     prompts.push(
-      `Final supporting image related to: ${blogTitle}. Cohesive with overall blog theme. Professional and polished.`
+      `Final supporting image related to: ${blogTitle}. Cohesive with overall blog theme. Professional and polished. ${noTextRequirement}`
     );
   }
 
-  // Generate all images (FREE!)
+  // Generate all images with Gemini 2.5 Flash Image
   return generateImages(
     prompts.slice(0, count),
-    'mystical, professional, Bulgarian cultural elements',
+    'mystical, professional, Bulgarian cultural elements, NO TEXT',
     '16:9'
   );
 }

@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server';
 import { NextResponse } from 'next/server';
+import { linkImagesToPost } from '@/lib/supabase/blog-images';
 
 export async function POST(request: Request) {
   try {
@@ -41,6 +42,7 @@ export async function POST(request: Request) {
       wordCount,
       status,
       featuredImageUrl,
+      imageUrls,
       tags,
     } = body;
 
@@ -132,6 +134,17 @@ export async function POST(request: Request) {
       .from('blog_posts')
       .update({ schema_markup: schemaMarkup })
       .eq('id', blogPost.id);
+
+    // Link generated images to this blog post
+    if (imageUrls && Array.isArray(imageUrls) && imageUrls.length > 0) {
+      try {
+        await linkImagesToPost(imageUrls, blogPost.id);
+        console.log(`[Blog Publish] Linked ${imageUrls.length} images to post ${blogPost.id}`);
+      } catch (linkError) {
+        console.error('[Blog Publish] Failed to link images:', linkError);
+        // Don't fail the whole request if linking fails
+      }
+    }
 
     return NextResponse.json({
       success: true,
