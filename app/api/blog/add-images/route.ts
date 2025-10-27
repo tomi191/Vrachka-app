@@ -49,15 +49,18 @@ export async function POST(req: NextRequest) {
     }
 
     console.log(`[Blog Images] Generating images for: ${post.title}`);
+    console.log(`[Blog Images] Post ID: ${post.id}`);
 
-    // Generate images using the blog title and keywords
+    // Generate images using Gemini Flash Image and upload to Supabase Storage
     const images = await generateBlogImages(
       post.title,
       post.keywords || [],
-      3 // Generate 3 images: hero + 2 in-article
+      3, // Generate 3 images: hero + 2 in-article
+      post.id // Pass blog post ID for storage organization
     );
 
     console.log(`[Blog Images] Generated ${images.length} images successfully`);
+    console.log(`[Blog Images] Images stored in Supabase Storage bucket: blog-images`);
 
     // Update the blog post with the featured image (first image)
     const { error: updateError } = await supabase
@@ -82,9 +85,18 @@ export async function POST(req: NextRequest) {
         postId: post.id,
         slug: post.slug,
         featuredImage: images[0]?.url,
-        allImages: images,
+        allImages: images.map(img => ({
+          url: img.url,
+          prompt: img.prompt,
+          model: img.model,
+          storagePath: img.storagePath,
+        })),
+        storage: {
+          bucket: 'blog-images',
+          paths: images.map(img => img.storagePath).filter(Boolean),
+        },
       },
-      message: `Successfully added ${images.length} images to blog post`,
+      message: `Successfully generated and uploaded ${images.length} AI images to Supabase Storage`,
     });
   } catch (error) {
     console.error('Add images error:', error);
