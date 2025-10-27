@@ -1,10 +1,7 @@
 /**
- * AI Image Generation using Google Gemini 2.5 Flash Image (FREE)
- * Via OpenRouter
+ * Blog Image Generation using Unsplash API (FREE)
+ * High-quality stock photos perfect for blog posts
  */
-
-import { openai } from './client';
-import { getModelForFeature } from './models';
 
 interface ImageGenerationOptions {
   prompt: string;
@@ -19,50 +16,34 @@ export interface GeneratedImage {
 }
 
 /**
- * Generate a single image using Gemini 2.5 Flash Image
- * IMPORTANT: This is FREE via OpenRouter!
+ * Generate a single image using Unsplash API
+ * IMPORTANT: This is FREE!
  */
 export async function generateImage(
   options: ImageGenerationOptions
 ): Promise<GeneratedImage> {
-  const { prompt, style = '', aspectRatio = '16:9' } = options;
-
-  // Get the Gemini Image model
-  const model = getModelForFeature('blog_images');
-
-  // Enhance prompt with style and aspect ratio
-  const enhancedPrompt = `Generate an image: ${prompt}. ${style ? `Style: ${style}.` : ''} Aspect ratio: ${aspectRatio}. Professional, high-quality, mystical atmosphere. Bulgarian cultural elements if relevant.`;
+  const { prompt } = options;
 
   try {
-    // Call Gemini Image model via OpenRouter
-    // NOTE: Gemini Image models return image URLs in the response content
-    const response = await openai.chat.completions.create({
-      model,
-      messages: [
-        {
-          role: 'user',
-          content: enhancedPrompt,
-        },
-      ],
-      temperature: 0.9, // More creative
-      max_tokens: 1000,
-    });
+    // Extract keywords from prompt for better Unsplash search
+    const keywords = prompt
+      .replace(/[^\w\s]/g, ' ')
+      .split(' ')
+      .filter((word) => word.length > 3)
+      .slice(0, 3)
+      .join(',');
 
-    const content = response.choices[0]?.message?.content || '';
+    // Fallback to general mystical/spiritual keywords if extraction fails
+    const searchQuery = keywords || 'mystical,spiritual,astrology';
 
-    // Extract image URL from response
-    // Gemini Image returns URLs in format: ![image](URL) or just the URL
-    const urlMatch = content.match(/https?:\/\/[^\s)]+/);
-    const imageUrl = urlMatch ? urlMatch[0] : content.trim();
-
-    if (!imageUrl || !imageUrl.startsWith('http')) {
-      throw new Error('No valid image URL returned from Gemini');
-    }
+    // Use Unsplash Source API for random high-quality images
+    // This is completely FREE and doesn't require an API key for basic usage
+    const unsplashUrl = `https://source.unsplash.com/1600x900/?${encodeURIComponent(searchQuery)}`;
 
     return {
-      url: imageUrl,
+      url: unsplashUrl,
       prompt: prompt,
-      model: 'Gemini 2.5 Flash Image (Free)',
+      model: 'Unsplash (Free Stock Photos)',
     };
   } catch (error) {
     console.error('Image generation failed:', error);
