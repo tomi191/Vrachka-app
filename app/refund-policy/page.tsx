@@ -126,7 +126,7 @@ export default function RefundPolicyPage() {
                 Можете да отмените абонамента си по всяко време чрез:
               </p>
               <ul className="list-disc list-inside space-y-2 text-zinc-300 ml-4">
-                <li>Настройки на профила → Абонамент → "Отмени абонамент"</li>
+                <li>Настройки на профила → Абонамент → &quot;Отмени абонамент&quot;</li>
                 <li>Или чрез Stripe Customer Portal (линк в имейла за потвърждение)</li>
               </ul>
               <p className="text-zinc-300 leading-relaxed mt-3">

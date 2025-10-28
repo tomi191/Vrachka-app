@@ -34,7 +34,7 @@ export default function PrivacyENPage() {
             <section>
               <h2 className="text-2xl font-semibold text-zinc-50 mb-3">1. General Information</h2>
               <p className="text-zinc-300 leading-relaxed">
-                Vrachka ("we", "us", "our") is committed to protecting the privacy of your personal information.
+                Vrachka (&quot;we&quot;, &quot;us&quot;, &quot;our&quot;) is committed to protecting the privacy of your personal information.
                 This privacy policy explains how we collect, use, and protect your data in compliance with GDPR and Bulgarian law.
               </p>
             </section>
@@ -98,7 +98,7 @@ export default function PrivacyENPage() {
               <ul className="list-disc list-inside space-y-2 text-zinc-300 ml-4">
                 <li><strong className="text-zinc-50">Access:</strong> Request a copy of your personal data</li>
                 <li><strong className="text-zinc-50">Rectification:</strong> Correct inaccurate data</li>
-                <li><strong className="text-zinc-50">Erasure:</strong> Delete your account and data ("right to be forgotten")</li>
+                <li><strong className="text-zinc-50">Erasure:</strong> Delete your account and data (&quot;right to be forgotten&quot;)</li>
                 <li><strong className="text-zinc-50">Restriction:</strong> Limit processing of your data</li>
                 <li><strong className="text-zinc-50">Objection:</strong> Object to data processing</li>
                 <li><strong className="text-zinc-50">Portability:</strong> Transfer your data to another service</li>

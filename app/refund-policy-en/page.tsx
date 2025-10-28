@@ -125,7 +125,7 @@ export default function RefundPolicyENPage() {
                 You can cancel your subscription at any time via:
               </p>
               <ul className="list-disc list-inside space-y-2 text-zinc-300 ml-4">
-                <li>Profile Settings → Subscription → "Cancel Subscription"</li>
+                <li>Profile Settings → Subscription → &quot;Cancel Subscription&quot;</li>
                 <li>Or through the Stripe Customer Portal (link in confirmation email)</li>
               </ul>
               <p className="text-zinc-300 leading-relaxed mt-3">

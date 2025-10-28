@@ -70,7 +70,7 @@ export default function TermsENPage() {
                 <li>Payments are automatically processed through Stripe</li>
                 <li>You can cancel your subscription at any time</li>
                 <li>No refunds for partially used periods (see our <Link href="/refund-policy-en" className="text-accent-400 hover:text-accent-300 underline">Refund Policy</Link>)</li>
-                <li>Prices may change with 30 days' notice</li>
+                <li>Prices may change with 30 days&apos; notice</li>
               </ul>
             </section>
 

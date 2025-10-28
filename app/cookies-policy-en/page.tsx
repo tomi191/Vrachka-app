@@ -153,15 +153,15 @@ export default function CookiesPolicyENPage() {
               <div className="bg-amber-900/20 p-4 rounded-lg border border-amber-500/30 mt-4">
                 <p className="text-amber-200 text-sm">
                   <strong>⚠️ Important:</strong> If you block or delete cookies, some features of Vrachka may not work properly
-                  (e.g., you won't be able to log into your account or save your preferences).
+                  (e.g., you won&apos;t be able to log into your account or save your preferences).
                 </p>
               </div>
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold text-zinc-50 mb-3">6. "Do Not Track" (DNT) Signals</h2>
+              <h2 className="text-2xl font-semibold text-zinc-50 mb-3">6. &quot;Do Not Track&quot; (DNT) Signals</h2>
               <p className="text-zinc-300 leading-relaxed">
-                Currently, our website does not respond to "Do Not Track" (DNT) signals from browsers, as there is no industry
+                Currently, our website does not respond to &quot;Do Not Track&quot; (DNT) signals from browsers, as there is no industry
                 standard for how to interpret these signals. If a standard is established in the future, we will update our policy.
               </p>
             </section>
@@ -189,7 +189,7 @@ export default function CookiesPolicyENPage() {
               <h2 className="text-2xl font-semibold text-zinc-50 mb-3">8. Changes to This Policy</h2>
               <p className="text-zinc-300 leading-relaxed">
                 We may update this cookie policy periodically to reflect changes in technology, legislation, or our practices.
-                We will post the updated version on this page with a new "Last updated" date. We recommend reviewing this policy periodically.
+                We will post the updated version on this page with a new &quot;Last updated&quot; date. We recommend reviewing this policy periodically.
               </p>
             </section>
 
