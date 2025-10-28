@@ -2,18 +2,37 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { StructuredData, getBreadcrumbSchema } from '@/components/StructuredData'
-import { ArrowLeft, Heart, Briefcase, Star, TrendingUp } from 'lucide-react'
-import { ZodiacIcon } from '@/components/icons/zodiac'
+import { ArrowLeft, Star, TrendingUp } from 'lucide-react'
+import { ZodiacIcon, zodiacIcons } from '@/components/icons/zodiac'
+import { PlanetIcon, ElementIcon, type PlanetName, type ElementName } from '@/components/icons/astrology'
 import { GradientText } from '@/components/ui/gradient-text'
 import { ShimmerButton } from '@/components/ui/shimmer-button'
 import { Navigation } from '@/components/Navigation'
 import { Footer } from '@/components/Footer'
+import { MysticBackground } from '@/components/background/MysticBackground'
+import { ZodiacConstellation } from '@/components/background/ZodiacConstellation'
+import { HoroscopeCard } from '@/components/HoroscopeCard'
 
 // ISR: Revalidate every 24 hours (daily horoscope updates)
 export const revalidate = 86400
+
+// Zodiac emoji mapping
+const zodiacEmojis: Record<string, string> = {
+  oven: '♈',
+  telec: '♉',
+  bliznaci: '♊',
+  rak: '♋',
+  lav: '♌',
+  deva: '♍',
+  vezni: '♎',
+  skorpion: '♏',
+  strelec: '♐',
+  kozirog: '♑',
+  vodolej: '♒',
+  ribi: '♓',
+}
 
 interface ZodiacData {
   sign: string
@@ -377,8 +396,12 @@ export default async function ZodiacSignPage({ params }: { params: Promise<{ sig
       <StructuredData data={articleSchema} />
       <StructuredData data={breadcrumbData} />
 
+      <Navigation />
+      <MysticBackground />
+      <ZodiacConstellation sign={zodiac.sign} />
+
       <div className="min-h-screen bg-gradient-dark">
-        <Navigation />
+
         <div className="container mx-auto px-4 pt-24 pb-8 max-w-5xl">
           {/* Back Button */}
           <Link href="/horoscope" className="inline-flex items-center gap-2 text-accent-400 hover:text-accent-300 mb-6">
@@ -402,10 +425,12 @@ export default async function ZodiacSignPage({ params }: { params: Promise<{ sig
             </h1>
             <p className="text-xl text-zinc-400 mb-4">{zodiac.dates}</p>
             <div className="flex justify-center gap-4 flex-wrap">
-              <Badge variant="secondary" className="text-base px-4 py-2">
+              <Badge variant="secondary" className="text-base px-4 py-2 flex items-center gap-2">
+                <ElementIcon element={zodiac.element as ElementName} size={18} />
                 {zodiac.element}
               </Badge>
-              <Badge variant="secondary" className="text-base px-4 py-2">
+              <Badge variant="secondary" className="text-base px-4 py-2 flex items-center gap-2">
+                <PlanetIcon planet={zodiac.planet as PlanetName} size={18} />
                 {zodiac.planet}
               </Badge>
               <Badge variant="secondary" className="text-base px-4 py-2">
@@ -414,185 +439,118 @@ export default async function ZodiacSignPage({ params }: { params: Promise<{ sig
             </div>
           </div>
 
+          {/* Daily Horoscope */}
+          <div className="mb-8">
+            <HoroscopeCard
+              zodiacSign={zodiac.sign}
+              zodiacEmoji={zodiacEmojis[zodiac.sign] || ''}
+              zodiacName={zodiac.name}
+            />
+          </div>
+
           {/* Description */}
-          <Card className="mb-8">
-            <CardHeader>
-              <CardTitle className="text-2xl">За Зодия {zodiac.name}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-lg leading-relaxed">{zodiac.description}</p>
-            </CardContent>
-          </Card>
+          <div className="glass-card p-8 mb-8">
+            <h2 className="text-2xl font-bold text-zinc-50 mb-4">За Зодия {zodiac.name}</h2>
+            <p className="text-lg leading-relaxed text-zinc-300">{zodiac.description}</p>
+          </div>
 
           {/* Traits */}
           <div className="grid md:grid-cols-2 gap-6 mb-8">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Star className="w-5 h-5 text-yellow-500" />
-                  Положителни Черти
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ul className="space-y-2">
-                  {zodiac.traits.positive.map((trait, index) => (
-                    <li key={index} className="flex items-center gap-2">
-                      <span className="text-green-500">✓</span>
-                      <span>{trait}</span>
-                    </li>
-                  ))}
-                </ul>
-              </CardContent>
-            </Card>
+            <div className="glass-card p-6">
+              <h3 className="flex items-center gap-2 text-xl font-bold text-zinc-50 mb-4">
+                <Star className="w-5 h-5 text-yellow-500" />
+                Положителни Черти
+              </h3>
+              <ul className="space-y-2">
+                {zodiac.traits.positive.map((trait, index) => (
+                  <li key={index} className="flex items-center gap-2 text-zinc-300">
+                    <span className="text-green-500">✓</span>
+                    <span>{trait}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
 
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <TrendingUp className="w-5 h-5 text-orange-500" />
-                  Предизвикателства
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ul className="space-y-2">
-                  {zodiac.traits.negative.map((trait, index) => (
-                    <li key={index} className="flex items-center gap-2">
-                      <span className="text-orange-500">⚠</span>
-                      <span>{trait}</span>
-                    </li>
-                  ))}
-                </ul>
-              </CardContent>
-            </Card>
+            <div className="glass-card p-6">
+              <h3 className="flex items-center gap-2 text-xl font-bold text-zinc-50 mb-4">
+                <TrendingUp className="w-5 h-5 text-orange-500" />
+                Предизвикателства
+              </h3>
+              <ul className="space-y-2">
+                {zodiac.traits.negative.map((trait, index) => (
+                  <li key={index} className="flex items-center gap-2 text-zinc-300">
+                    <span className="text-orange-500">⚠</span>
+                    <span>{trait}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
 
-          {/* Life Areas */}
-          <div className="grid md:grid-cols-3 gap-6 mb-8">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Heart className="w-5 h-5 text-red-500" />
-                  Любов
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm leading-relaxed">{zodiac.love}</p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Briefcase className="w-5 h-5 text-blue-500" />
-                  Кариера
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm leading-relaxed">{zodiac.career}</p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  ❤️‍🩹
-                  Здраве
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm leading-relaxed">{zodiac.health}</p>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Compatibility & Lucky Numbers */}
-          <div className="grid md:grid-cols-2 gap-6 mb-8">
-            <Card>
-              <CardHeader>
-                <CardTitle>Съвместимост</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <p className="font-semibold text-green-600 dark:text-green-400 mb-2">Най-добра съвместимост:</p>
-                  <div className="flex flex-wrap gap-2">
-                    {zodiac.compatibility.best.map((sign, index) => (
-                      <Badge key={index} variant="secondary" className="bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-100">
-                        {sign}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-                <div>
-                  <p className="font-semibold text-orange-600 dark:text-orange-400 mb-2">Предизвикателна съвместимост:</p>
-                  <div className="flex flex-wrap gap-2">
-                    {zodiac.compatibility.challenging.map((sign, index) => (
-                      <Badge key={index} variant="secondary" className="bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-100">
-                        {sign}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Късметлийски Числа</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex flex-wrap gap-4">
-                  {zodiac.luckyNumbers.map((num, index) => (
-                    <div key={index} className="w-12 h-12 rounded-full bg-purple-600 text-white flex items-center justify-center font-bold text-lg">
-                      {num}
-                    </div>
+          {/* Compatibility */}
+          <div className="glass-card p-6 mb-8">
+            <h3 className="text-xl font-bold text-zinc-50 mb-4">Съвместимост</h3>
+            <div className="space-y-4">
+              <div>
+                <p className="font-semibold text-green-400 mb-2">Най-добра съвместимост:</p>
+                <div className="flex flex-wrap gap-2">
+                  {zodiac.compatibility.best.map((sign, index) => (
+                    <Badge key={index} variant="secondary" className="bg-green-900/50 text-green-100 border-green-800">
+                      {sign}
+                    </Badge>
                   ))}
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+              <div>
+                <p className="font-semibold text-orange-400 mb-2">Предизвикателна съвместимост:</p>
+                <div className="flex flex-wrap gap-2">
+                  {zodiac.compatibility.challenging.map((sign, index) => (
+                    <Badge key={index} variant="secondary" className="bg-orange-900/50 text-orange-100 border-orange-800">
+                      {sign}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
 
           {/* Famous People */}
-          <Card className="mb-8">
-            <CardHeader>
-              <CardTitle>Известни Личности - {zodiac.name}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex flex-wrap gap-3">
-                {zodiac.famous.map((person, index) => (
-                  <Badge key={index} variant="outline" className="text-base px-4 py-2">
-                    ⭐ {person}
-                  </Badge>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+          <div className="glass-card p-6 mb-8">
+            <h3 className="text-xl font-bold text-zinc-50 mb-4">Известни Личности - {zodiac.name}</h3>
+            <div className="flex flex-wrap gap-3">
+              {zodiac.famous.map((person, index) => (
+                <Badge key={index} variant="outline" className="text-base px-4 py-2 text-zinc-300 border-zinc-700">
+                  ⭐ {person}
+                </Badge>
+              ))}
+            </div>
+          </div>
 
           {/* CTA */}
-          <Card className="bg-gradient-to-r from-purple-600 to-pink-600 text-white border-0">
-            <CardContent className="py-8 text-center">
-              <h2 className="text-2xl font-bold mb-3">
-                Искаш Персонализиран Хороскоп за Днес?
-              </h2>
-              <p className="text-lg mb-6 text-purple-100">
-                Получи AI-генериран дневен хороскоп, специално за теб - базиран не само на зодията ти, но и на твоята лична натална карта
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Link href="/auth/register">
-                  <ShimmerButton
-                    className="text-lg px-8"
-                    background="linear-gradient(135deg, #ffffff 0%, #f3f4f6 100%)"
-                    shimmerColor="#9333ea"
-                  >
-                    Започни Безплатно
-                  </ShimmerButton>
-                </Link>
-                <Link href="/pricing">
-                  <Button size="lg" variant="outline" className="text-lg px-8 bg-white/10 hover:bg-white/20 text-white border-white">
-                    Виж Плановете
-                  </Button>
-                </Link>
-              </div>
-            </CardContent>
-          </Card>
+          <div className="rounded-2xl bg-gradient-to-r from-purple-600 to-pink-600 text-white p-8 text-center shadow-xl shadow-purple-500/20">
+            <h2 className="text-2xl font-bold mb-3">
+              Искаш Персонализиран Хороскоп за Днес?
+            </h2>
+            <p className="text-lg mb-6 text-purple-100">
+              Получи AI-генериран дневен хороскоп, специално за теб - базиран не само на зодията ти, но и на твоята лична натална карта
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link href="/auth/register">
+                <ShimmerButton
+                  className="text-lg px-8"
+                  background="linear-gradient(135deg, #ffffff 0%, #f3f4f6 100%)"
+                  shimmerColor="#9333ea"
+                >
+                  Започни Безплатно
+                </ShimmerButton>
+              </Link>
+              <Link href="/pricing">
+                <Button size="lg" variant="outline" className="text-lg px-8 bg-white/10 hover:bg-white/20 text-white border-white">
+                  Виж Плановете
+                </Button>
+              </Link>
+            </div>
+          </div>
         </div>
 
         <Footer />

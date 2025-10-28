@@ -127,6 +127,21 @@ export default async function PricingPage() {
             <details className="glass-card group overflow-hidden">
               <summary className="flex items-center justify-between p-6 cursor-pointer list-none">
                 <span className="text-lg font-semibold text-zinc-50">
+                  Каква е политиката за възстановяване на средства?
+                </span>
+                <Sparkles className="w-5 h-5 text-accent-400 group-open:rotate-180 transition-transform duration-300" />
+              </summary>
+              <div className="px-6 pb-6 text-zinc-400 leading-relaxed">
+                Имаш 14-дневен период за връщане на средства според EU закона (ако не си използвал услугите). За повече детайли вижте нашата{" "}
+                <Link href="/refund-policy" className="text-accent-400 hover:text-accent-300 underline">
+                  Политика за възстановяване
+                </Link>.
+              </div>
+            </details>
+
+            <details className="glass-card group overflow-hidden">
+              <summary className="flex items-center justify-between p-6 cursor-pointer list-none">
+                <span className="text-lg font-semibold text-zinc-50">
                   Защитени ли са моите данни?
                 </span>
                 <Sparkles className="w-5 h-5 text-accent-400 group-open:rotate-180 transition-transform duration-300" />

@@ -26,15 +26,15 @@ export function Navigation() {
               <svg width="32" height="32" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="transition-all duration-300 group-hover:scale-110">
                 <defs>
                   <radialGradient id="nav-logo-grad" cx="50%" cy="40%" r="60%">
-                    <stop offset="0%" stop-color="#e879f9"/>
-                    <stop offset="30%" stop-color="#c084fc"/>
-                    <stop offset="70%" stop-color="#8b5cf6"/>
-                    <stop offset="100%" stop-color="#7c3aed"/>
+                    <stop offset="0%" stopColor="#e879f9"/>
+                    <stop offset="30%" stopColor="#c084fc"/>
+                    <stop offset="70%" stopColor="#8b5cf6"/>
+                    <stop offset="100%" stopColor="#7c3aed"/>
                   </radialGradient>
                   <radialGradient id="nav-logo-glow" cx="50%" cy="50%" r="50%">
-                    <stop offset="0%" stop-color="#ffffff" stop-opacity="0.4"/>
-                    <stop offset="50%" stop-color="#e879f9" stop-opacity="0.2"/>
-                    <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+                    <stop offset="0%" stopColor="#ffffff" stopOpacity="0.4"/>
+                    <stop offset="50%" stopColor="#e879f9" stopOpacity="0.2"/>
+                    <stop offset="100%" stopColor="#ffffff" stopOpacity="0"/>
                   </radialGradient>
                   <mask id="nav-logo-mask" maskUnits="userSpaceOnUse">
                     <rect width="48" height="48" fill="black"/>

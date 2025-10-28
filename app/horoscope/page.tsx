@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { Sparkles } from 'lucide-react'
 import { StructuredData, getBreadcrumbSchema } from '@/components/StructuredData'
 import { ZodiacIcon } from '@/components/icons/zodiac'
+import { PlanetIcon, ElementIcon, getElementColors, type PlanetName, type ElementName } from '@/components/icons/astrology'
 import { HoverCardWrapper } from '@/components/ui/hover-card-wrapper'
 import { GradientText } from '@/components/ui/gradient-text'
 import { ShimmerButton } from '@/components/ui/shimmer-button'
@@ -144,9 +145,10 @@ export default function HoroscopePage() {
     <>
       <StructuredData data={breadcrumbData} />
 
+      <Navigation />
+      <MysticBackground />
+
       <div className="min-h-screen bg-gradient-dark">
-        <Navigation />
-        <MysticBackground />
         {/* Hero Section */}
         <div className="container mx-auto px-4 pt-32 pb-16">
           <div className="text-center mb-12">
@@ -166,36 +168,45 @@ export default function HoroscopePage() {
 
           {/* Zodiac Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-16">
-            {zodiacSigns.map((zodiac) => (
-              <Link key={zodiac.sign} href={`/horoscope/${zodiac.sign}`}>
-                <HoverCardWrapper className="h-full">
-                  <div className="glass-card card-hover h-full cursor-pointer p-6">
-                    <div className="flex justify-center mb-4">
-                      <ZodiacIcon
-                        sign={zodiac.sign as keyof typeof import('@/components/icons/zodiac').zodiacIcons}
-                        size={56}
-                        className="text-purple-600 dark:text-purple-400"
-                      />
+            {zodiacSigns.map((zodiac) => {
+              const elementColors = getElementColors(zodiac.element)
+              return (
+                <Link key={zodiac.sign} href={`/horoscope/${zodiac.sign}`}>
+                  <HoverCardWrapper className="h-full">
+                    <div className={`glass-card card-hover h-full cursor-pointer p-6 border-2 ${elementColors.border}`}>
+                      <div className="flex justify-center mb-4">
+                        <ZodiacIcon
+                          sign={zodiac.sign as keyof typeof import('@/components/icons/zodiac').zodiacIcons}
+                          size={56}
+                          className="text-purple-600 dark:text-purple-400"
+                        />
+                      </div>
+                      <h3 className="text-center text-2xl font-bold text-zinc-50 mb-2">
+                        {zodiac.name}
+                      </h3>
+                      <p className="text-center font-medium text-zinc-400 mb-4">
+                        {zodiac.dates}
+                      </p>
+                      <div className="space-y-2">
+                        <div className="text-sm text-zinc-300 flex items-center gap-2">
+                          <span className="font-semibold">Стихия:</span>
+                          <ElementIcon element={zodiac.element as ElementName} size={16} className="inline-block" />
+                          <span>{zodiac.element}</span>
+                        </div>
+                        <div className="text-sm text-zinc-300 flex items-center gap-2">
+                          <span className="font-semibold">Планета:</span>
+                          <PlanetIcon planet={zodiac.planet as PlanetName} size={16} className="inline-block" />
+                          <span>{zodiac.planet}</span>
+                        </div>
+                        <div className="text-sm text-zinc-400">
+                          {zodiac.traits}
+                        </div>
+                      </div>
                     </div>
-                    <h3 className="text-center text-2xl font-bold text-zinc-50 mb-2">{zodiac.name}</h3>
-                    <p className="text-center font-medium text-zinc-400 mb-4">
-                      {zodiac.dates}
-                    </p>
-                    <div className="space-y-2">
-                      <div className="text-sm text-zinc-300">
-                        <span className="font-semibold">Стихия:</span> {zodiac.element}
-                      </div>
-                      <div className="text-sm text-zinc-300">
-                        <span className="font-semibold">Планета:</span> {zodiac.planet}
-                      </div>
-                      <div className="text-sm text-zinc-400">
-                        {zodiac.traits}
-                      </div>
-                    </div>
-                  </div>
-                </HoverCardWrapper>
-              </Link>
-            ))}
+                  </HoverCardWrapper>
+                </Link>
+              )
+            })}
           </div>
 
           {/* SEO Content Section */}

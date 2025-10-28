@@ -2,6 +2,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import { GradientText } from "@/components/ui/gradient-text";
+import Link from "next/link";
 
 export default function TermsPage() {
   return (
@@ -16,6 +17,11 @@ export default function TermsPage() {
             </GradientText>
           </h1>
           <p className="text-zinc-400">Последна актуализация: {new Date().toLocaleDateString("bg-BG")}</p>
+          <div className="pt-2">
+            <Link href="/terms-en" className="text-accent-400 hover:text-accent-300 text-sm underline">
+              Read in English →
+            </Link>
+          </div>
         </div>
 
         <Card className="glass-card">
@@ -57,9 +63,13 @@ export default function TermsPage() {
               </p>
               <ul className="list-disc list-inside space-y-2 text-zinc-300 ml-4">
                 <li>Абонаментите се таксуват месечно или годишно</li>
-                <li>Плащанията се обработват автоматично през Stripe</li>
+                <li>Плащанията се обработват автоматично през Stripe (PCI-DSS compliant)</li>
                 <li>Можете да отмените абонамента си по всяко време</li>
-                <li>Няма възстановяване на средства за частично използвани периоди</li>
+                <li>Няма възстановяване на средства за частично използвани периоди (вижте нашата{" "}
+                  <Link href="/refund-policy" className="text-accent-400 hover:text-accent-300 underline">
+                    Политика за възстановяване
+                  </Link>)
+                </li>
                 <li>Цените могат да се променят с 30-дневно предизвестие</li>
               </ul>
             </section>
@@ -136,8 +146,8 @@ export default function TermsPage() {
               <h2 className="text-2xl font-semibold text-zinc-50 mb-3">12. Контакт</h2>
               <p className="text-zinc-300 leading-relaxed">
                 За въпроси относно тези условия, моля свържете се с нас на:{" "}
-                <a href="mailto:support@vrachka.com" className="text-accent-400 hover:text-accent-300 underline">
-                  support@vrachka.com
+                <a href="mailto:support@vrachka.eu" className="text-accent-400 hover:text-accent-300 underline">
+                  support@vrachka.eu
                 </a>
               </p>
             </section>

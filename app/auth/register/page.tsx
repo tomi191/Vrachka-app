@@ -164,10 +164,13 @@ export default function RegisterPage() {
               С регистрацията приемаш нашите{" "}
               <Link href="/terms" className="underline hover:text-zinc-400">
                 Условия
-              </Link>{" "}
-              и{" "}
+              </Link>,{" "}
               <Link href="/privacy" className="underline hover:text-zinc-400">
                 Политика за поверителност
+              </Link>{" "}
+              и{" "}
+              <Link href="/cookies-policy" className="underline hover:text-zinc-400">
+                Политика за бисквитки
               </Link>
             </p>
 

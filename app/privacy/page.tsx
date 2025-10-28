@@ -2,6 +2,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import { GradientText } from "@/components/ui/gradient-text";
+import Link from "next/link";
 
 export default function PrivacyPage() {
   return (
@@ -16,6 +17,11 @@ export default function PrivacyPage() {
             </GradientText>
           </h1>
           <p className="text-zinc-400">Последна актуализация: {new Date().toLocaleDateString("bg-BG")}</p>
+          <div className="pt-2">
+            <Link href="/privacy-en" className="text-accent-400 hover:text-accent-300 text-sm underline">
+              Read in English →
+            </Link>
+          </div>
         </div>
 
         <Card className="glass-card">
@@ -67,11 +73,17 @@ export default function PrivacyPage() {
 
             <section>
               <h2 className="text-2xl font-semibold text-zinc-50 mb-3">5. Споделяне на информация</h2>
-              <p className="text-zinc-300 leading-relaxed">
+              <p className="text-zinc-300 leading-relaxed mb-3">
                 Ние не продаваме, не наемаме и не споделяме вашата лична информация с трети страни,
-                освен когато е необходимо за предоставяне на нашите услуги (напр. платежни процесори)
-                или когато се изисква от закона.
+                освен когато е необходимо за предоставяне на нашите услуги или когато се изисква от закона.
+                Третостранни процесори включват:
               </p>
+              <ul className="list-disc list-inside space-y-2 text-zinc-300 ml-4">
+                <li><strong className="text-zinc-50">Stripe:</strong> Обработка на плащания (PCI-DSS compliant)</li>
+                <li><strong className="text-zinc-50">Supabase:</strong> База данни и автентикация</li>
+                <li><strong className="text-zinc-50">Vercel:</strong> Хостинг и analytics</li>
+                <li><strong className="text-zinc-50">OpenAI:</strong> AI прогнози (само анонимизирани данни)</li>
+              </ul>
             </section>
 
             <section>
@@ -94,7 +106,11 @@ export default function PrivacyPage() {
               <p className="text-zinc-300 leading-relaxed">
                 Използваме бисквитки и подобни технологии за подобряване на потребителския опит,
                 анализ на трафика и персонализация на съдържанието. Можете да контролирате
-                използването на бисквитки чрез настройките на вашия браузър.
+                използването на бисквитки чрез настройките на вашия браузър. За повече подробности,
+                вижте нашата{" "}
+                <Link href="/cookies-policy" className="text-accent-400 hover:text-accent-300 underline">
+                  Политика за бисквитки
+                </Link>.
               </p>
             </section>
 
@@ -110,8 +126,8 @@ export default function PrivacyPage() {
               <h2 className="text-2xl font-semibold text-zinc-50 mb-3">9. Контакт</h2>
               <p className="text-zinc-300 leading-relaxed">
                 За въпроси относно тази политика за поверителност, моля свържете се с нас на:{" "}
-                <a href="mailto:privacy@vrachka.com" className="text-accent-400 hover:text-accent-300 underline">
-                  privacy@vrachka.com
+                <a href="mailto:privacy@vrachka.eu" className="text-accent-400 hover:text-accent-300 underline">
+                  privacy@vrachka.eu
                 </a>
               </p>
             </section>

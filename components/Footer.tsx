@@ -58,6 +58,12 @@ export function Footer() {
               <Link href="/terms" className="text-sm text-zinc-500 hover:text-zinc-300 transition-colors">
                 Условия
               </Link>
+              <Link href="/refund-policy" className="text-sm text-zinc-500 hover:text-zinc-300 transition-colors">
+                Възстановявания
+              </Link>
+              <Link href="/cookies-policy" className="text-sm text-zinc-500 hover:text-zinc-300 transition-colors">
+                Бисквитки
+              </Link>
               <Link href="/contact" className="text-sm text-zinc-500 hover:text-zinc-300 transition-colors">
                 Контакт
               </Link>

@@ -1,13 +1,13 @@
 'use client';
 
-import { Star, Sparkles, TrendingUp, Zap, Heart, Calendar } from 'lucide-react';
+import { Star, Sparkles, Zap, Heart } from 'lucide-react';
 import { ZodiacIcon } from '@/components/icons/zodiac';
 
 export function BentoHero() {
   return (
     <div className="mt-20 max-w-7xl mx-auto">
-      {/* Bento Grid Container */}
-      <div className="grid grid-cols-1 md:grid-cols-4 md:grid-rows-4 gap-4 h-auto md:h-[600px]">
+      {/* Bento Grid Container - Features Preview */}
+      <div className="grid grid-cols-1 md:grid-cols-4 md:grid-rows-3 gap-4 h-auto md:h-[500px]">
 
         {/* Large Card - Horoscope Preview (spans 2x2) */}
         <div className="md:col-span-2 md:row-span-2 glass-card p-8 card-hover group relative overflow-hidden">
@@ -34,26 +34,6 @@ export function BentoHero() {
               <span className="text-sm text-zinc-500">12 зодии</span>
             </div>
           </div>
-        </div>
-
-        {/* Stats Card - Users (spans 1x1) */}
-        <div className="md:col-span-1 md:row-span-1 glass-card p-6 card-hover group">
-          <div className="flex items-center justify-between mb-2">
-            <Sparkles className="w-8 h-8 text-accent-400 group-hover:rotate-12 transition-transform duration-300" />
-            <span className="text-xs text-zinc-500 font-medium">ПОТРЕБИТЕЛИ</span>
-          </div>
-          <div className="text-4xl font-bold text-zinc-50 mb-1">10,000+</div>
-          <p className="text-sm text-zinc-400">Активни потребители</p>
-        </div>
-
-        {/* Stats Card - Readings (spans 1x1) */}
-        <div className="md:col-span-1 md:row-span-1 glass-card p-6 card-hover group">
-          <div className="flex items-center justify-between mb-2">
-            <TrendingUp className="w-8 h-8 text-green-400 group-hover:scale-110 transition-transform duration-300" />
-            <span className="text-xs text-zinc-500 font-medium">ЧЕТЕНИЯ</span>
-          </div>
-          <div className="text-4xl font-bold text-zinc-50 mb-1">50K+</div>
-          <p className="text-sm text-zinc-400">Таро четения</p>
         </div>
 
         {/* Tarot Card - Interactive (spans 1x2) */}
@@ -90,8 +70,8 @@ export function BentoHero() {
           <p className="text-xs text-zinc-500">24/7 духовни консултации</p>
         </div>
 
-        {/* Compatibility Checker (spans 2x1) */}
-        <div className="md:col-span-2 md:row-span-1 glass-card p-6 card-hover group">
+        {/* Compatibility Checker (spans full width in row 3) */}
+        <div className="md:col-span-4 md:row-span-1 glass-card p-6 card-hover group">
           <div className="flex items-center justify-between">
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-2">
@@ -112,26 +92,6 @@ export function BentoHero() {
               <div className="text-2xl font-bold text-green-400">85%</div>
             </div>
           </div>
-        </div>
-
-        {/* Streak Gamification (spans 1x1) */}
-        <div className="md:col-span-1 md:row-span-1 glass-card p-6 card-hover group">
-          <div className="flex items-center justify-between mb-2">
-            <Calendar className="w-8 h-8 text-orange-400 group-hover:scale-110 transition-transform duration-300" />
-            <span className="text-xs text-zinc-500 font-medium">STREAK</span>
-          </div>
-          <div className="text-4xl font-bold text-zinc-50 mb-1">7🔥</div>
-          <p className="text-sm text-zinc-400">Дни подред</p>
-        </div>
-
-        {/* Rating Card (spans 1x1) */}
-        <div className="md:col-span-1 md:row-span-1 glass-card p-6 card-hover group">
-          <div className="flex items-center justify-between mb-2">
-            <Star className="w-8 h-8 text-yellow-400 fill-yellow-400 group-hover:rotate-12 transition-transform duration-300" />
-            <span className="text-xs text-zinc-500 font-medium">РЕЙТИНГ</span>
-          </div>
-          <div className="text-4xl font-bold text-zinc-50 mb-1">4.8★</div>
-          <p className="text-sm text-zinc-400">Среден рейтинг</p>
         </div>
       </div>
     </div>

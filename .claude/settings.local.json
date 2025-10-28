@@ -13,7 +13,10 @@
       "Bash(npm install:*)",
       "Bash(npx supabase db execute:*)",
       "Bash(npm update)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "mcp__stripe__list_products",
+      "mcp__stripe__list_prices",
+      "mcp__stripe__get_stripe_account_info"
     ],
     "deny": [],
     "ask": []

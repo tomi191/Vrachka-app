@@ -1,160 +1,31 @@
 import Link from "next/link";
-import { ArrowRight, Sparkles, Shield, Zap, Calendar, Star, TrendingUp, BookOpen, Quote, Crown, Check, X, ChevronDown } from "lucide-react";
+import { Suspense } from "react";
+import { ArrowRight, Sparkles, Star, Crown, Check, X, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { StructuredData, organizationSchema, webApplicationSchema, faqSchema } from "@/components/StructuredData";
-import { createClient } from '@supabase/supabase-js'
 import { ZodiacIcon } from '@/components/icons/zodiac'
 import { ShimmerButton } from '@/components/ui/shimmer-button'
 import { HoverCardWrapper } from '@/components/ui/hover-card-wrapper'
 import { GradientText } from '@/components/ui/gradient-text'
 import { BentoHero } from '@/components/landing/BentoHero'
-import { ProblemSolution } from '@/components/landing/ProblemSolution'
 import { VrachkaStory } from '@/components/landing/VrachkaStory'
 import { StatsBar } from '@/components/landing/StatsBar'
 import { BentoFeatures } from '@/components/landing/BentoFeatures'
 import { ComparisonTable } from '@/components/landing/ComparisonTable'
 import { BentoTestimonials } from '@/components/landing/BentoTestimonials'
 import { FinalCTA } from '@/components/landing/FinalCTA'
+import { BlogSection } from '@/components/landing/BlogSection'
+import { BlogSectionSkeleton } from '@/components/landing/BlogSectionSkeleton'
 import { MysticBackground } from '@/components/background/MysticBackground'
 import { Navigation } from '@/components/Navigation'
 import { Footer } from '@/components/Footer'
+import { ZODIAC_SIGNS } from '@/lib/constants/zodiac'
+import { HOMEPAGE_FAQS } from '@/lib/constants/faqs'
 
 // Revalidate every hour for fresh blog posts
 export const revalidate = 3600
 
-// Zodiac signs data (emoji removed - now using custom SVG icons)
-const zodiacSigns = [
-  { sign: 'oven', name: 'Овен', dates: '21 март - 19 април' },
-  { sign: 'telec', name: 'Телец', dates: '20 април - 20 май' },
-  { sign: 'bliznaci', name: 'Близнаци', dates: '21 май - 20 юни' },
-  { sign: 'rak', name: 'Рак', dates: '21 юни - 22 юли' },
-  { sign: 'lav', name: 'Лъв', dates: '23 юли - 22 август' },
-  { sign: 'deva', name: 'Дева', dates: '23 август - 22 септември' },
-  { sign: 'vezni', name: 'Везни', dates: '23 септември - 22 октомври' },
-  { sign: 'skorpion', name: 'Скорпион', dates: '23 октомври - 21 ноември' },
-  { sign: 'strelec', name: 'Стрелец', dates: '22 ноември - 21 декември' },
-  { sign: 'kozirog', name: 'Козирог', dates: '22 декември - 19 януари' },
-  { sign: 'vodolej', name: 'Водолей', dates: '20 януари - 18 февруари' },
-  { sign: 'ribi', name: 'Риби', dates: '19 февруари - 20 март' },
-] as const
-
-// Testimonials
-const testimonials = [
-  {
-    name: 'Мария К.',
-    zodiac: 'Лъв',
-    text: 'Vrachka промени начина, по който разбирам себе си. Дневните хороскопи са невероятно точни!',
-    rating: 5
-  },
-  {
-    name: 'Георги П.',
-    zodiac: 'Скорпион',
-    text: 'AI Оракулът ми помогна да взема важно решение. Впечатляващо!',
-    rating: 5
-  },
-  {
-    name: 'Елена Д.',
-    zodiac: 'Везни',
-    text: 'Таро четенията са точни и детайлни. Използвам платформата всеки ден!',
-    rating: 5
-  },
-  {
-    name: 'Иван С.',
-    zodiac: 'Овен',
-    text: 'Седмичните прогнози ми помагат да планирам седмицата си. Много полезно!',
-    rating: 5
-  },
-  {
-    name: 'Цветелина М.',
-    zodiac: 'Риби',
-    text: 'Натална карта разкри толкова много за личността ми. Препоръчвам на всички!',
-    rating: 5
-  },
-  {
-    name: 'Петър Н.',
-    zodiac: 'Телец',
-    text: 'Анализът на съвместимост беше изключително точен. Благодаря!',
-    rating: 5
-  },
-  {
-    name: 'Анна В.',
-    zodiac: 'Дева',
-    text: 'Нумерологията ми помогна да разбера жизнения си път по-добре.',
-    rating: 5
-  },
-  {
-    name: 'Димитър К.',
-    zodiac: 'Стрелец',
-    text: 'Качеството на AI прогнозите е невероятно. Искрено впечатлен!',
-    rating: 5
-  },
-]
-
-// FAQ data
-const faqs = [
-  {
-    question: 'Как работи Оракулът?',
-    answer: 'AI Оракулът използва напреднали езикови модели, обучени на хиляди астрологични текстове и духовни учения. Той анализира вашия въпрос в контекста на вашата натална карта и текущите астрологични аспекти, за да предостави персонализирани насоки.'
-  },
-  {
-    question: 'Мога ли да откажа абонамента си по всяко време?',
-    answer: 'Да, можете да отмените абонамента си по всяко време от вашия профил. Ще запазите достъп до края на текущия период и няма такси за анулиране.'
-  },
-  {
-    question: 'Защитени ли са моите лични данни?',
-    answer: 'Абсолютно. Използваме банково ниво на криптиране за всички данни. Вашата информация никога не се споделя с трети страни и е съхранена на сигурни сървъри в Европа.'
-  },
-  {
-    question: 'Колко точни са прогнозите?',
-    answer: 'Нашите прогнози се базират на традиционни астрологични принципи, подобрени с анализ. Хиляди потребители потвърждават високата точност на дневните хороскопи и таро четенията.'
-  },
-  {
-    question: 'Какво включва безплатният план?',
-    answer: 'Безплатният план включва дневен хороскоп и карта на деня за всички 12 зодиакални знака. За достъп до таро четения, Оракул и детайлни анализи се изисква premium абонамент.'
-  },
-]
-
-// Category labels
-const categoryLabels: Record<string, string> = {
-  'daily-horoscope': 'Дневен Хороскоп',
-  'weekly-horoscope': 'Седмичен Хороскоп',
-  'monthly-horoscope': 'Месечен Хороскоп',
-  'tarot': 'Таро',
-  'astrology': 'Астрология',
-  'numerology': 'Нумерология',
-  'spirituality': 'Духовност',
-}
-
-// Fetch latest blog posts
-async function getLatestBlogPosts() {
-  try {
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-
-    if (!supabaseUrl || !supabaseAnonKey) {
-      console.warn('[Homepage] Missing Supabase env vars')
-      return []
-    }
-
-    const supabase = createClient(supabaseUrl, supabaseAnonKey)
-
-    const { data } = await supabase
-      .from('blog_posts')
-      .select('slug, title, description, category, published_at')
-      .eq('published', true)
-      .order('published_at', { ascending: false })
-      .limit(3)
-
-    return data || []
-  } catch (error) {
-    console.error('[Homepage] Failed to fetch blog posts:', error)
-    return []
-  }
-}
-
-export default async function LandingPage() {
-  const blogPosts = await getLatestBlogPosts()
+export default function LandingPage() {
 
   return (
     <>
@@ -165,7 +36,7 @@ export default async function LandingPage() {
       <Navigation />
       <MysticBackground />
 
-      <div className="min-h-screen bg-gradient-dark relative">
+      <div className="min-h-screen bg-gradient-dark">
 
       {/* Hero Section */}
       <section className="pt-32 pb-20 px-6">
@@ -218,9 +89,6 @@ export default async function LandingPage() {
       {/* Stats Bar */}
       <StatsBar />
 
-      {/* Problem → Solution Section */}
-      <ProblemSolution />
-
       {/* Vrachka Story Section */}
       <VrachkaStory />
 
@@ -241,7 +109,7 @@ export default async function LandingPage() {
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-5xl mx-auto">
-            {zodiacSigns.map((zodiac) => (
+            {ZODIAC_SIGNS.map((zodiac) => (
               <Link key={zodiac.sign} href={`/horoscope/${zodiac.sign}`}>
                 <HoverCardWrapper className="h-full">
                   <div className="glass-card p-6 text-center card-hover group h-full">
@@ -278,56 +146,10 @@ export default async function LandingPage() {
       {/* Features Section - Bento Grid */}
       <BentoFeatures />
 
-      {/* Blog Section */}
-      {blogPosts.length > 0 && (
-        <section className="py-20 px-6">
-          <div className="container mx-auto max-w-6xl">
-            <div className="text-center mb-16">
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full glass text-sm text-accent-400 mb-4">
-                <BookOpen className="w-4 h-4" />
-                <span>Блог</span>
-              </div>
-              <h2 className="text-4xl font-bold text-zinc-50 mb-4">
-                Последни статии
-              </h2>
-              <p className="text-xl text-zinc-400">
-                Открий нови прозрения и духовни насоки
-              </p>
-            </div>
-
-            <div className="grid md:grid-cols-3 gap-8">
-              {blogPosts.map((post) => (
-                <Link key={post.slug} href={`/blog/${post.slug}`}>
-                  <div className="glass-card p-6 card-hover h-full">
-                    <Badge variant="secondary" className="mb-4">
-                      {categoryLabels[post.category] || post.category}
-                    </Badge>
-                    <h3 className="text-xl font-semibold text-zinc-50 mb-3 line-clamp-2">
-                      {post.title}
-                    </h3>
-                    <p className="text-zinc-400 leading-relaxed line-clamp-3">
-                      {post.description}
-                    </p>
-                    <div className="mt-4 text-sm text-accent-400 flex items-center gap-2">
-                      <span>Прочети повече</span>
-                      <ArrowRight className="w-4 h-4" />
-                    </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-
-            <div className="text-center mt-8">
-              <Link href="/blog">
-                <Button variant="outline" className="border-zinc-700 hover:bg-zinc-900">
-                  Всички статии
-                  <ArrowRight className="ml-2 w-4 h-4" />
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </section>
-      )}
+      {/* Blog Section - Async with Suspense */}
+      <Suspense fallback={<BlogSectionSkeleton />}>
+        <BlogSection />
+      </Suspense>
 
       {/* Comparison Table */}
       <ComparisonTable />
@@ -518,7 +340,7 @@ export default async function LandingPage() {
           </div>
 
           <div className="space-y-4">
-            {faqs.map((faq, index) => (
+            {HOMEPAGE_FAQS.map((faq, index) => (
               <details key={index} className="glass-card group">
                 <summary className="flex items-center justify-between cursor-pointer p-6 list-none">
                   <h3 className="text-lg font-semibold text-zinc-50 pr-8">
