@@ -249,21 +249,21 @@ export default async function BlogPostPage({ params }: Props) {
       author: {
         '@type': 'Organization',
         name: 'Врачка',
-        url: 'https://vrachka.bg',
+        url: 'https://vrachka.eu',
       },
       publisher: {
         '@type': 'Organization',
         name: 'Врачка',
         logo: {
           '@type': 'ImageObject',
-          url: 'https://vrachka.bg/logo.png',
+          url: 'https://vrachka.eu/logo.png',
         },
       },
       datePublished: post.published_at,
       dateModified: post.updated_at || post.published_at,
       mainEntityOfPage: {
         '@type': 'WebPage',
-        '@id': `https://vrachka.bg/blog/${post.slug}`,
+        '@id': `https://vrachka.eu/blog/${post.slug}`,
       },
     };
   };

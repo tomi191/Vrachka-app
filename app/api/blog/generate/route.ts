@@ -66,7 +66,7 @@ export async function POST(request: Request) {
       headers: {
         'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY}`,
         'Content-Type': 'application/json',
-        'HTTP-Referer': 'https://vrachka.bg',
+        'HTTP-Referer': 'https://vrachka.eu',
         'X-Title': 'Vrachka AI Blog Generator',
       },
       body: JSON.stringify({

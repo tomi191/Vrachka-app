@@ -17,7 +17,7 @@ interface ShareButtonsProps {
 export default function ShareButtons({ url, title, description }: ShareButtonsProps) {
   const [copied, setCopied] = useState(false);
 
-  const fullUrl = `https://vrachka.bg${url}`;
+  const fullUrl = `https://vrachka.eu${url}`;
   const shareText = description || title;
 
   const handleCopyLink = async () => {

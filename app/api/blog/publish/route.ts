@@ -111,21 +111,21 @@ export async function POST(request: Request) {
       author: {
         '@type': 'Organization',
         name: 'Vrachka',
-        url: 'https://vrachka.bg',
+        url: 'https://vrachka.eu',
       },
       publisher: {
         '@type': 'Organization',
         name: 'Vrachka',
         logo: {
           '@type': 'ImageObject',
-          url: 'https://vrachka.bg/logo.svg',
+          url: 'https://vrachka.eu/logo.svg',
         },
       },
       datePublished: blogPost.published_at || blogPost.created_at,
       dateModified: blogPost.updated_at,
       mainEntityOfPage: {
         '@type': 'WebPage',
-        '@id': `https://vrachka.bg/blog/${slug}`,
+        '@id': `https://vrachka.eu/blog/${slug}`,
       },
     };
 
