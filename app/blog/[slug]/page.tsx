@@ -10,6 +10,7 @@ import RelatedPosts from '@/components/blog/RelatedPosts';
 import Breadcrumbs, { generateBreadcrumbSchema } from '@/components/blog/Breadcrumbs';
 import ShareButtons from '@/components/blog/ShareButtons';
 import BackToTop from '@/components/blog/BackToTop';
+import NewsletterSubscribe from '@/components/blog/NewsletterSubscribe';
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -377,7 +378,7 @@ export default async function BlogPostPage({ params }: Props) {
               {/* Category badge */}
               {post.category && (
                 <Link
-                  href={`/blog?category=${post.category}`}
+                  href={`/blog/category/${post.category}`}
                   className="inline-block text-xs sm:text-sm px-3 py-1 rounded-full bg-accent-500/10 text-accent-400 border border-accent-500/20 mb-3 sm:mb-4 hover:bg-accent-500/20 transition-colors"
                 >
                   {categoryLabels[post.category]}
@@ -458,9 +459,13 @@ export default async function BlogPostPage({ params }: Props) {
                 <div className="mt-8 sm:mt-12 pt-6 sm:pt-8 border-t border-zinc-800/50">
                   <div className="flex flex-wrap gap-2">
                     {post.tags.map((tag: string, i: number) => (
-                      <span key={i} className="text-xs sm:text-sm px-2.5 sm:px-3 py-1 bg-zinc-800/50 text-zinc-300 rounded-full hover:bg-zinc-700/50 transition-colors">
+                      <Link
+                        key={i}
+                        href={`/blog/tag/${tag.toLowerCase().replace(/\s+/g, '-')}`}
+                        className="text-xs sm:text-sm px-2.5 sm:px-3 py-1 bg-zinc-800/50 text-zinc-300 rounded-full hover:bg-accent-500/20 hover:text-accent-400 hover:border-accent-500/30 border border-transparent transition-colors"
+                      >
                         #{tag}
-                      </span>
+                      </Link>
                     ))}
                   </div>
                 </div>
@@ -552,30 +557,10 @@ export default async function BlogPostPage({ params }: Props) {
               </div>
 
               {/* Newsletter Subscription */}
-              <div className="bg-gradient-to-br from-accent-500/10 to-purple-500/10 backdrop-blur-sm border border-accent-500/20 rounded-lg p-6">
-                <h3 className="text-lg font-bold text-zinc-50 mb-2">
-                  📬 Абонирай се
-                </h3>
-                <p className="text-sm text-zinc-400 mb-4">
-                  Получавай нови статии директно на имейла си
-                </p>
-                <form className="space-y-3">
-                  <input
-                    type="email"
-                    placeholder="твоя@имейл.bg"
-                    className="w-full px-4 py-2 bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100 text-sm placeholder:text-zinc-600 focus:outline-none focus:border-accent-500 transition-colors"
-                  />
-                  <button
-                    type="submit"
-                    className="w-full px-4 py-2 bg-accent-600 hover:bg-accent-700 text-white rounded-lg text-sm font-semibold transition-colors"
-                  >
-                    Абонирай се
-                  </button>
-                </form>
-                <p className="text-xs text-zinc-500 mt-3">
-                  Без спам. Може да се отпишеш по всяко време.
-                </p>
-              </div>
+              <NewsletterSubscribe
+                source="blog-post"
+                interests={post.category ? [post.category] : []}
+              />
             </aside>
           </div>
         </div>

@@ -58,9 +58,13 @@ export default async function BlogIndexPage() {
                 )}
                 <div className="p-6">
                   {post.category && (
-                    <span className="inline-block text-xs px-3 py-1 rounded-full bg-accent-500/10 text-accent-400 border border-accent-500/20 mb-3">
+                    <Link
+                      href={`/blog/category/${post.category}`}
+                      className="inline-block text-xs px-3 py-1 rounded-full bg-accent-500/10 text-accent-400 border border-accent-500/20 mb-3 hover:bg-accent-500/20 transition-colors"
+                      onClick={(e) => e.stopPropagation()}
+                    >
                       {categoryLabels[post.category]}
-                    </span>
+                    </Link>
                   )}
                   <h2 className="text-xl font-bold text-zinc-50 mb-3 line-clamp-2 group-hover:text-accent-400 transition-colors">{post.title}</h2>
                   {post.excerpt && (<p className="text-zinc-400 text-sm mb-4 line-clamp-3">{post.excerpt}</p>)}
