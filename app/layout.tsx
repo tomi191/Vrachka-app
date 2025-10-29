@@ -119,8 +119,7 @@ export default function RootLayout({
         },
         "description": "AI предсказания, хороскопи и таро четения за информирани решения и лична перспектива. Първата AI астрологична платформа в България.",
         "sameAs": [
-          "https://www.facebook.com/vrachka",
-          "https://www.instagram.com/vrachka"
+          "https://www.facebook.com/vrachka.bg"
         ],
         "address": {
           "@type": "PostalAddress",

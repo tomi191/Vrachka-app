@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { Sparkles } from 'lucide-react'
+import { Sparkles, Facebook, Mail } from 'lucide-react'
 
 export function Footer() {
   return (
@@ -14,9 +14,32 @@ export function Footer() {
               </div>
               <span className="font-semibold text-zinc-50">Vrachka</span>
             </div>
-            <p className="text-sm text-zinc-500">
+            <p className="text-sm text-zinc-500 mb-4">
               Твоят духовен гид с AI технология
             </p>
+
+            {/* Social Links */}
+            <div className="flex flex-col gap-3 mt-4">
+              <h5 className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">Последвай ни</h5>
+              <div className="flex items-center gap-3">
+                <a
+                  href="https://www.facebook.com/vrachka.bg"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-9 h-9 rounded-lg bg-zinc-800/50 hover:bg-zinc-700/50 border border-zinc-700/50 hover:border-accent-500/50 flex items-center justify-center transition-all group"
+                  aria-label="Facebook"
+                >
+                  <Facebook className="w-4 h-4 text-zinc-400 group-hover:text-accent-400 transition-colors" />
+                </a>
+                <a
+                  href="mailto:support@vrachka.eu"
+                  className="w-9 h-9 rounded-lg bg-zinc-800/50 hover:bg-zinc-700/50 border border-zinc-700/50 hover:border-accent-500/50 flex items-center justify-center transition-all group"
+                  aria-label="Email"
+                >
+                  <Mail className="w-4 h-4 text-zinc-400 group-hover:text-accent-400 transition-colors" />
+                </a>
+              </div>
+            </div>
           </div>
 
           {/* Безплатни */}

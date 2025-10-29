@@ -28,8 +28,7 @@ export const organizationSchema = {
     name: 'Bulgaria',
   },
   sameAs: [
-    'https://www.facebook.com/vrachka.eu',
-    'https://www.instagram.com/vrachka.eu',
+    'https://www.facebook.com/vrachka.bg',
   ],
 }
 
