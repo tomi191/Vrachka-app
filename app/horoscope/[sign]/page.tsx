@@ -11,7 +11,6 @@ import { GradientText } from '@/components/ui/gradient-text'
 import { ShimmerButton } from '@/components/ui/shimmer-button'
 import { Navigation } from '@/components/Navigation'
 import { TopHeader } from '@/components/layout/top-header'
-import { BottomNav } from '@/components/layout/bottom-nav'
 import { Footer } from '@/components/Footer'
 import { MysticBackground } from '@/components/background/MysticBackground'
 import { ZodiacConstellation } from '@/components/background/ZodiacConstellation'
@@ -570,9 +569,6 @@ export default async function ZodiacSignPage({ params }: { params: Promise<{ sig
 
         <Footer />
       </div>
-
-      {/* Bottom Navigation - mobile only for logged-in users */}
-      {user && <BottomNav />}
     </>
   )
 }
