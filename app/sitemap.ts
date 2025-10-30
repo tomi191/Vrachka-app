@@ -1,18 +1,22 @@
 import { MetadataRoute } from 'next'
 import { createClient } from '@supabase/supabase-js'
 
+// Supabase client initialization
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+let supabase: any;
+if (supabaseUrl && supabaseAnonKey) {
+  supabase = createClient(supabaseUrl, supabaseAnonKey)
+}
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.vrachka.eu'
 
-  // Static routes (only public pages - exclude auth pages)
-  const routes = [
-    '',
-    '/pricing',
-    '/privacy',
-    '/terms',
-    '/contact',
-    '/features',
-    '/blog',
+  // 1. Static routes
+  const staticRoutes = [
+    '', '/pricing', '/privacy', '/terms', '/contact', 
+    '/features', '/blog', '/about', '/horoscope'
   ].map((route) => ({
     url: `${baseUrl}${route}`,
     lastModified: new Date(),
@@ -20,50 +24,70 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: route === '' ? 1 : 0.8,
   }))
 
-  // Bulgarian zodiac signs for horoscope pages
+  // 2. Zodiac sign routes
   const zodiacSigns = [
     'oven', 'telec', 'bliznaci', 'rak', 'lav', 'deva',
     'vezni', 'skorpion', 'strelec', 'kozirog', 'vodolej', 'ribi'
   ]
-
   const zodiacRoutes = zodiacSigns.map((sign) => ({
     url: `${baseUrl}/horoscope/${sign}`,
     lastModified: new Date(),
     changeFrequency: 'daily' as const,
-    priority: 0.9, // High priority for SEO
+    priority: 0.9,
   }))
 
-  // Fetch blog posts for dynamic sitemap
-  let blogRoutes: MetadataRoute.Sitemap = []
-  try {
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-
-    if (supabaseUrl && supabaseAnonKey) {
-      const supabase = createClient(supabaseUrl, supabaseAnonKey)
-
-      const { data: blogPosts } = await supabase
-        .from('blog_posts')
-        .select('slug, updated_at')
-        .eq('published', true)
-        .order('updated_at', { ascending: false })
-
-      if (blogPosts) {
-        blogRoutes = blogPosts.map((post) => ({
-          url: `${baseUrl}/blog/${post.slug}`,
-          lastModified: new Date(post.updated_at),
-          changeFrequency: 'weekly' as const,
-          priority: 0.7,
-        }))
-      }
-    }
-  } catch (error) {
-    console.error('[Sitemap] Failed to fetch blog posts:', error)
+  if (!supabase) {
+    console.error('[Sitemap] Supabase client not initialized. Returning static routes only.')
+    return [...staticRoutes, ...zodiacRoutes]
   }
 
-  return [
-    ...routes,
-    ...zodiacRoutes,
-    ...blogRoutes,
-  ]
+  try {
+    // 3. Fetch Blog Posts
+    const { data: blogPosts } = await supabase
+      .from('blog_posts')
+      .select('slug, updated_at')
+      .eq('published', true)
+    
+    const blogPostRoutes = blogPosts?.map((post: any) => ({
+      url: `${baseUrl}/blog/${post.slug}`,
+      lastModified: new Date(post.updated_at),
+      changeFrequency: 'weekly' as const,
+      priority: 0.7,
+    })) || []
+
+    // 4. Fetch Blog Categories
+    const { data: categories } = await supabase
+      .from('blog_categories')
+      .select('slug')
+
+    const categoryRoutes = categories?.map((category: any) => ({
+      url: `${baseUrl}/blog/category/${category.slug}`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly' as const,
+      priority: 0.6,
+    })) || []
+
+    // 5. Fetch Blog Tags
+    const { data: tags } = await supabase
+      .from('blog_tags')
+      .select('slug')
+
+    const tagRoutes = tags?.map((tag: any) => ({
+      url: `${baseUrl}/blog/tag/${tag.slug}`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly' as const,
+      priority: 0.6,
+    })) || []
+
+    return [
+      ...staticRoutes,
+      ...zodiacRoutes,
+      ...blogPostRoutes,
+      ...categoryRoutes,
+      ...tagRoutes,
+    ]
+  } catch (error) {
+    console.error('[Sitemap] Failed to fetch dynamic routes:', error)
+    return [...staticRoutes, ...zodiacRoutes] // Fallback to static routes
+  }
 }

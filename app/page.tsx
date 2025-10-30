@@ -51,13 +51,13 @@ export default function LandingPage() {
             {/* Main Heading */}
             <h1 className="text-5xl md:text-7xl font-bold max-w-4xl mx-auto leading-tight">
               <GradientText>
-                Твоят личен астрологичен асистент
+                Врачка: Твоята Дигитална Врачка и Личен Астролог в България
               </GradientText>
             </h1>
 
             {/* Subheading */}
-            <p className="text-xl text-zinc-400 max-w-2xl mx-auto leading-relaxed">
-              Персонализирани дневни хороскопи, таро четения и духовни насоки, генерирани от напреднала AI технология
+            <p className="text-xl text-zinc-400 max-w-3xl mx-auto leading-relaxed">
+              Добре дошли във Vrachka.eu – първата дигитална платформа в България, която съчетава древната мъдрост на астрологията и таро с мощта на изкуствения интелект. Получете своите персонализирани дневни хороскопи, задълбочени таро четения и духовни насоки за любов, кариера и личностно израстване. Нашата мисия е да ви предоставим точни и достъпни предсказания, които да ви помагат да навигирате в предизвикателствата на живота с увереност.
             </p>
 
             {/* CTA Buttons */}
@@ -139,6 +139,24 @@ export default function LandingPage() {
                 <ArrowRight className="ml-2 w-4 h-4" />
               </Button>
             </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Services Section */}
+      <section id="features" className="py-20 px-6">
+        <div className="container mx-auto max-w-6xl">
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full glass text-sm text-accent-400 mb-4">
+              <Sparkles className="w-4 h-4" />
+              <span>Услуги</span>
+            </div>
+            <h2 className="text-4xl font-bold text-zinc-50 mb-4">
+              Отключи пълния си потенциал
+            </h2>
+            <p className="text-xl text-zinc-400 max-w-3xl mx-auto">
+              Vrachka.eu предлага разнообразие от AI-базирани услуги, които да ти помогнат в твоето духовно пътуване - от дневни хороскопи и таро до персонализирани анализи.
+            </p>
           </div>
         </div>
       </section>

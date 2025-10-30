@@ -16,7 +16,21 @@
       "Bash(git add:*)",
       "mcp__stripe__list_products",
       "mcp__stripe__list_prices",
-      "mcp__stripe__get_stripe_account_info"
+      "mcp__stripe__get_stripe_account_info",
+      "mcp__vercel__list_teams",
+      "mcp__vercel__list_projects",
+      "mcp__vercel__list_deployments",
+      "mcp__vercel__get_deployment_build_logs",
+      "Bash(curl:*)",
+      "mcp__vercel__get_deployment",
+      "mcp__vercel__web_fetch_vercel_url",
+      "Bash(gemini:*)",
+      "Bash(npx supabase:*)",
+      "mcp__supabase__apply_migration",
+      "Bash(git push:*)",
+      "mcp__supabase__list_migrations",
+      "Bash(git commit:*)",
+      "Bash(where:*)"
     ],
     "deny": [],
     "ask": []

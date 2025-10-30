@@ -2,7 +2,7 @@ import { ImageResponse } from 'next/og';
 
 export const runtime = 'edge';
 
-export const alt = 'Vrachka - AI-Powered Astrology';
+export const alt = 'Vrachka Admin - AI Costs';
 export const size = {
   width: 1200,
   height: 630,
@@ -23,7 +23,7 @@ export default async function Image() {
         }}
       >
         <img
-          src={`https://vrachka.eu/og-image-main.png`}
+          src={`https://vrachka.eu/og-image-admin-financial-ai-costs.png`}
           alt={alt}
           style={{
             width: '100%',

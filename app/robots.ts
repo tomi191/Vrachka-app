@@ -23,8 +23,6 @@ export default function robots(): MetadataRoute.Robots {
           '/admin/',
           '/onboarding/',
           '/profile/',
-          '/oracle/',
-          '/tarot/',
           '/subscription/',
         ],
       },
