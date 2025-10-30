@@ -46,38 +46,52 @@ export async function requestNotificationPermission() {
 
 // Subscribe to push notifications
 export async function subscribeToPush() {
+  console.log('🔔 [Client] Starting push subscription flow...')
+
   if (!isPushSupported()) {
+    console.error('🔔 [Client] Push notifications not supported')
     throw new Error('Push notifications are not supported')
   }
 
   // Check permission
   if (Notification.permission === 'denied') {
+    console.error('🔔 [Client] Notification permission denied by user')
     throw new Error('Notification permission denied')
   }
 
   // Request permission if not granted
   if (Notification.permission !== 'granted') {
+    console.log('🔔 [Client] Requesting notification permission...')
     const permission = await requestNotificationPermission()
+    console.log('🔔 [Client] Permission result:', permission)
     if (permission !== 'granted') {
       throw new Error('Notification permission not granted')
     }
   }
 
+  console.log('🔔 [Client] Waiting for service worker to be ready...')
   // Register service worker if not already registered
   const registration = await navigator.serviceWorker.ready
+  console.log('🔔 [Client] Service worker ready:', registration.active?.scriptURL)
 
   // Check if already subscribed
   let subscription = await registration.pushManager.getSubscription()
+  console.log('🔔 [Client] Existing subscription:', subscription ? 'Found' : 'None')
 
   if (!subscription) {
+    console.log('🔔 [Client] Creating new push subscription...')
+    console.log('🔔 [Client] VAPID key:', VAPID_PUBLIC_KEY ? 'Present' : 'MISSING!')
+
     // Subscribe to push
     subscription = await registration.pushManager.subscribe({
       userVisibleOnly: true,
       applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
     })
+    console.log('🔔 [Client] Push subscription created:', subscription.endpoint)
   }
 
   // Send subscription to backend
+  console.log('🔔 [Client] Sending subscription to backend...')
   const response = await fetch('/api/push/subscribe', {
     method: 'POST',
     headers: {
@@ -90,8 +104,13 @@ export async function subscribeToPush() {
   })
 
   if (!response.ok) {
+    const error = await response.text()
+    console.error('🔔 [Client] Backend save failed:', error)
     throw new Error('Failed to save subscription')
   }
+
+  const result = await response.json()
+  console.log('🔔 [Client] Subscription saved successfully:', result)
 
   return subscription
 }

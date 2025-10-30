@@ -18,40 +18,70 @@ export function PushNotificationPrompt() {
   const [showPrompt, setShowPrompt] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [isVisible, setIsVisible] = useState(false)
 
   useEffect(() => {
     // Check if push is supported
     const supported = isPushSupported()
     setIsSupported(supported)
 
+    // Development mode warning
+    if (process.env.NODE_ENV === 'development') {
+      console.log('🔔 Push Notifications: Service worker is disabled in development mode')
+      console.log('   To test push notifications, deploy to production or set disable: false in next.config.js')
+      return
+    }
+
     if (supported) {
+      console.log('🔔 Push Notifications: Supported and ready')
+
       // Check if already subscribed
-      checkSubscribed().then(setIsSubscribed)
+      checkSubscribed().then((subscribed) => {
+        console.log('🔔 Push Notifications: Subscription status:', subscribed)
+        setIsSubscribed(subscribed)
+      })
 
       // Show prompt after 10 seconds if not subscribed and permission not denied
       const permission = getNotificationPermission()
+      console.log('🔔 Push Notifications: Current permission:', permission)
+
       if (!isSubscribed && permission === 'default') {
         const timer = setTimeout(() => {
+          console.log('🔔 Push Notifications: Showing subscription prompt')
           setShowPrompt(true)
         }, 10000) // Show after 10 seconds
 
         return () => clearTimeout(timer)
       }
+    } else {
+      console.warn('🔔 Push Notifications: Not supported in this browser')
     }
   }, [isSubscribed])
+
+  // Trigger animation when prompt shows
+  useEffect(() => {
+    if (showPrompt) {
+      setTimeout(() => setIsVisible(true), 50)
+    } else {
+      setIsVisible(false)
+    }
+  }, [showPrompt])
 
   const handleSubscribe = async () => {
     setLoading(true)
     setError('')
 
+    console.log('🔔 Push Notifications: User clicked subscribe')
+
     try {
       await subscribeToPush()
+      console.log('🔔 Push Notifications: Successfully subscribed!')
       setIsSubscribed(true)
       setShowPrompt(false)
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to subscribe'
       setError(message)
-      console.error('Push subscription error:', err)
+      console.error('🔔 Push Notifications: Subscription error:', err)
     } finally {
       setLoading(false)
     }
@@ -63,56 +93,72 @@ export function PushNotificationPrompt() {
   // Show subscription prompt
   if (showPrompt && !isSubscribed) {
     return (
-      <div className="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:w-96 z-50 animate-fade-in">
-        <Card className="glass-card border-accent-500/30">
-          <CardContent className="pt-6 relative">
-            <button
-              onClick={() => setShowPrompt(false)}
-              className="absolute top-2 right-2 text-zinc-500 hover:text-zinc-300"
-            >
-              <X className="w-4 h-4" />
-            </button>
+      <>
+        {/* Backdrop */}
+        <div
+          className={`fixed inset-0 bg-black/50 backdrop-blur-sm z-[60] transition-opacity duration-300 ${
+            isVisible ? 'opacity-100' : 'opacity-0'
+          }`}
+          onClick={() => setShowPrompt(false)}
+        />
 
-            <div className="flex items-start gap-4">
-              <div className="w-12 h-12 rounded-full bg-accent-500/20 flex items-center justify-center flex-shrink-0">
-                <Bell className="w-6 h-6 text-accent-400" />
+        {/* Centered Modal */}
+        <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 pointer-events-none">
+          <Card className={`glass-card border-accent-500/30 w-full max-w-sm pointer-events-auto transition-all duration-300 ${
+            isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
+          }`}>
+            <CardContent className="p-6 relative">
+              <button
+                onClick={() => setShowPrompt(false)}
+                className="absolute top-3 right-3 text-zinc-500 hover:text-zinc-300 transition-colors"
+                aria-label="Затвори"
+              >
+                <X className="w-5 h-5" />
+              </button>
+
+              {/* Icon */}
+              <div className="flex justify-center mb-4">
+                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-accent-500/20 to-purple-500/20 flex items-center justify-center">
+                  <Bell className="w-8 h-8 text-accent-400" />
+                </div>
               </div>
 
-              <div className="flex-1">
-                <h3 className="font-semibold text-zinc-50 mb-2">
+              {/* Content */}
+              <div className="text-center space-y-3">
+                <h3 className="text-lg font-semibold text-zinc-50">
                   Получавай дневни напомняния
                 </h3>
-                <p className="text-sm text-zinc-400 mb-4">
+                <p className="text-sm text-zinc-400 leading-relaxed">
                   Ще ти изпращаме напомняне всеки ден в 8:00 сутринта за твоя дневен хороскоп
                 </p>
 
                 {error && (
-                  <p className="text-sm text-red-400 mb-3">{error}</p>
+                  <p className="text-sm text-red-400 bg-red-950/20 rounded-lg px-3 py-2">{error}</p>
                 )}
 
-                <div className="flex gap-2">
+                {/* Buttons */}
+                <div className="flex flex-col gap-2 pt-2">
                   <Button
                     onClick={handleSubscribe}
                     disabled={loading}
-                    size="sm"
-                    className="bg-accent-600 hover:bg-accent-700"
+                    className="w-full bg-accent-600 hover:bg-accent-700"
                   >
-                    {loading ? 'Записване...' : 'Включи'}
+                    {loading ? 'Записване...' : '🔔 Включи напомняния'}
                   </Button>
                   <Button
                     onClick={() => setShowPrompt(false)}
                     disabled={loading}
-                    size="sm"
-                    variant="outline"
+                    variant="ghost"
+                    className="w-full text-zinc-400 hover:text-zinc-200"
                   >
                     По-късно
                   </Button>
                 </div>
               </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+            </CardContent>
+          </Card>
+        </div>
+      </>
     )
   }
 
