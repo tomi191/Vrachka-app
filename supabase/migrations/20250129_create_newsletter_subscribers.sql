@@ -74,7 +74,7 @@ CREATE POLICY "Admin can read all newsletter subscribers" ON newsletter_subscrib
     EXISTS (
       SELECT 1 FROM profiles
       WHERE profiles.id = auth.uid()
-      AND profiles.role = 'admin'
+      AND profiles.is_admin = true
     )
   );
 
@@ -86,14 +86,14 @@ CREATE POLICY "Admin can update newsletter subscribers" ON newsletter_subscriber
     EXISTS (
       SELECT 1 FROM profiles
       WHERE profiles.id = auth.uid()
-      AND profiles.role = 'admin'
+      AND profiles.is_admin = true
     )
   )
   WITH CHECK (
     EXISTS (
       SELECT 1 FROM profiles
       WHERE profiles.id = auth.uid()
-      AND profiles.role = 'admin'
+      AND profiles.is_admin = true
     )
   );
 

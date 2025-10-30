@@ -1,5 +1,8 @@
 import { createClient } from '@/lib/supabase/server';
 import { NextRequest, NextResponse } from 'next/server';
+import { Resend } from 'resend';
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(request: NextRequest) {
   try {
@@ -93,7 +96,7 @@ export async function POST(request: NextRequest) {
         ip_address: ipAddress,
         user_agent: userAgent,
       })
-      .select('id, confirmation_token')
+      .select('id, confirmation_token, unsubscribe_token')
       .single();
 
     if (error) {
@@ -104,14 +107,93 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // TODO: Send confirmation email
-    // For now, we'll auto-confirm since email service is not set up
-    // In production, you would:
-    // 1. Send email with confirmation link containing data.confirmation_token
-    // 2. User clicks link -> calls /api/newsletter/confirm?token=...
-    // 3. That endpoint updates status to 'confirmed'
+    // Send welcome email
+    try {
+      await resend.emails.send({
+        from: 'Vrachka <newsletter@vrachka.eu>',
+        to: email.toLowerCase(),
+        subject: '🌟 Добре дошъл в Vrachka!',
+        html: `
+          <!DOCTYPE html>
+          <html>
+            <head>
+              <meta charset="utf-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            </head>
+            <body style="margin: 0; padding: 0; background-color: #09090b; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+              <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
 
-    // Auto-confirm for now (remove this in production when email is set up)
+                <!-- Header -->
+                <div style="text-align: center; padding: 30px 0;">
+                  <h1 style="color: #a78bfa; margin: 0; font-size: 36px;">✨ Добре дошъл!</h1>
+                  <p style="color: #71717a; margin: 10px 0 0 0; font-size: 18px;">Успешно се абонира за Vrachka Newsletter</p>
+                </div>
+
+                <!-- Main Content -->
+                <div style="background: #18181b; border-radius: 12px; padding: 30px; margin-bottom: 30px;">
+                  <p style="color: #fafafa; margin: 0 0 20px 0; font-size: 16px; line-height: 1.6;">
+                    Здравей${name ? `, ${name}` : ''}! 👋
+                  </p>
+                  <p style="color: #a1a1aa; margin: 0 0 20px 0; line-height: 1.6;">
+                    Благодарим ти, че се абонира за дневния хороскоп от Vrachka!
+                  </p>
+                  <p style="color: #a1a1aa; margin: 0 0 20px 0; line-height: 1.6;">
+                    Всяка сутрин в <strong style="color: #fafafa;">7:00</strong> ще получаваш персонализиран хороскоп директно в пощата си. 📬
+                  </p>
+
+                  <div style="background: #1a1a1a; border-left: 3px solid #a78bfa; padding: 15px; margin: 20px 0; border-radius: 4px;">
+                    <p style="color: #d4d4d8; margin: 0; font-size: 14px; line-height: 1.6;">
+                      💡 <strong>Съвет:</strong> Добави <span style="color: #a78bfa;">newsletter@vrachka.eu</span> в контактите си, за да не пропуснеш нито един хороскоп.
+                    </p>
+                  </div>
+                </div>
+
+                <!-- What's Next -->
+                <div style="background: #18181b; border-radius: 12px; padding: 30px; margin-bottom: 30px;">
+                  <h2 style="color: #fafafa; margin: 0 0 20px 0; font-size: 20px;">Какво следва? 🎯</h2>
+                  <ul style="color: #a1a1aa; margin: 0; padding-left: 20px; line-height: 1.8;">
+                    <li>Получаваш дневен хороскоп всяка сутрин</li>
+                    <li>Вижте специални астрологични съвети</li>
+                    <li>Бъдеш информиран за космически събития</li>
+                    <li>Достъп до ексклузивно съдържание</li>
+                  </ul>
+                </div>
+
+                <!-- CTA Button -->
+                <div style="text-align: center; margin: 40px 0;">
+                  <a href="https://vrachka.eu/horoscope"
+                     style="display: inline-block; background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%); color: white; text-decoration: none; padding: 14px 32px; border-radius: 8px; font-weight: 600; font-size: 16px;">
+                    Виж своя хороскоп сега
+                  </a>
+                </div>
+
+                <!-- Footer -->
+                <div style="border-top: 1px solid #27272a; padding-top: 25px; margin-top: 40px;">
+                  <p style="color: #71717a; font-size: 13px; line-height: 1.6; margin: 0 0 10px 0; text-align: center;">
+                    Ако искаш да се отпишеш, можеш да го направиш по всяко време.
+                  </p>
+                  <p style="text-align: center; margin: 15px 0 0 0;">
+                    <a href="https://vrachka.eu/unsubscribe?token=${data.unsubscribe_token}"
+                       style="color: #71717a; font-size: 12px; text-decoration: underline;">
+                      Отписване
+                    </a>
+                  </p>
+                  <p style="color: #52525b; font-size: 12px; text-align: center; margin: 15px 0 0 0;">
+                    © ${new Date().getFullYear()} Vrachka.eu - Всички права запазени
+                  </p>
+                </div>
+
+              </div>
+            </body>
+          </html>
+        `,
+      });
+    } catch (emailError) {
+      console.error('Failed to send welcome email:', emailError);
+      // Don't fail the subscription if email fails
+    }
+
+    // Auto-confirm the subscription
     await supabase
       .from('newsletter_subscribers')
       .update({
@@ -123,7 +205,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         success: true,
-        message: 'Благодарим ви! Успешно се записахте за нашия бюлетин.',
+        message: 'Благодарим ви! Успешно се записахте за нашия бюлетин. Проверете имейла си за потвърждение.',
         status: 'confirmed',
       },
       { status: 201 }

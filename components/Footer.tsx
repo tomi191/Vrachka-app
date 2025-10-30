@@ -1,10 +1,26 @@
 import Link from 'next/link'
 import { Sparkles, Facebook, Mail } from 'lucide-react'
+import { NewsletterSubscribeForm } from '@/components/NewsletterSubscribeForm'
 
 export function Footer() {
   return (
     <footer className="border-t border-zinc-800/50 py-12 px-6 mt-20">
       <div className="container mx-auto max-w-6xl">
+        {/* Newsletter Section */}
+        <div className="mb-12 pb-12 border-b border-zinc-800/50">
+          <div className="max-w-xl mx-auto text-center mb-6">
+            <h3 className="text-2xl font-bold text-zinc-50 mb-2">
+              Дневен хороскоп в пощата ти
+            </h3>
+            <p className="text-zinc-400">
+              Получавай персонализирани астрологични прогнози всяка сутрин в 7:00
+            </p>
+          </div>
+          <div className="max-w-md mx-auto">
+            <NewsletterSubscribeForm source="footer" />
+          </div>
+        </div>
+
         <div className="grid md:grid-cols-4 gap-8 mb-8">
           {/* Brand */}
           <div>
