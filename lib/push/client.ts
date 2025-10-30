@@ -107,18 +107,10 @@ export async function subscribeToPush() {
     const newReg = await navigator.serviceWorker.register('/sw.js', { scope: '/' })
     console.log('🔔 [Client] New service worker registered:', newReg.scope)
 
-    // Wait for it to activate
-    if (newReg.installing) {
-      console.log('🔔 [Client] New service worker installing...')
-      await new Promise(resolve => {
-        newReg.installing!.addEventListener('statechange', function() {
-          if (this.state === 'activated') {
-            console.log('🔔 [Client] New service worker activated!')
-            resolve(undefined)
-          }
-        })
-      })
-    }
+    // Wait for it to activate using navigator.serviceWorker.ready
+    console.log('🔔 [Client] Waiting for new service worker to activate...')
+    await navigator.serviceWorker.ready
+    console.log('🔔 [Client] New service worker activated successfully!')
   }
 
   if (registrations.length === 0) {
@@ -128,17 +120,12 @@ export async function subscribeToPush() {
       const reg = await navigator.serviceWorker.register('/sw.js', { scope: '/' })
       console.log('🔔 [Client] Service worker registered manually:', reg.scope)
 
-      // Wait for it to be installing/waiting/active
-      if (reg.installing) {
-        console.log('🔔 [Client] Service worker installing...')
-        await new Promise(resolve => {
-          reg.installing!.addEventListener('statechange', function() {
-            if (this.state === 'activated') resolve(undefined)
-          })
-        })
-      }
-
+      // Wait for service worker to become active
+      // Use navigator.serviceWorker.ready instead of tracking state changes
+      // to avoid race conditions
+      console.log('🔔 [Client] Waiting for service worker to activate...')
       await navigator.serviceWorker.ready
+      console.log('🔔 [Client] Service worker activated successfully')
     } catch (error) {
       console.error('🔔 [Client] Manual registration failed:', error)
       throw new Error('Service worker registration failed. Please refresh the page.')
