@@ -1,9 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Bell, Mail, Moon, Check, Loader2, Shield, Lock, AtSign } from "lucide-react";
+import { Mail, Moon, Check, Loader2, Shield, Lock, AtSign } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
-import { subscribeToPush, unsubscribeFromPush, isPushSupported } from "@/lib/push/client";
 import { Button } from "@/components/ui/button";
 
 interface SettingsFormProps {
@@ -12,16 +11,12 @@ interface SettingsFormProps {
 
 interface UserPreferences {
   email_notifications: boolean;
-  push_notifications: boolean;
-  daily_reminders: boolean;
   weekly_digest: boolean;
 }
 
 export function SettingsForm({ userEmail }: SettingsFormProps) {
   const [settings, setSettings] = useState({
     emailNotifications: true,
-    pushNotifications: false,
-    dailyReminders: true,
     weeklyDigest: false,
   });
 
@@ -61,8 +56,6 @@ export function SettingsForm({ userEmail }: SettingsFormProps) {
         if (data) {
           setSettings({
             emailNotifications: data.email_notifications,
-            pushNotifications: data.push_notifications,
-            dailyReminders: data.daily_reminders,
             weeklyDigest: data.weekly_digest,
           });
         } else {
@@ -72,8 +65,6 @@ export function SettingsForm({ userEmail }: SettingsFormProps) {
             .insert({
               user_id: user.id,
               email_notifications: true,
-              push_notifications: false,
-              daily_reminders: true,
               weekly_digest: false,
             });
         }
@@ -180,34 +171,6 @@ export function SettingsForm({ userEmail }: SettingsFormProps) {
   const handleToggle = async (key: keyof typeof settings) => {
     const newValue = !settings[key];
 
-    // Special handling for push notifications
-    if (key === 'pushNotifications') {
-      if (!isPushSupported()) {
-        setError('Push notifications не се поддържат в този браузър');
-        setTimeout(() => setError(''), 3000);
-        return;
-      }
-
-      try {
-        if (newValue) {
-          // Subscribe to push
-          await subscribeToPush();
-        } else {
-          // Unsubscribe from push
-          await unsubscribeFromPush();
-        }
-      } catch (err) {
-        console.error('Push notification error:', err);
-        setError(
-          err instanceof Error
-            ? err.message
-            : 'Грешка при активиране на notifications'
-        );
-        setTimeout(() => setError(''), 3000);
-        return;
-      }
-    }
-
     // Optimistically update UI
     setSettings((prev) => ({
       ...prev,
@@ -296,32 +259,6 @@ export function SettingsForm({ userEmail }: SettingsFormProps) {
           description="Резюме на седмицата всяка неделя"
           checked={settings.weeklyDigest}
           onChange={() => handleToggle("weeklyDigest")}
-        />
-      </div>
-
-      <div className="border-t border-zinc-800" />
-
-      {/* Push Notifications */}
-      <div className="space-y-4">
-        <div className="flex items-center gap-3">
-          <Bell className="w-5 h-5 text-zinc-400" />
-          <h3 className="text-lg font-semibold text-zinc-100">
-            Push Известия
-          </h3>
-        </div>
-
-        <SettingToggle
-          label="Push notifications"
-          description="Получавай уведомления в браузъра"
-          checked={settings.pushNotifications}
-          onChange={() => handleToggle("pushNotifications")}
-        />
-
-        <SettingToggle
-          label="Дневни напомняния"
-          description="Напомняне да проверите хороскопа си"
-          checked={settings.dailyReminders}
-          onChange={() => handleToggle("dailyReminders")}
         />
       </div>
 
