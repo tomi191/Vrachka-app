@@ -5,6 +5,8 @@ const withPWA = require('next-pwa')({
   disable: process.env.NODE_ENV === 'development',
   // Use default sw.js path - custom worker causes 404 issues in production
   // sw: 'worker/index.js',
+  // Exclude app-build-manifest.json from precaching to avoid 404 errors
+  buildExcludes: [/app-build-manifest\.json$/],
 });
 
 /** @type {import('next').NextConfig} */
