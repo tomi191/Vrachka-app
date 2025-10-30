@@ -85,6 +85,42 @@ export async function subscribeToPush() {
     })
   })
 
+  // Cleanup old service workers from /worker/ path (migration fix)
+  const oldWorkers = registrations.filter(reg =>
+    reg.active?.scriptURL.includes('/worker/index.js') ||
+    reg.waiting?.scriptURL.includes('/worker/index.js') ||
+    reg.installing?.scriptURL.includes('/worker/index.js')
+  )
+
+  if (oldWorkers.length > 0) {
+    console.log('🔔 [Client] Found old service workers from /worker/ path, removing...')
+    for (const reg of oldWorkers) {
+      console.log('🔔 [Client] Unregistering:', reg.scope, reg.active?.scriptURL)
+      await reg.unregister()
+    }
+
+    // Wait a bit for cleanup to complete
+    await new Promise(resolve => setTimeout(resolve, 500))
+
+    // Register new service worker from correct path
+    console.log('🔔 [Client] Registering new service worker from /sw.js...')
+    const newReg = await navigator.serviceWorker.register('/sw.js', { scope: '/' })
+    console.log('🔔 [Client] New service worker registered:', newReg.scope)
+
+    // Wait for it to activate
+    if (newReg.installing) {
+      console.log('🔔 [Client] New service worker installing...')
+      await new Promise(resolve => {
+        newReg.installing!.addEventListener('statechange', function() {
+          if (this.state === 'activated') {
+            console.log('🔔 [Client] New service worker activated!')
+            resolve(undefined)
+          }
+        })
+      })
+    }
+  }
+
   if (registrations.length === 0) {
     console.error('🔔 [Client] No service worker registered! Attempting manual registration...')
     try {
