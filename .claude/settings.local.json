@@ -30,7 +30,9 @@
       "Bash(git push:*)",
       "mcp__supabase__list_migrations",
       "Bash(git commit:*)",
-      "Bash(where:*)"
+      "Bash(where:*)",
+      "mcp__playwright__browser_navigate",
+      "mcp__playwright__browser_close"
     ],
     "deny": [],
     "ask": []

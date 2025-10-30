@@ -1,6 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
 import { SettingsForm } from "./SettingsForm";
-import { PushNotificationSettings } from "@/components/PushNotificationPrompt";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
@@ -29,16 +28,6 @@ export default async function SettingsPage() {
         </CardHeader>
         <CardContent>
           <SettingsForm userEmail={user?.email || ""} />
-        </CardContent>
-      </Card>
-
-      {/* Push Notifications */}
-      <Card className="glass-card">
-        <CardHeader>
-          <CardTitle className="text-zinc-50">Нотификации</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <PushNotificationSettings />
         </CardContent>
       </Card>
 

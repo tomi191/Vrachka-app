@@ -4,7 +4,6 @@ import { zodiacSigns, type ZodiacSign } from "@/lib/zodiac";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Sparkles, CreditCard, Star, Heart, TrendingUp } from "lucide-react";
 import { HoroscopeCard } from "@/components/HoroscopeCard";
-import { PushNotificationPrompt } from "@/components/PushNotificationPrompt";
 import Link from "next/link";
 
 export default async function DashboardPage() {
@@ -150,9 +149,6 @@ export default async function DashboardPage() {
           </div>
         </CardContent>
       </Card>
-
-      {/* Push Notification Prompt */}
-      <PushNotificationPrompt />
     </div>
   );
 }
