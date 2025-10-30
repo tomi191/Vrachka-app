@@ -10,10 +10,13 @@ import { PlanetIcon, ElementIcon, type PlanetName, type ElementName } from '@/co
 import { GradientText } from '@/components/ui/gradient-text'
 import { ShimmerButton } from '@/components/ui/shimmer-button'
 import { Navigation } from '@/components/Navigation'
+import { TopHeader } from '@/components/layout/top-header'
+import { BottomNav } from '@/components/layout/bottom-nav'
 import { Footer } from '@/components/Footer'
 import { MysticBackground } from '@/components/background/MysticBackground'
 import { ZodiacConstellation } from '@/components/background/ZodiacConstellation'
 import { HoroscopeCard } from '@/components/HoroscopeCard'
+import { createClient } from '@/lib/supabase/server'
 
 // ISR: Revalidate every 24 hours (daily horoscope updates)
 export const revalidate = 86400
@@ -371,6 +374,9 @@ export default async function ZodiacSignPage({ params }: { params: Promise<{ sig
     notFound()
   }
 
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+
   const articleSchema = {
     '@context': 'https://schema.org',
     '@type': 'Article',
@@ -396,7 +402,16 @@ export default async function ZodiacSignPage({ params }: { params: Promise<{ sig
       <StructuredData data={articleSchema} />
       <StructuredData data={breadcrumbData} />
 
-      <Navigation />
+      {/* Desktop: Navigation with Profile dropdown */}
+      <div className="hidden lg:block">
+        <Navigation user={user} />
+      </div>
+
+      {/* Mobile: TopHeader with hamburger (if logged in) or Navigation */}
+      <div className="lg:hidden">
+        {user ? <TopHeader /> : <Navigation />}
+      </div>
+
       <MysticBackground />
       <ZodiacConstellation sign={zodiac.sign} />
 
@@ -555,6 +570,9 @@ export default async function ZodiacSignPage({ params }: { params: Promise<{ sig
 
         <Footer />
       </div>
+
+      {/* Bottom Navigation - mobile only for logged-in users */}
+      {user && <BottomNav />}
     </>
   )
 }

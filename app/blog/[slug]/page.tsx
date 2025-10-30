@@ -11,6 +11,10 @@ import Breadcrumbs, { generateBreadcrumbSchema } from '@/components/blog/Breadcr
 import ShareButtons from '@/components/blog/ShareButtons';
 import BackToTop from '@/components/blog/BackToTop';
 import NewsletterSubscribe from '@/components/blog/NewsletterSubscribe';
+import { Navigation } from '@/components/Navigation';
+import { TopHeader } from '@/components/layout/top-header';
+import { BottomNav } from '@/components/layout/bottom-nav';
+import { Footer } from '@/components/Footer';
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -45,6 +49,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function BlogPostPage({ params }: Props) {
   const { slug } = await params;
   const supabase = await createClient();
+
+  // Check if user is authenticated
+  const { data: { user } } = await supabase.auth.getUser();
 
   const { data: post } = await supabase
     .from('blog_posts')
@@ -343,10 +350,20 @@ export default async function BlogPostPage({ params }: Props) {
       {/* Reading Progress Bar */}
       <ReadingProgress />
 
+      {/* Desktop: Navigation with Profile dropdown */}
+      <div className="hidden lg:block">
+        <Navigation user={user} />
+      </div>
+
+      {/* Mobile: TopHeader with hamburger (if logged in) or Navigation */}
+      <div className="lg:hidden">
+        {user ? <TopHeader /> : <Navigation />}
+      </div>
+
       <MysticBackground />
       <div className="relative min-h-screen">
         {/* Container with max-width */}
-        <div className="container mx-auto px-4 sm:px-6 py-8 sm:py-12">
+        <div className="container mx-auto px-4 sm:px-6 pt-32 pb-16">
           <Link href="/blog" className="inline-flex items-center gap-2 text-zinc-400 hover:text-zinc-50 transition-colors mb-4">
             <ArrowLeft className="w-4 h-4" />
             <span className="text-sm sm:text-base">Назад към блога</span>
@@ -569,6 +586,11 @@ export default async function BlogPostPage({ params }: Props) {
           <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(post.schema_markup) }} />
         )}
       </div>
+
+      <Footer />
+
+      {/* Bottom Navigation - mobile only for logged-in users */}
+      {user && <BottomNav />}
 
       {/* Back to Top Button */}
       <BackToTop />

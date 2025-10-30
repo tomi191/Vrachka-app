@@ -2,17 +2,48 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Flame, Bell } from "lucide-react";
+import { Flame, Bell, Menu } from "lucide-react";
 import { NotificationsDropdown } from "@/components/NotificationsDropdown";
+import { MobileMenu } from "@/components/layout/mobile-menu";
+import { createClient } from "@/lib/supabase/client";
 
 interface TopHeaderProps {
   streak?: number;
   showNotifications?: boolean;
 }
 
-export function TopHeader({ streak = 0, showNotifications = true }: TopHeaderProps) {
+export function TopHeader({ streak: initialStreak, showNotifications = true }: TopHeaderProps) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [streak, setStreak] = useState(initialStreak || 0);
+
+  // Fetch streak data if not provided
+  useEffect(() => {
+    async function fetchStreak() {
+      if (initialStreak !== undefined) return; // Use provided streak
+
+      try {
+        const supabase = createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('daily_streak')
+          .eq('id', user.id)
+          .single();
+
+        if (profile) {
+          setStreak(profile.daily_streak || 0);
+        }
+      } catch (error) {
+        console.error('Failed to fetch streak:', error);
+      }
+    }
+
+    fetchStreak();
+  }, [initialStreak]);
 
   // Fetch unread notification count on mount
   useEffect(() => {
@@ -42,8 +73,9 @@ export function TopHeader({ streak = 0, showNotifications = true }: TopHeaderPro
   }
 
   return (
-    <header className="sticky top-0 z-40 bg-mystic-950/95 backdrop-blur-lg border-b border-mystic-800">
-      <div className="container max-w-lg mx-auto px-4 h-16 flex items-center justify-between">
+    <>
+      <header className="sticky top-0 z-40 bg-mystic-950/95 backdrop-blur-lg border-b border-mystic-800">
+        <div className="container max-w-lg lg:max-w-none mx-auto px-4 lg:px-6 h-16 flex items-center justify-between lg:ml-72">
         {/* Logo */}
         <Link href="/dashboard" className="flex items-center gap-2 group">
           <div className="relative">
@@ -96,19 +128,19 @@ export function TopHeader({ streak = 0, showNotifications = true }: TopHeaderPro
           <span className="font-bold text-lg gradient-text group-hover:text-white transition-colors duration-300">Vrachka</span>
         </Link>
 
-        {/* Right side */}
-        <div className="flex items-center gap-4">
-          {/* Streak */}
-          {streak > 0 && (
-            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-mystic-900/50 rounded-full">
-              <Flame className="w-4 h-4 text-orange-500" />
-              <span className="text-sm font-semibold text-mystic-200">
-                {streak}
-              </span>
-            </div>
-          )}
+          {/* Right side */}
+          <div className="flex items-center gap-3">
+            {/* Streak */}
+            {streak > 0 && (
+              <div className="flex items-center gap-1.5 px-3 py-1.5 bg-mystic-900/50 rounded-full">
+                <Flame className="w-4 h-4 text-orange-500" />
+                <span className="text-sm font-semibold text-mystic-200">
+                  {streak}
+                </span>
+              </div>
+            )}
 
-          {/* Notifications */}
+            {/* Notifications */}
           {showNotifications && (
             <div className="relative">
               <button
@@ -129,8 +161,24 @@ export function TopHeader({ streak = 0, showNotifications = true }: TopHeaderPro
               />
             </div>
           )}
+
+            {/* Burger Menu Icon */}
+            <button
+              onClick={() => setIsMobileMenuOpen(true)}
+              className="p-2 hover:bg-mystic-900/50 rounded-lg transition-colors"
+              aria-label="Отвори меню"
+            >
+              <Menu className="w-5 h-5 text-mystic-400" />
+            </button>
+          </div>
         </div>
-      </div>
-    </header>
+      </header>
+
+      {/* Mobile Menu */}
+      <MobileMenu
+        isOpen={isMobileMenuOpen}
+        onClose={() => setIsMobileMenuOpen(false)}
+      />
+    </>
   );
 }

@@ -3,13 +3,30 @@ import { Mail, MessageSquare, HelpCircle } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Navigation } from "@/components/Navigation";
+import { TopHeader } from "@/components/layout/top-header";
+import { BottomNav } from "@/components/layout/bottom-nav";
 import { Footer } from "@/components/Footer";
 import { GradientText } from "@/components/ui/gradient-text";
+import { createClient } from "@/lib/supabase/server";
+import { MysticBackground } from "@/components/background/MysticBackground";
 
-export default function ContactPage() {
+export default async function ContactPage() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
   return (
-    <div className="min-h-screen bg-gradient-dark">
-      <Navigation />
+    <div className="min-h-screen bg-gradient-dark relative">
+      <MysticBackground />
+
+      {/* Desktop: Navigation with Profile dropdown */}
+      <div className="hidden lg:block">
+        <Navigation user={user} />
+      </div>
+
+      {/* Mobile: TopHeader with hamburger (if logged in) or Navigation */}
+      <div className="lg:hidden">
+        {user ? <TopHeader /> : <Navigation />}
+      </div>
       <div className="max-w-4xl mx-auto px-4 pt-32 pb-16">
         {/* Header */}
         <div className="space-y-2 mb-8">
@@ -193,6 +210,9 @@ export default function ContactPage() {
         </Card>
       </div>
       <Footer />
+
+      {/* Bottom Navigation - mobile only for logged-in users */}
+      {user && <BottomNav />}
     </div>
   );
 }

@@ -1,12 +1,22 @@
 'use client';
 
 import Link from 'next/link'
-import { Sparkles, Menu, X } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { Sparkles, Menu, X, User, Home, MessageCircle, Settings, LogOut, ChevronDown } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useState } from 'react'
+import { createClient } from '@/lib/supabase/client'
+import type { User as SupabaseUser } from '@supabase/supabase-js'
 
-export function Navigation() {
+interface NavigationProps {
+  user?: SupabaseUser | null;
+}
+
+export function Navigation({ user }: NavigationProps) {
+  const router = useRouter();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen);
@@ -14,6 +24,19 @@ export function Navigation() {
 
   const closeMobileMenu = () => {
     setMobileMenuOpen(false);
+  };
+
+  const handleLogout = async () => {
+    try {
+      setIsLoggingOut(true);
+      const supabase = createClient();
+      await supabase.auth.signOut();
+      router.push('/auth/login');
+    } catch (error) {
+      console.error('Logout error:', error);
+    } finally {
+      setIsLoggingOut(false);
+    }
   };
 
   return (
@@ -85,14 +108,103 @@ export function Navigation() {
             <Link href="/pricing" className="text-sm text-zinc-400 hover:text-zinc-50 transition-colors">
               Цени
             </Link>
-            <Link href="/auth/login" className="text-sm text-zinc-400 hover:text-zinc-50 transition-colors">
-              Вход
+            <Link href="/about" className="text-sm text-zinc-400 hover:text-zinc-50 transition-colors">
+              За нас
             </Link>
-            <Link href="/auth/register">
-              <Button size="sm" className="bg-accent-600 hover:bg-accent-700">
-                Започни сега
-              </Button>
+            <Link href="/contact" className="text-sm text-zinc-400 hover:text-zinc-50 transition-colors">
+              Контакти
             </Link>
+
+            {user ? (
+              /* Profile Dropdown for logged-in users */
+              <div className="relative">
+                <button
+                  onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
+                  className="flex items-center gap-2 text-sm text-zinc-400 hover:text-zinc-50 transition-colors"
+                >
+                  <User className="w-4 h-4" />
+                  <span>Профил</span>
+                  <ChevronDown className="w-3 h-3" />
+                </button>
+
+                {profileDropdownOpen && (
+                  <>
+                    {/* Backdrop */}
+                    <div
+                      className="fixed inset-0 z-10"
+                      onClick={() => setProfileDropdownOpen(false)}
+                    />
+
+                    {/* Dropdown Menu */}
+                    <div className="absolute right-0 mt-2 w-48 bg-mystic-950 border border-mystic-800 rounded-lg shadow-xl z-20">
+                      <div className="py-2">
+                        <Link
+                          href="/dashboard"
+                          className="flex items-center gap-3 px-4 py-2 text-sm text-zinc-400 hover:bg-mystic-900 hover:text-zinc-50 transition-colors"
+                          onClick={() => setProfileDropdownOpen(false)}
+                        >
+                          <Home className="w-4 h-4" />
+                          Dashboard
+                        </Link>
+                        <Link
+                          href="/tarot"
+                          className="flex items-center gap-3 px-4 py-2 text-sm text-zinc-400 hover:bg-mystic-900 hover:text-zinc-50 transition-colors"
+                          onClick={() => setProfileDropdownOpen(false)}
+                        >
+                          <Sparkles className="w-4 h-4" />
+                          Таро
+                        </Link>
+                        <Link
+                          href="/oracle"
+                          className="flex items-center gap-3 px-4 py-2 text-sm text-zinc-400 hover:bg-mystic-900 hover:text-zinc-50 transition-colors"
+                          onClick={() => setProfileDropdownOpen(false)}
+                        >
+                          <MessageCircle className="w-4 h-4" />
+                          Оракул
+                        </Link>
+                        <Link
+                          href="/profile"
+                          className="flex items-center gap-3 px-4 py-2 text-sm text-zinc-400 hover:bg-mystic-900 hover:text-zinc-50 transition-colors"
+                          onClick={() => setProfileDropdownOpen(false)}
+                        >
+                          <User className="w-4 h-4" />
+                          Профил
+                        </Link>
+                        <Link
+                          href="/profile/settings"
+                          className="flex items-center gap-3 px-4 py-2 text-sm text-zinc-400 hover:bg-mystic-900 hover:text-zinc-50 transition-colors"
+                          onClick={() => setProfileDropdownOpen(false)}
+                        >
+                          <Settings className="w-4 h-4" />
+                          Настройки
+                        </Link>
+                        <div className="border-t border-mystic-800 my-2" />
+                        <button
+                          onClick={handleLogout}
+                          disabled={isLoggingOut}
+                          className="w-full flex items-center gap-3 px-4 py-2 text-sm text-red-400 hover:bg-red-950/30 hover:text-red-300 transition-colors disabled:opacity-50"
+                        >
+                          <LogOut className="w-4 h-4" />
+                          {isLoggingOut ? 'Излизане...' : 'Изход'}
+                        </button>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+            ) : (
+              /* Login/Register buttons for non-logged users */
+              <>
+                <Link href="/auth/login" className="text-sm text-zinc-400 hover:text-zinc-50 transition-colors">
+                  Вход
+                </Link>
+                <Link href="/auth/register">
+                  <Button size="sm" className="bg-accent-600 hover:bg-accent-700">
+                    Започни сега
+                  </Button>
+                </Link>
+              </>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -152,6 +264,20 @@ export function Navigation() {
             onClick={closeMobileMenu}
           >
             Цени
+          </Link>
+          <Link
+            href="/about"
+            className="text-zinc-400 hover:text-zinc-50 transition-colors py-2"
+            onClick={closeMobileMenu}
+          >
+            За нас
+          </Link>
+          <Link
+            href="/contact"
+            className="text-zinc-400 hover:text-zinc-50 transition-colors py-2"
+            onClick={closeMobileMenu}
+          >
+            Контакти
           </Link>
 
           <div className="pt-6 border-t border-zinc-800/50 space-y-4">

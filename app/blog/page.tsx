@@ -2,6 +2,11 @@ import { createClient } from '@/lib/supabase/server';
 import Link from 'next/link';
 import { FileText, Calendar, Clock, TrendingUp } from 'lucide-react';
 import { Metadata } from 'next';
+import { Navigation } from '@/components/Navigation';
+import { TopHeader } from '@/components/layout/top-header';
+import { BottomNav } from '@/components/layout/bottom-nav';
+import { Footer } from '@/components/Footer';
+import { MysticBackground } from '@/components/background/MysticBackground';
 
 export const metadata: Metadata = {
   title: 'Блог | Vrachka',
@@ -10,6 +15,9 @@ export const metadata: Metadata = {
 
 export default async function BlogIndexPage() {
   const supabase = await createClient();
+
+  // Check if user is authenticated
+  const { data: { user } } = await supabase.auth.getUser();
 
   const { data: blogPosts } = await supabase
     .from('blog_posts')
@@ -26,8 +34,20 @@ export default async function BlogIndexPage() {
   };
 
   return (
-    <div className="min-h-screen bg-brand-950">
-      <div className="container mx-auto px-6 py-12">
+    <div className="min-h-screen bg-gradient-dark relative">
+      <MysticBackground />
+
+      {/* Desktop: Navigation with Profile dropdown */}
+      <div className="hidden lg:block">
+        <Navigation user={user} />
+      </div>
+
+      {/* Mobile: TopHeader with hamburger (if logged in) or Navigation */}
+      <div className="lg:hidden">
+        {user ? <TopHeader /> : <Navigation />}
+      </div>
+
+      <div className="container mx-auto px-6 pt-32 pb-16 relative z-10">
         <div className="text-center mb-12">
           <h1 className="text-4xl md:text-5xl font-bold text-zinc-50 mb-4">
             Vrachka Блог
@@ -58,13 +78,9 @@ export default async function BlogIndexPage() {
                 )}
                 <div className="p-6">
                   {post.category && (
-                    <Link
-                      href={`/blog/category/${post.category}`}
-                      className="inline-block text-xs px-3 py-1 rounded-full bg-accent-500/10 text-accent-400 border border-accent-500/20 mb-3 hover:bg-accent-500/20 transition-colors"
-                      onClick={(e) => e.stopPropagation()}
-                    >
+                    <span className="inline-block text-xs px-3 py-1 rounded-full bg-accent-500/10 text-accent-400 border border-accent-500/20 mb-3">
                       {categoryLabels[post.category]}
-                    </Link>
+                    </span>
                   )}
                   <h2 className="text-xl font-bold text-zinc-50 mb-3 line-clamp-2 group-hover:text-accent-400 transition-colors">{post.title}</h2>
                   {post.excerpt && (<p className="text-zinc-400 text-sm mb-4 line-clamp-3">{post.excerpt}</p>)}
@@ -79,6 +95,10 @@ export default async function BlogIndexPage() {
           </div>
         )}
       </div>
+      <Footer />
+
+      {/* Bottom Navigation - mobile only for logged-in users */}
+      {user && <BottomNav />}
     </div>
   );
 }

@@ -8,9 +8,12 @@ import { HoverCardWrapper } from '@/components/ui/hover-card-wrapper'
 import { GradientText } from '@/components/ui/gradient-text'
 import { ShimmerButton } from '@/components/ui/shimmer-button'
 import { Navigation } from '@/components/Navigation'
+import { TopHeader } from '@/components/layout/top-header'
+import { BottomNav } from '@/components/layout/bottom-nav'
 import { Footer } from '@/components/Footer'
 import { MysticBackground } from '@/components/background/MysticBackground'
 import { BentoTestimonials } from '@/components/landing/BentoTestimonials'
+import { createClient } from '@/lib/supabase/server'
 
 export const metadata: Metadata = {
   title: 'Дневен Хороскоп за Всички Зодии',
@@ -140,12 +143,24 @@ const breadcrumbData = getBreadcrumbSchema([
   { name: 'Хороскопи', url: 'https://www.vrachka.eu/horoscope' },
 ])
 
-export default function HoroscopePage() {
+export default async function HoroscopePage() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
   return (
     <>
       <StructuredData data={breadcrumbData} />
 
-      <Navigation />
+      {/* Desktop: Navigation with Profile dropdown */}
+      <div className="hidden lg:block">
+        <Navigation user={user} />
+      </div>
+
+      {/* Mobile: TopHeader with hamburger (if logged in) or Navigation */}
+      <div className="lg:hidden">
+        {user ? <TopHeader /> : <Navigation />}
+      </div>
+
       <MysticBackground />
 
       <div className="min-h-screen bg-gradient-dark">
@@ -289,6 +304,9 @@ export default function HoroscopePage() {
 
         <Footer />
       </div>
+
+      {/* Bottom Navigation - mobile only for logged-in users */}
+      {user && <BottomNav />}
     </>
   )
 }

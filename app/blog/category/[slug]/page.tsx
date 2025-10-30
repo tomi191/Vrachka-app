@@ -3,6 +3,11 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { FileText, Calendar, Clock, TrendingUp, ArrowLeft } from 'lucide-react';
 import { Metadata } from 'next';
+import { Navigation } from '@/components/Navigation';
+import { TopHeader } from '@/components/layout/top-header';
+import { BottomNav } from '@/components/layout/bottom-nav';
+import { Footer } from '@/components/Footer';
+import { MysticBackground } from '@/components/background/MysticBackground';
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -66,6 +71,9 @@ export default async function CategoryPage({ params }: Props) {
 
   const supabase = await createClient();
 
+  // Check if user is authenticated
+  const { data: { user } } = await supabase.auth.getUser();
+
   // Fetch posts in this category
   const { data: blogPosts, error } = await supabase
     .from('blog_posts')
@@ -91,8 +99,20 @@ export default async function CategoryPage({ params }: Props) {
   }));
 
   return (
-    <div className="min-h-screen bg-brand-950">
-      <div className="container mx-auto px-6 py-12">
+    <div className="min-h-screen bg-gradient-dark relative">
+      <MysticBackground />
+
+      {/* Desktop: Navigation with Profile dropdown */}
+      <div className="hidden lg:block">
+        <Navigation user={user} />
+      </div>
+
+      {/* Mobile: TopHeader with hamburger (if logged in) or Navigation */}
+      <div className="lg:hidden">
+        {user ? <TopHeader /> : <Navigation />}
+      </div>
+
+      <div className="container mx-auto px-6 pt-32 pb-16 relative z-10">
         {/* Breadcrumb */}
         <div className="mb-8">
           <Link
@@ -242,6 +262,10 @@ export default async function CategoryPage({ params }: Props) {
           </aside>
         </div>
       </div>
+      <Footer />
+
+      {/* Bottom Navigation - mobile only for logged-in users */}
+      {user && <BottomNav />}
     </div>
   );
 }
