@@ -70,8 +70,56 @@ export async function subscribeToPush() {
   }
 
   console.log('🔔 [Client] Waiting for service worker to be ready...')
-  // Register service worker if not already registered
-  const registration = await navigator.serviceWorker.ready
+
+  // Check if service worker is registered at all
+  const registrations = await navigator.serviceWorker.getRegistrations()
+  console.log('🔔 [Client] Service worker registrations:', registrations.length)
+
+  registrations.forEach((reg, index) => {
+    console.log(`🔔 [Client] Registration ${index}:`, {
+      scope: reg.scope,
+      installing: reg.installing?.state,
+      waiting: reg.waiting?.state,
+      active: reg.active?.state,
+      updateViaCache: reg.updateViaCache
+    })
+  })
+
+  if (registrations.length === 0) {
+    console.error('🔔 [Client] No service worker registered! Attempting manual registration...')
+    try {
+      // next-pwa generates worker at /worker/index.js (from config)
+      const reg = await navigator.serviceWorker.register('/worker/index.js', { scope: '/' })
+      console.log('🔔 [Client] Service worker registered manually:', reg.scope)
+
+      // Wait for it to be installing/waiting/active
+      if (reg.installing) {
+        console.log('🔔 [Client] Service worker installing...')
+        await new Promise(resolve => {
+          reg.installing!.addEventListener('statechange', function() {
+            if (this.state === 'activated') resolve(undefined)
+          })
+        })
+      }
+
+      await navigator.serviceWorker.ready
+    } catch (error) {
+      console.error('🔔 [Client] Manual registration failed:', error)
+      throw new Error('Service worker registration failed. Please refresh the page.')
+    }
+  }
+
+  // Wait for service worker to be ready with timeout
+  const registration = await Promise.race([
+    navigator.serviceWorker.ready,
+    new Promise<ServiceWorkerRegistration>((_, reject) =>
+      setTimeout(() => reject(new Error('Service worker timeout')), 10000)
+    )
+  ]).catch(error => {
+    console.error('🔔 [Client] Service worker not ready:', error)
+    throw new Error('Service worker failed to initialize. Please refresh the page.')
+  })
+
   console.log('🔔 [Client] Service worker ready:', registration.active?.scriptURL)
 
   // Check if already subscribed
