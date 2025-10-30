@@ -71,66 +71,8 @@ export async function subscribeToPush() {
 
   console.log('🔔 [Client] Waiting for service worker to be ready...')
 
-  // Check if service worker is registered at all
-  const registrations = await navigator.serviceWorker.getRegistrations()
-  console.log('🔔 [Client] Service worker registrations:', registrations.length)
-
-  registrations.forEach((reg, index) => {
-    console.log(`🔔 [Client] Registration ${index}:`, {
-      scope: reg.scope,
-      installing: reg.installing?.state,
-      waiting: reg.waiting?.state,
-      active: reg.active?.state,
-      updateViaCache: reg.updateViaCache
-    })
-  })
-
-  // Cleanup old service workers from /worker/ path (migration fix)
-  const oldWorkers = registrations.filter(reg =>
-    reg.active?.scriptURL.includes('/worker/index.js') ||
-    reg.waiting?.scriptURL.includes('/worker/index.js') ||
-    reg.installing?.scriptURL.includes('/worker/index.js')
-  )
-
-  if (oldWorkers.length > 0) {
-    console.log('🔔 [Client] Found old service workers from /worker/ path, removing...')
-    for (const reg of oldWorkers) {
-      console.log('🔔 [Client] Unregistering:', reg.scope, reg.active?.scriptURL)
-      await reg.unregister()
-    }
-
-    // Wait a bit for cleanup to complete
-    await new Promise(resolve => setTimeout(resolve, 500))
-
-    // Register new service worker from correct path
-    console.log('🔔 [Client] Registering new service worker from /sw.js...')
-    const newReg = await navigator.serviceWorker.register('/sw.js', { scope: '/' })
-    console.log('🔔 [Client] New service worker registered:', newReg.scope)
-
-    // Wait for it to activate using navigator.serviceWorker.ready
-    console.log('🔔 [Client] Waiting for new service worker to activate...')
-    await navigator.serviceWorker.ready
-    console.log('🔔 [Client] New service worker activated successfully!')
-  }
-
-  if (registrations.length === 0) {
-    console.error('🔔 [Client] No service worker registered! Attempting manual registration...')
-    try {
-      // next-pwa generates sw.js in public root by default
-      const reg = await navigator.serviceWorker.register('/sw.js', { scope: '/' })
-      console.log('🔔 [Client] Service worker registered manually:', reg.scope)
-
-      // Wait for service worker to become active
-      // Use navigator.serviceWorker.ready instead of tracking state changes
-      // to avoid race conditions
-      console.log('🔔 [Client] Waiting for service worker to activate...')
-      await navigator.serviceWorker.ready
-      console.log('🔔 [Client] Service worker activated successfully')
-    } catch (error) {
-      console.error('🔔 [Client] Manual registration failed:', error)
-      throw new Error('Service worker registration failed. Please refresh the page.')
-    }
-  }
+  // Just wait for the service worker that next-pwa automatically registers
+  // No need for manual registration or cleanup - next-pwa handles this
 
   // Wait for service worker to be ready with timeout
   const registration = await Promise.race([
