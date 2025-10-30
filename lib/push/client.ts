@@ -71,19 +71,37 @@ export async function subscribeToPush() {
 
   console.log('🔔 [Client] Waiting for service worker to be ready...')
 
-  // Just wait for the service worker that next-pwa automatically registers
-  // No need for manual registration or cleanup - next-pwa handles this
+  // Check if service worker is already registered
+  let registration = await navigator.serviceWorker.getRegistration()
+
+  if (!registration) {
+    console.log('🔔 [Client] No service worker found, registering /sw.js...')
+    try {
+      registration = await navigator.serviceWorker.register('/sw.js', {
+        scope: '/',
+        updateViaCache: 'none'
+      })
+      console.log('🔔 [Client] Service worker registered:', registration.scope)
+    } catch (error) {
+      console.error('🔔 [Client] Service worker registration failed:', error)
+      throw new Error('Failed to register service worker')
+    }
+  } else {
+    console.log('🔔 [Client] Service worker already registered:', registration.scope)
+  }
 
   // Wait for service worker to be ready with timeout
-  const registration = await Promise.race([
-    navigator.serviceWorker.ready,
-    new Promise<ServiceWorkerRegistration>((_, reject) =>
-      setTimeout(() => reject(new Error('Service worker timeout')), 10000)
-    )
-  ]).catch(error => {
+  try {
+    registration = await Promise.race([
+      navigator.serviceWorker.ready,
+      new Promise<ServiceWorkerRegistration>((_, reject) =>
+        setTimeout(() => reject(new Error('Service worker timeout')), 10000)
+      )
+    ])
+  } catch (error) {
     console.error('🔔 [Client] Service worker not ready:', error)
     throw new Error('Service worker failed to initialize. Please refresh the page.')
-  })
+  }
 
   console.log('🔔 [Client] Service worker ready:', registration.active?.scriptURL)
 

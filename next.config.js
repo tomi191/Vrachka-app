@@ -28,16 +28,6 @@ const nextConfig = {
   async headers() {
     return [
       {
-        // Allow service worker from /worker/ to control root scope
-        source: '/worker/:path*',
-        headers: [
-          {
-            key: 'Service-Worker-Allowed',
-            value: '/'
-          }
-        ]
-      },
-      {
         source: '/:path*',
         headers: [
           {
