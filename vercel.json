@@ -5,12 +5,8 @@
       "schedule": "5 22 * * *"
     },
     {
-      "path": "/api/cron/trial-expiring",
-      "schedule": "0 9 * * *"
-    },
-    {
-      "path": "/api/cron/send-daily-horoscope",
-      "schedule": "0 7 * * *"
+      "path": "/api/cron/daily-reminders",
+      "schedule": "0 6 * * *"
     }
   ]
 }
