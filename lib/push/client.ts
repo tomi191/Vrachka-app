@@ -88,7 +88,8 @@ export async function subscribeToPush() {
   if (registrations.length === 0) {
     console.error('🔔 [Client] No service worker registered! Attempting manual registration...')
     try {
-      // next-pwa generates worker at /worker/index.js (from config)
+      // next-pwa generates worker at /worker/index.js
+      // We added Service-Worker-Allowed: / header in next.config.js to allow root scope
       const reg = await navigator.serviceWorker.register('/worker/index.js', { scope: '/' })
       console.log('🔔 [Client] Service worker registered manually:', reg.scope)
 
