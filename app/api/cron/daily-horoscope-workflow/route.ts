@@ -4,7 +4,7 @@ import { createFeatureCompletion } from '@/lib/ai/openrouter';
 import { HOROSCOPE_SYSTEM_PROMPT, getHoroscopePrompt } from '@/lib/ai/prompts';
 import { parseAIJsonResponse } from '@/lib/ai/client';
 import { sendBatchEmails, type BatchEmailJob } from '@/lib/email/resend-service';
-import { DailyHoroscopeEmail } from '@/lib/email/templates';
+import { DailyHoroscopeEmail, GenericDailyHoroscopeEmail } from '@/lib/email/templates';
 import React from 'react';
 
 // Lazy initialize Supabase client to avoid build-time errors
@@ -177,13 +177,12 @@ export async function GET(req: NextRequest) {
     // ========================================
     console.log('[Step 2] Sending daily horoscope emails...');
 
-    // Get all confirmed subscribers with daily frequency and zodiac sign
+    // Get all confirmed subscribers with daily frequency (includes users with and without zodiac_sign)
     const { data: subscribers, error: subscribersError } = await supabase
       .from('newsletter_subscribers')
       .select('id, email, name, zodiac_sign')
       .eq('status', 'confirmed')
-      .eq('frequency', 'daily')
-      .not('zodiac_sign', 'is', null);
+      .eq('frequency', 'daily');
 
     if (subscribersError) {
       console.error('[Step 2] Error fetching subscribers:', subscribersError);
@@ -217,18 +216,58 @@ export async function GET(req: NextRequest) {
     const emailJobs: BatchEmailJob[] = [];
 
     for (const subscriber of subscribers) {
-      const zodiacSign = subscriber.zodiac_sign as string;
+      const zodiacSign = subscriber.zodiac_sign as string | null;
+
+      // Check if subscriber has zodiac_sign
+      if (!zodiacSign) {
+        // Send generic email with link to /horoscope
+        console.log(`[Step 2] Subscriber ${subscriber.email} has no zodiac_sign, sending generic email`);
+
+        emailJobs.push({
+          to: subscriber.email,
+          subject: `✨ Твоят дневен хороскоп - ${todayFormatted}`,
+          template: React.createElement(GenericDailyHoroscopeEmail, {
+            firstName: subscriber.name || '',
+            date: todayFormatted,
+          }),
+          subscriberId: subscriber.id,
+          metadata: {
+            zodiacSign: null,
+            date: today,
+            emailType: 'generic',
+          },
+        });
+        continue;
+      }
+
+      // Get horoscope for this zodiac sign
       const horoscope = generatedHoroscopes.get(zodiacSign);
 
       if (!horoscope) {
-        console.warn(`[Step 2] No horoscope found for ${zodiacSign}, skipping ${subscriber.email}`);
+        console.warn(`[Step 2] No horoscope found for ${zodiacSign}, sending generic email to ${subscriber.email}`);
+
+        // Fallback to generic email if horoscope generation failed for this sign
+        emailJobs.push({
+          to: subscriber.email,
+          subject: `✨ Твоят дневен хороскоп - ${todayFormatted}`,
+          template: React.createElement(GenericDailyHoroscopeEmail, {
+            firstName: subscriber.name || '',
+            date: todayFormatted,
+          }),
+          subscriberId: subscriber.id,
+          metadata: {
+            zodiacSign,
+            date: today,
+            emailType: 'generic_fallback',
+          },
+        });
         continue;
       }
 
       // Format horoscope text for email
       const horoscopeText = `${horoscope.general}\n\n💕 Любов: ${horoscope.love}\n\n💼 Кариера: ${horoscope.career}\n\n💪 Здраве: ${horoscope.health}\n\n✨ Съвет: ${horoscope.advice}`;
 
-      // Create email job with React template
+      // Create personalized email job with React template
       emailJobs.push({
         to: subscriber.email,
         subject: `✨ Твоят дневен хороскоп - ${todayFormatted}`,
@@ -242,6 +281,7 @@ export async function GET(req: NextRequest) {
         metadata: {
           zodiacSign,
           date: today,
+          emailType: 'personalized',
         },
       });
     }

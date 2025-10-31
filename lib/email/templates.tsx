@@ -1092,6 +1092,118 @@ export const DailyHoroscopeEmail = ({
   </EmailWrapper>
 );
 
+// Generic Daily Horoscope Email (for users without zodiac_sign)
+export const GenericDailyHoroscopeEmail = ({
+  firstName,
+  date,
+}: {
+  firstName: string;
+  date: string;
+}) => (
+  <EmailWrapper>
+    <EmailHeader />
+    <tr>
+      <td style={{
+        backgroundColor: '#18181b',
+        padding: '40px 30px',
+        borderRadius: '12px',
+      }}>
+        <h1 style={{
+          margin: '0 0 20px 0',
+          fontSize: '28px',
+          fontWeight: 'bold',
+          color: '#ffffff',
+        }}>
+          ✨ Твоят дневен хороскоп
+        </h1>
+        <p style={{
+          margin: '0 0 8px 0',
+          fontSize: '14px',
+          color: '#a1a1aa',
+        }}>
+          {date}
+        </p>
+        <p style={{
+          margin: '0 0 16px 0',
+          fontSize: '16px',
+          lineHeight: '24px',
+          color: '#d4d4d8',
+        }}>
+          Здравей{firstName ? `, ${firstName}` : ''}!
+        </p>
+        <p style={{
+          margin: '0 0 24px 0',
+          fontSize: '16px',
+          lineHeight: '24px',
+          color: '#d4d4d8',
+        }}>
+          Днес е чудесен ден да разбереш какво подготвят звездите за теб! 🌟
+        </p>
+
+        <div style={{
+          padding: '24px',
+          backgroundColor: '#27272a',
+          borderRadius: '12px',
+          borderLeft: '4px solid #8b5cf6',
+          marginBottom: '24px',
+        }}>
+          <p style={{
+            margin: '0 0 12px 0',
+            fontSize: '16px',
+            lineHeight: '24px',
+            color: '#ffffff',
+            fontWeight: 'bold',
+          }}>
+            💫 Виж персонализирания си хороскоп
+          </p>
+          <p style={{
+            margin: 0,
+            fontSize: '15px',
+            lineHeight: '22px',
+            color: '#d4d4d8',
+          }}>
+            За да получаваш персонализиран хороскоп всяка сутрин, трябва да добавиш своята зодия в профила си.
+          </p>
+        </div>
+
+        <p style={{
+          margin: '0 0 16px 0',
+          fontSize: '16px',
+          lineHeight: '24px',
+          color: '#d4d4d8',
+        }}>
+          Или разгледай хороскопите за всички зодии на нашия сайт:
+        </p>
+
+        <div style={{ textAlign: 'center', marginBottom: '24px' }}>
+          <Button href="https://vrachka.eu/horoscope">
+            Виж всички хороскопи →
+          </Button>
+        </div>
+
+        <div style={{ textAlign: 'center' }}>
+          <Button href="https://vrachka.eu/dashboard">
+            Добави своята зодия →
+          </Button>
+        </div>
+
+        <p style={{
+          margin: '24px 0 0 0',
+          padding: '16px',
+          backgroundColor: '#27272a',
+          borderRadius: '8px',
+          fontSize: '14px',
+          lineHeight: '20px',
+          color: '#a1a1aa',
+        }}>
+          💡 След като добавиш своята зодия, ще получаваш персонализирани хороскопи, базирани на твоята дата на раждане!
+        </p>
+      </td>
+    </tr>
+    <EmailFooter />
+  </EmailWrapper>
+);
+
 // Payment Failed Email Template
 export const PaymentFailedEmail = ({ firstName, planType, nextRetry }: { firstName: string; planType: string; nextRetry: string }) => (
   <EmailWrapper>

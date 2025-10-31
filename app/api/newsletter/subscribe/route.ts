@@ -32,6 +32,30 @@ export async function POST(request: NextRequest) {
 
     const supabase = await createClient();
 
+    // Check if user is authenticated and get their zodiac_sign from profile
+    let zodiacSign = null;
+    let userId = null;
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        userId = user.id;
+        // Get zodiac_sign from profiles table
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('zodiac_sign')
+          .eq('id', user.id)
+          .single();
+
+        if (profile?.zodiac_sign) {
+          zodiacSign = profile.zodiac_sign;
+          console.log(`[Newsletter Subscribe] Found zodiac_sign for user ${user.id}: ${zodiacSign}`);
+        }
+      }
+    } catch (authError) {
+      // User not authenticated - that's ok, continue without zodiac_sign
+      console.log('[Newsletter Subscribe] No authenticated user, continuing without zodiac_sign');
+    }
+
     // Check if email already exists
     const { data: existingSubscriber } = await supabase
       .from('newsletter_subscribers')
@@ -95,6 +119,8 @@ export async function POST(request: NextRequest) {
         interests: interests.length > 0 ? interests : null,
         ip_address: ipAddress,
         user_agent: userAgent,
+        zodiac_sign: zodiacSign, // Auto-populated from profile if authenticated
+        user_id: userId, // Link to authenticated user
       })
       .select('id, confirmation_token, unsubscribe_token')
       .single();
