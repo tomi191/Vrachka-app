@@ -54,31 +54,22 @@ export async function POST(request: Request) {
       );
     }
 
-    // Check if slug already exists
-    const { data: existingPost } = await supabase
-      .from('blog_posts')
-      .select('id')
-      .eq('slug', slug)
-      .single();
-
-    if (existingPost) {
-      return NextResponse.json(
-        { error: `Slug "${slug}" already exists. Please choose a different title.` },
-        { status: 400 }
-      );
-    }
+    // IMPORTANT: Keep markers as placeholders in content (don't replace them here)
+    // The display page will handle dynamic replacement using image_urls array
+    // This allows flexibility for image updates without re-generating content
 
     // Insert blog post
     const { data: blogPost, error: insertError } = await supabase
-      .from('blog_posts')
-      .insert({
-        title,
-        slug,
-        content,
-        excerpt: excerpt || null,
-        featured_image_url: featuredImageUrl || null,
-        meta_title: metaTitle || title,
-        meta_description: metaDescription || excerpt || null,
+        .from('blog_posts')
+        .insert({
+            title,
+            slug,
+            content: content, // Store with markers intact
+            excerpt: excerpt || null,
+            featured_image_url: featuredImageUrl || (imageUrls && imageUrls.length > 0 ? imageUrls[0] : null),
+            image_urls: imageUrls || [], // Store image URLs array for dynamic replacement
+            meta_title: metaTitle || title,
+            meta_description: metaDescription || excerpt || null,
         keywords: keywords || [],
         tags: tags || [],
         category: category || 'general',

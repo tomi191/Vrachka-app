@@ -11,6 +11,7 @@ import Breadcrumbs, { generateBreadcrumbSchema } from '@/components/blog/Breadcr
 import ShareButtons from '@/components/blog/ShareButtons';
 import BackToTop from '@/components/blog/BackToTop';
 import NewsletterSubscribe from '@/components/blog/NewsletterSubscribe';
+import { TableOfContents } from '@/components/blog/TableOfContents';
 import { Navigation } from '@/components/Navigation';
 import { TopHeader } from '@/components/layout/top-header';
 import { BottomNav } from '@/components/layout/bottom-nav';
@@ -275,7 +276,7 @@ export default async function BlogPostPage({ params }: Props) {
     };
   };
 
-  // Process inline images from IMAGE markers
+  // Process inline images from IMAGE markers with captions
   const processInlineImages = (htmlContent: string, imageUrls?: string[]) => {
     if (!imageUrls || imageUrls.length < 2) {
       return htmlContent; // No inline images to insert
@@ -288,18 +289,38 @@ export default async function BlogPostPage({ params }: Props) {
     processedContent = processedContent.replace(
       /<!--\s*IMAGE:1\s*-->/g,
       imageUrls[1]
-        ? `<div class="my-8 w-full">
-             <img src="${imageUrls[1]}" alt="Illustration" class="w-full h-auto rounded-lg shadow-xl" loading="lazy" />
-           </div>`
+        ? `<figure class="my-8 w-full group">
+             <div class="relative overflow-hidden rounded-lg">
+               <img
+                 src="${imageUrls[1]}"
+                 alt="Илюстрация към статията"
+                 class="w-full h-auto shadow-2xl transition-transform duration-300 group-hover:scale-[1.02]"
+                 loading="lazy"
+               />
+             </div>
+             <figcaption class="text-center text-sm text-zinc-400 mt-3 italic px-4">
+               Илюстрация 1
+             </figcaption>
+           </figure>`
         : ''
     );
 
     processedContent = processedContent.replace(
       /<!--\s*IMAGE:2\s*-->/g,
       imageUrls[2]
-        ? `<div class="my-8 w-full">
-             <img src="${imageUrls[2]}" alt="Supporting visual" class="w-full h-auto rounded-lg shadow-xl" loading="lazy" />
-           </div>`
+        ? `<figure class="my-8 w-full group">
+             <div class="relative overflow-hidden rounded-lg">
+               <img
+                 src="${imageUrls[2]}"
+                 alt="Допълнителна визуализация"
+                 class="w-full h-auto shadow-2xl transition-transform duration-300 group-hover:scale-[1.02]"
+                 loading="lazy"
+               />
+             </div>
+             <figcaption class="text-center text-sm text-zinc-400 mt-3 italic px-4">
+               Илюстрация 2
+             </figcaption>
+           </figure>`
         : ''
     );
 
@@ -449,15 +470,17 @@ export default async function BlogPostPage({ params }: Props) {
               <div
                 className="prose prose-invert prose-zinc prose-sm sm:prose-base md:prose-lg max-w-none
                   prose-headings:font-bold prose-headings:text-zinc-50
-                  prose-h2:text-2xl prose-h2:mt-10 prose-h2:mb-5 prose-h2:scroll-mt-20
-                  prose-h3:text-xl prose-h3:mt-6 prose-h3:mb-3
-                  prose-p:text-zinc-300 prose-p:leading-relaxed prose-p:mb-3
-                  prose-a:text-accent-400 prose-a:no-underline hover:prose-a:underline
-                  prose-strong:text-zinc-100 prose-strong:font-semibold prose-strong:my-0.5
-                  prose-ul:list-disc prose-ul:my-3 prose-ul:space-y-1 prose-ol:list-decimal prose-ol:my-3 prose-ol:space-y-1
-                  prose-li:text-zinc-300 prose-li:my-1
-                  prose-img:rounded-lg prose-img:shadow-lg prose-img:my-8
-                  prose-blockquote:border-l-accent-500 prose-blockquote:italic prose-blockquote:text-zinc-400
+                  prose-h2:text-2xl prose-h2:mt-16 prose-h2:mb-8 prose-h2:pt-8 prose-h2:border-t prose-h2:border-zinc-800 prose-h2:scroll-mt-20
+                  prose-h3:text-xl prose-h3:mt-10 prose-h3:mb-5
+                  prose-p:text-zinc-300 prose-p:leading-relaxed prose-p:mb-6
+                  prose-a:text-accent-400 prose-a:no-underline hover:prose-a:text-accent-300 hover:prose-a:underline prose-a:transition-colors
+                  prose-strong:text-zinc-100 prose-strong:font-semibold
+                  prose-ul:list-disc prose-ul:my-6 prose-ul:space-y-2 prose-ol:list-decimal prose-ol:my-6 prose-ol:space-y-2
+                  prose-li:text-zinc-300 prose-li:leading-relaxed
+                  prose-img:rounded-lg prose-img:shadow-2xl prose-img:my-8
+                  prose-blockquote:border-l-4 prose-blockquote:border-accent-500 prose-blockquote:bg-zinc-900/50 prose-blockquote:py-4 prose-blockquote:px-6 prose-blockquote:my-8 prose-blockquote:italic prose-blockquote:text-zinc-200
+                  prose-code:text-accent-300 prose-code:bg-zinc-900 prose-code:px-2 prose-code:py-1 prose-code:rounded prose-code:text-sm
+                  prose-pre:bg-zinc-950 prose-pre:border prose-pre:border-zinc-800 prose-pre:shadow-xl prose-pre:my-8
                   [&>*]:break-words"
                 dangerouslySetInnerHTML={{
                   __html: processInlineImages(
@@ -516,6 +539,11 @@ export default async function BlogPostPage({ params }: Props) {
 
             {/* Sidebar - 4 columns on large screens */}
             <aside className="lg:col-span-4 space-y-6">
+              {/* Table of Contents */}
+              <div className="hidden lg:block">
+                <TableOfContents content={post.content} />
+              </div>
+
               {/* Most Popular Posts */}
               {popularPosts && popularPosts.length > 0 && (
                 <div className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800/50 rounded-lg p-6">
