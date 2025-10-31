@@ -224,7 +224,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       success: true,
       ideas: ideas,
-      generationTime,
     });
   } catch (error) {
     console.error('Blog ideas generation error:', error);
