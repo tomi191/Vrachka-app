@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Moon, Sunrise, Sunset, Loader2, ExternalLink } from "lucide-react";
 import SunCalc from "suncalc";
-import type { ZodiacSign } from "@/lib/constants/zodiac";
+import type { ZodiacSign } from "@/lib/zodiac";
 
 interface MoonData {
   phase: number; // 0-1 where 0=new moon, 0.5=full moon
