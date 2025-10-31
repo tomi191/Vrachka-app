@@ -223,7 +223,7 @@ export async function POST(req: NextRequest) {
     // Return structured response
     return NextResponse.json({
       success: true,
-      ideas: generatedIdeas,
+      ideas: ideas,
       generationTime,
     });
   } catch (error) {
