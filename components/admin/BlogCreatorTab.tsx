@@ -82,6 +82,11 @@ export function BlogCreatorTab() {
   const [ideaFocus, setIdeaFocus] = useState('');
   const [ideaCategory, setIdeaCategory] = useState('all');
 
+  // Phase 1 Quick Wins - New state
+  const [selectedKeyword, setSelectedKeyword] = useState('');
+  const [batchSize, setBatchSize] = useState(10);
+  const [avoidExisting, setAvoidExisting] = useState(true);
+
   // Generation state
   const [generatedPost, setGeneratedPost] = useState<GeneratedPost | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -90,7 +95,7 @@ export function BlogCreatorTab() {
   const handleGenerateIdeas = async () => {
     setIsGeneratingIdeas(true);
     setError(null);
-    setProgress('Генериране на 10 blog идеи...');
+    setProgress(`Генериране на ${batchSize} blog идеи...`);
 
     try {
       const response = await fetch('/api/blog/generate-ideas', {
@@ -99,6 +104,9 @@ export function BlogCreatorTab() {
         body: JSON.stringify({
           focus: ideaFocus,
           category: ideaCategory !== 'all' ? ideaCategory : undefined,
+          selectedKeyword: selectedKeyword || undefined,
+          batchSize,
+          avoidExisting,
         }),
       });
 
@@ -372,6 +380,85 @@ export function BlogCreatorTab() {
                       <option value="general">Общо</option>
                     </select>
                   </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-zinc-300 mb-2">
+                      🎯 SEO Focus Keyword (опционално)
+                    </label>
+                    <select
+                      value={selectedKeyword}
+                      onChange={(e) => setSelectedKeyword(e.target.value)}
+                      className="w-full px-4 py-3 bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100"
+                    >
+                      <option value="">Автоматично избиране</option>
+                      <optgroup label="🔥 High Priority (P0)">
+                        <option value="хороскоп">хороскоп</option>
+                        <option value="дневен хороскоп">дневен хороскоп</option>
+                        <option value="натална карта">натална карта</option>
+                        <option value="таро">таро</option>
+                        <option value="таро четене">таро четене</option>
+                        <option value="астрология">астрология</option>
+                        <option value="зодия">зодия</option>
+                      </optgroup>
+                      <optgroup label="🟡 Medium Priority (P1)">
+                        <option value="натална карта безплатно">натална карта безплатно</option>
+                        <option value="натална карта онлайн">натална карта онлайн</option>
+                        <option value="ретрограден меркурий">ретрограден меркурий</option>
+                        <option value="синастрия">синастрия</option>
+                        <option value="съвместимост зодии">съвместимост зодии</option>
+                        <option value="таро онлайн">таро онлайн</option>
+                        <option value="любовно таро">любовно таро</option>
+                        <option value="лунен календар">лунен календар</option>
+                      </optgroup>
+                      <optgroup label="🟢 Long-tail (P2)">
+                        <option value="как да изчисля натална карта">как да изчисля натална карта</option>
+                        <option value="какво означава ретрограден меркурий">какво означава ретрограден меркурий</option>
+                        <option value="какво показва натална карта">какво показва натална карта</option>
+                        <option value="най-добрият таро подредба за любов">най-добрият таро подредба за любов</option>
+                        <option value="какво е ascendent в астрология">какво е ascendent в астрология</option>
+                      </optgroup>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-zinc-300 mb-2">
+                      Брой идеи: <span className="text-accent-400">{batchSize}</span>
+                    </label>
+                    <input
+                      type="range"
+                      min="5"
+                      max="30"
+                      step="5"
+                      value={batchSize}
+                      onChange={(e) => setBatchSize(Number(e.target.value))}
+                      className="w-full h-2 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-accent-500"
+                    />
+                    <div className="flex justify-between text-xs text-zinc-500 mt-1">
+                      <span>5</span>
+                      <span>15</span>
+                      <span>30</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Advanced Options */}
+                <div className="mb-6">
+                  <label className="flex items-center gap-3 px-4 py-3 bg-zinc-900/50 border border-zinc-800 rounded-lg cursor-pointer hover:border-accent-500/30 transition-colors">
+                    <input
+                      type="checkbox"
+                      checked={avoidExisting}
+                      onChange={(e) => setAvoidExisting(e.target.checked)}
+                      className="w-4 h-4 accent-accent-500"
+                    />
+                    <div className="flex-1">
+                      <div className="font-medium text-zinc-200 text-sm">
+                        🚫 Избягвай съществуващи теми
+                      </div>
+                      <div className="text-xs text-zinc-500 mt-0.5">
+                        Проверка в блога преди генериране (препоръчано за избягване на дублиращи се статии)
+                      </div>
+                    </div>
+                  </label>
                 </div>
 
                 <Button
@@ -387,7 +474,7 @@ export function BlogCreatorTab() {
                   ) : (
                     <>
                       <Sparkles className="w-5 h-5 mr-2" />
-                      Генерирай 10 Идеи (Безплатно)
+                      Генерирай {batchSize} Идеи {selectedKeyword && `за "${selectedKeyword}"`}
                     </>
                   )}
                 </Button>

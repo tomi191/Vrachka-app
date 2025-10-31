@@ -115,18 +115,53 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { focus, category } = body;
+    const { focus, category, selectedKeyword, batchSize = 10, avoidExisting = true } = body;
+
+    // Fetch existing blog post titles if avoidExisting is true
+    let existingTitles = '';
+    if (avoidExisting) {
+      const { data: existingPosts } = await supabase
+        .from('blog_posts')
+        .select('title, slug')
+        .not('published_at', 'is', null);
+
+      if (existingPosts && existingPosts.length > 0) {
+        existingTitles = existingPosts.map(p => p.title).join('\n- ');
+      }
+    }
 
     // Build custom prompt based on focus
     let customPrompt = getIdeasGenerationPrompt();
+
+    // Replace default batch size (10) with custom batchSize
+    customPrompt = customPrompt.replace(
+      'Генерирай 10 КОНКРЕТНИ идеи СЕГА:',
+      `Генерирай ${batchSize} КОНКРЕТНИ идеи СЕГА:`
+    );
+
+    if (selectedKeyword) {
+      customPrompt += `\n\nSEO FOCUS KEYWORD: "${selectedKeyword}"\n`;
+      customPrompt += `ЗАДЪЛЖИТЕЛНО включи този keyword в заглавията на идеите!\n`;
+      customPrompt += `Генерирай идеи които естествено включват "${selectedKeyword}" в title.\n`;
+    }
+
     if (focus) {
       customPrompt += `\n\nСПЕЦИАЛЕН ФОКУС: ${focus}\n`;
     }
+
     if (category && category !== 'all') {
       customPrompt += `\nПРИОРИТЕТ КЪМ КАТЕГОРИЯ: ${category}\n`;
     }
 
+    if (existingTitles) {
+      customPrompt += `\n\n⚠️ ИЗБЯГВАЙ СЛЕДНИТЕ ТЕМИ (вече имаме статии за тях):\n- ${existingTitles}\n`;
+      customPrompt += `Генерирай идеи които са РАЗЛИЧНИ от горните!\n`;
+    }
+
     // Call Claude Haiku (fast and cheap - $0.0002 per request)
+    // Dynamic max_tokens based on batchSize (each idea ~150 tokens)
+    const maxTokens = Math.min(batchSize * 300, 8000);
+
     let response;
     try {
       response = await createOpenRouterCompletion({
@@ -138,7 +173,7 @@ export async function POST(req: NextRequest) {
           },
         ],
         temperature: 0.9, // More creative for ideas
-        max_tokens: 4000,
+        max_tokens: maxTokens,
       });
     } catch (aiError) {
       console.error('OpenRouter API call failed:', aiError);
