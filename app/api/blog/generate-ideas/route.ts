@@ -229,6 +229,24 @@ export async function POST(req: NextRequest) {
 
     // Save ideas to database for later use
     try {
+      // Build comprehensive generation prompt for tracking
+      const generationContext = {
+        focus: focus || null,
+        category: category !== 'all' ? category : null,
+        selectedKeyword: selectedKeyword || null,
+        batchSize,
+        avoidExisting,
+        timestamp: new Date().toISOString(),
+      };
+
+      const generationPromptText = [
+        selectedKeyword && `SEO Keyword: "${selectedKeyword}"`,
+        focus && `Focus: "${focus}"`,
+        category && category !== 'all' && `Category: ${category}`,
+        `Batch: ${batchSize} ideas`,
+        avoidExisting && 'Gap Analysis: Enabled',
+      ].filter(Boolean).join(' | ') || 'General ideas generation';
+
       const ideasToInsert: BlogIdeaInsert[] = ideas.map((idea) => ({
         title: idea.title,
         description: idea.description,
@@ -239,7 +257,7 @@ export async function POST(req: NextRequest) {
         seo_score: idea.estimatedPerformance?.seoScore,
         viral_potential: idea.estimatedPerformance?.viralPotential,
         conversion_potential: idea.estimatedPerformance?.conversionPotential,
-        generation_prompt: focus || category || 'General ideas generation',
+        generation_prompt: generationPromptText,
         generated_by: user.id,
       }));
 
