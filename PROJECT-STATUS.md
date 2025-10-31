@@ -2,7 +2,7 @@
 
 **Last Updated:** 31 Октомври 2025
 **Status:** ✅ DEPLOYED to Production (Vercel)
-**Version:** 1.1.0 - Phase 2 P0 Complete
+**Version:** 1.2.0 - Blog System Enhanced
 
 ---
 
@@ -11,23 +11,197 @@
 | Metric | Value |
 |--------|-------|
 | **Production Status** | ✅ LIVE on Vercel |
-| **Current Version** | 1.1.0 - Phase 2 P0 |
+| **Current Version** | 1.2.0 - Blog System Enhanced |
 | **Core Features** | 14 working (added Moon Phase) |
 | **Advanced Features** | 3 flagship (Natal Chart, Synastry, Personal Horoscope) |
 | **Public Landing Pages** | 3 (Tarot, Natal Chart, Moon Phase) |
+| **Blog Posts** | 4 published with enhanced UX |
 | **Total Routes** | 98 routes |
 | **API Endpoints** | 40+ |
 | **Database Tables** | 25+ |
-| **AI Models** | 5 (Gemini, Claude, DeepSeek, GPT-4, Gemini Image) |
+| **AI Models** | 5 (Gemini 2.5 Pro for blogs, Claude, DeepSeek, GPT-4, Gemini Image) |
 | **Subscription Tiers** | 3 (Free/Basic/Ultimate) |
 | **Stripe Integration** | ✅ Working (Test + Production) |
 | **Build Time** | ~50 seconds |
 
 ---
 
-## 🆕 PHASE 2 P0 FEATURES (JUST DEPLOYED - 31 Oct 2025)
+## 📝 BLOG SYSTEM ENHANCEMENTS (Version 1.2.0 - 31 Oct 2025)
 
-This section documents the features deployed in Version 1.1.0 - our first major update after MVP.
+Complete overhaul of blog post rendering, UX, and AI generation for professional, engaging content.
+
+### 🎨 Visual & UX Improvements
+
+#### 1. Typography & Spacing - FIXED ✅
+**Problem:** Blog posts looked cramped, unprofessional with tight H2 spacing.
+
+**Solution:**
+- H2 headings: `mt-10 mb-5` → `mt-16 mb-8 pt-8` with `border-top`
+- Paragraph spacing: `mb-3` → `mb-6` for breathing room
+- List spacing: `my-3 space-y-1` → `my-6 space-y-2`
+- Enhanced blockquotes: Added `bg-zinc-900/50`, `border-l-4`, `py-4 px-6`
+- Code blocks: Added `bg-zinc-950`, `border`, `shadow-xl`
+- Links: Added transition effects and hover states
+
+**Files Modified:**
+- `app/blog/[slug]/page.tsx` - Comprehensive prose classes update
+
+---
+
+#### 2. Image Display System - FIXED ✅
+**Problem:** Only hero image showing, 2 inline images missing from blog posts.
+
+**Solution:**
+- Added `image_urls TEXT[]` column to `blog_posts` table
+- Updated `processInlineImages()` to render all 3 images:
+  - Hero image in post header
+  - Image 1 at `<!-- IMAGE:1 -->` marker
+  - Image 2 at `<!-- IMAGE:2 -->` marker
+- Added `<figure>` and `<figcaption>` structure
+- Added hover scale effects for better UX
+- Alt text and captions for SEO
+
+**Migration:**
+- `supabase/migrations/20250131_add_blog_image_urls.sql`
+- Populated `image_urls` for 4 existing blog posts
+- Script: `scripts/run-blog-migration.mjs`
+
+**Files Modified:**
+- `app/blog/[slug]/page.tsx` - Enhanced image rendering with captions
+- `app/api/blog/publish/route.ts` - Store `image_urls` array in DB
+- `lib/ai/blog-prompts.ts` - Fixed marker format to `IMAGE:1`, `IMAGE:2`
+
+---
+
+#### 3. Table of Contents (TOC) - NEW ✅
+**Added:** Sticky sidebar component with auto-generated TOC from H2/H3 headings.
+
+**Features:**
+- Automatic extraction of headings
+- Active section highlighting on scroll (Intersection Observer)
+- Smooth scroll navigation
+- Responsive (hidden on mobile to save space)
+- Beautiful glass-card styling
+
+**Files Added:**
+- `components/blog/TableOfContents.tsx` - New client component
+
+**Files Modified:**
+- `app/blog/[slug]/page.tsx` - Integrated TOC in sidebar
+
+---
+
+#### 4. Layout Width - OPTIMIZED ✅
+**Problem:** Main content column too narrow (66%), wasting horizontal space.
+
+**Solution:**
+- Grid layout: `8/4 columns` → `9/3 columns`
+- Content width: 66% → 75% (+9% more space)
+- Sidebar: 33% → 25% (still enough for widgets)
+- Gap: Responsive `gap-6 lg:gap-8`
+
+**Result:** Better readability, modern blog appearance.
+
+---
+
+#### 5. TOC Duplication - FIXED ✅
+**Problem:** AI was generating inline "В тази статия" TOC + we added sidebar TOC = confusing duplication.
+
+**Solution:**
+- Removed `<!-- TOC -->` marker from AI prompts
+- AI no longer generates inline TOC
+- Only sidebar TOC component is used
+
+**Files Modified:**
+- `lib/ai/blog-prompts.ts` - Removed TOC marker instruction
+
+---
+
+### 🤖 AI Model Switch - Gemini 2.5 Pro
+
+#### Switched from Claude 3.5 Sonnet to Google Gemini 2.5 Pro
+
+**Reasons:**
+1. **Better Bulgarian Language** 🇧🇬
+   - More natural, conversational tone
+   - Avoids complex/academic words
+   - Matches Vrachka brand voice
+
+2. **Word Count Compliance** 📝
+   - Claude often generated 400-800 words instead of 2000
+   - Gemini better at following requirements
+   - Increased `max_tokens`: 8000 → 12000
+
+3. **Cost Efficiency** 💰
+   - Claude: $3/$15 per 1M tokens
+   - Gemini: $1.25/$5 per 1M tokens
+   - **2.4x cheaper!**
+
+**Technical Changes:**
+```typescript
+// Before:
+model: 'anthropic/claude-3.5-sonnet',
+max_tokens: 8000,
+
+// After:
+model: 'google/gemini-2.5-pro',
+max_tokens: 12000,
+```
+
+**Files Modified:**
+- `app/api/blog/generate/route.ts` - Model and max_tokens updated
+- `app/api/blog/publish/route.ts` - `model_used` field updated
+
+---
+
+### 📊 Database Changes
+
+**Migration:** `20250131_add_blog_image_urls.sql`
+
+```sql
+-- Add image_urls column
+ALTER TABLE blog_posts ADD COLUMN IF NOT EXISTS image_urls TEXT[];
+
+-- Populate from blog_images table
+UPDATE blog_posts bp
+SET image_urls = (
+  SELECT ARRAY_AGG(bi.url ORDER BY bi.position_in_article)
+  FROM blog_images bi
+  WHERE bi.blog_post_id = bp.id
+);
+```
+
+**Result:**
+- 4 blog posts updated
+- All have `image_urls` array with 3 URLs
+- Dynamic image replacement now possible
+
+---
+
+### 🐛 Bug Fixes
+
+1. **Build Error:** `generatedIdeas` undefined → Fixed to `ideas`
+2. **Build Error:** `generationTime` undefined → Removed from response
+3. **Marker Format:** `IMAGE_2`/`IMAGE_3` → `IMAGE:1`/`IMAGE:2` (with colon)
+
+---
+
+### 📈 Impact & Results
+
+| Metric | Before | After | Improvement |
+|--------|--------|-------|-------------|
+| **Content Width** | 66% | 75% | +9% more space |
+| **H2 Spacing** | mt-10 mb-5 | mt-16 mb-8 pt-8 | +60% breathing room |
+| **Images Shown** | 1/3 (33%) | 3/3 (100%) | ✅ All images |
+| **TOC** | None / Inline duplicate | Sticky sidebar | ✅ Better UX |
+| **AI Cost** | $3/$15 per 1M | $1.25/$5 per 1M | 2.4x cheaper |
+| **Word Count** | ~400-800 | 2000+ target | ✅ Full articles |
+
+---
+
+## 🆕 PHASE 2 P0 FEATURES (DEPLOYED - 31 Oct 2025)
+
+This section documents the features deployed in Version 1.1.0 - moon phase system and public landing pages.
 
 ### 🌙 Moon Phase System
 **Status:** ✅ LIVE in Production
@@ -778,8 +952,10 @@ Three TypeScript errors fixed during deployment:
 
 | Model | Provider | Cost | Use Case |
 |-------|----------|------|----------|
-| **Gemini Flash** | Google | FREE | Horoscopes, Tarot, Oracle Basic, Blog |
+| **Gemini Flash** | Google | FREE | Horoscopes, Tarot, Oracle Basic |
+| **Gemini 2.5 Pro** | Google | $1.25/$5 per 1M | Blog content generation (natural Bulgarian) |
 | **Claude Sonnet** | Anthropic | $3/$15 per 1M | Oracle Ultimate, Natal Chart, Synastry, Personal Horoscope |
+| **Claude Haiku** | Anthropic | $0.25/$1.25 per 1M | Blog idea generation (fast & cheap) |
 | **DeepSeek Chat** | DeepSeek | $0.27/$1.10 per 1M | Ultra-cheap fallback |
 | **GPT-4 Turbo** | OpenAI | $10/$30 per 1M | Legacy (not primary) |
 | **Gemini Image** | Google | FREE | Blog image generation |
@@ -1106,7 +1282,18 @@ NEXT_PUBLIC_APP_URL=
 
 ## 🔄 UPDATE LOG
 
-**31 Oct 2025:** 🚀 Phase 2 P0 DEPLOYED to Vercel Production
+**31 Oct 2025 (Evening):** 📝 Blog System ENHANCED - Version 1.2.0
+- **Typography & Spacing:** H2 margins increased (+60%), better prose classes, enhanced blockquotes/code blocks
+- **Image System:** Fixed - all 3 images now showing (hero + 2 inline with captions)
+- **Table of Contents:** NEW sticky sidebar component with active section highlighting
+- **Layout Width:** Optimized from 66% to 75% content width (9/3 grid)
+- **TOC Duplication:** Fixed - removed inline TOC marker from AI prompts
+- **AI Model Switch:** Claude 3.5 Sonnet → Gemini 2.5 Pro (better Bulgarian, 2.4x cheaper, 2000+ words)
+- **Database Migration:** Added `image_urls TEXT[]` column, populated 4 blog posts
+- **Bug Fixes:** Fixed 2 TypeScript build errors (generatedIdeas, generationTime)
+- **Git Commits:** 5 commits (a8e3b58, 4fdfaf2, d7d47ac, caa0980, eb27031)
+
+**31 Oct 2025 (Morning):** 🚀 Phase 2 P0 DEPLOYED to Vercel Production
 - Added Moon Phase System (LiveMoonPhaseWidget, MoonCalendar, public page)
 - Added 3 public SEO landing pages (/tarot, /natal-chart, /moon-phase)
 - Route restructuring (separated public vs authenticated routes)
