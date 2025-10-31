@@ -57,7 +57,7 @@ export default async function DashboardPage() {
       )}
 
       {/* Moon Phase Tracker */}
-      <MoonPhaseWidget zodiacSign={profile?.zodiac_sign as ZodiacSign} />
+      <MoonPhaseWidget zodiacSign={profile?.zodiac_sign as ZodiacSign | undefined} />
 
       {/* Ultimate Plan Features */}
       {hasUltimatePlan && (
