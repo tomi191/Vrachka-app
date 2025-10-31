@@ -82,7 +82,7 @@ export const metadata: Metadata = {
     canonical: '/',
   },
   icons: {
-    icon: '/icon-192.png',
+    icon: '/logo.svg',
     apple: '/icon-192.png',
   },
 };

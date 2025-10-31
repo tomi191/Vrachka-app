@@ -137,3 +137,19 @@ export function getBreadcrumbSchema(items: Array<{ name: string; url: string }>)
     })),
   }
 }
+
+// FAQ Schema Generator
+export function getFAQSchema(faqs: Array<{ question: string; answer: string }>) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((faq) => ({
+      '@type': 'Question',
+      name: faq.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: faq.answer,
+      },
+    })),
+  }
+}

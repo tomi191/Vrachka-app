@@ -3,6 +3,10 @@
     {
       "path": "/api/cron/generate-horoscopes",
       "schedule": "5 22 * * *"
+    },
+    {
+      "path": "/api/cron/send-daily-horoscope",
+      "schedule": "0 7 * * *"
     }
   ]
 }

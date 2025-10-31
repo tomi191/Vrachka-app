@@ -101,7 +101,7 @@ export function ThreeCardSpread({ isPremium, planType }: { isPremium: boolean; p
       <div className="space-y-6 animate-fade-in">
         {/* Back Button */}
         <Link
-          href="/tarot"
+          href="/tarot-readings"
           className="flex items-center gap-2 text-zinc-400 hover:text-zinc-300 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
@@ -410,7 +410,7 @@ export function ThreeCardSpread({ isPremium, planType }: { isPremium: boolean; p
           icon={<Heart className="w-8 h-8 text-red-400" />}
           planType={planType}
           requiredPlan="ultimate"
-          href="/tarot/love"
+          href="/tarot-readings/love"
         />
         <PremiumFeatureCard
           title="Кариерно четене"
@@ -418,7 +418,7 @@ export function ThreeCardSpread({ isPremium, planType }: { isPremium: boolean; p
           icon={<Briefcase className="w-8 h-8 text-blue-400" />}
           planType={planType}
           requiredPlan="ultimate"
-          href="/tarot/career"
+          href="/tarot-readings/career"
         />
       </div>
     </div>

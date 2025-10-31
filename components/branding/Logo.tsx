@@ -1,21 +1,51 @@
-"use client";
+'use client';
 
-import React from "react";
-
-type LogoProps = {
-  variant?: "full" | "mark";
+interface LogoProps {
   className?: string;
-  alt?: string;
-};
-
-export function Logo({ variant = "full", className, alt }: LogoProps) {
-  const src = variant === "mark" ? "/logo-mark.svg" : "/logo.svg";
-  const title = alt || (variant === "mark" ? "Vrachka" : "Vrachka — астрология и таро");
-  return (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img src={src} alt={title} className={className} loading="eager" decoding="async" />
-  );
 }
 
-export default Logo;
+export function Logo({ className }: LogoProps) {
+  return (
+    <svg width="32" height="32" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
+      <defs>
+        <radialGradient id="nav-logo-grad" cx="50%" cy="40%" r="60%">
+          <stop offset="0%" stopColor="#e879f9"/>
+          <stop offset="30%" stopColor="#c084fc"/>
+          <stop offset="70%" stopColor="#8b5cf6"/>
+          <stop offset="100%" stopColor="#7c3aed"/>
+        </radialGradient>
+        <radialGradient id="nav-logo-glow" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="#ffffff" stopOpacity="0.4"/>
+          <stop offset="50%" stopColor="#e879f9" stopOpacity="0.2"/>
+          <stop offset="100%" stopColor="#ffffff" stopOpacity="0"/>
+        </radialGradient>
+        <mask id="nav-logo-mask" maskUnits="userSpaceOnUse">
+          <rect width="48" height="48" fill="black"/>
+          <circle cx="24" cy="24" r="18" fill="white"/>
+          <ellipse cx="20" cy="20" rx="6" ry="8" fill="black"/>
+        </mask>
+      </defs>
 
+      {/* Outer glow */}
+      <circle cx="24" cy="24" r="22" fill="url(#nav-logo-glow)" opacity="0.3"/>
+
+      {/* Crystal ball */}
+      <g mask="url(#nav-logo-mask)">
+        <circle cx="24" cy="24" r="18" fill="url(#nav-logo-grad)"/>
+      </g>
+
+      {/* Central star */}
+      <g transform="translate(24,24) scale(0.6)">
+        <path d="M0 -6 L1.8 -1.8 L6 0 L1.8 1.8 L0 6 L-1.8 1.8 L-6 0 L-1.8 -1.8 Z" fill="#fef3c7"/>
+      </g>
+
+      {/* Sparkles */}
+      <circle cx="8" cy="14" r="1" fill="#fbbf24" opacity="0.7">
+        <animate attributeName="opacity" values="0.3;1;0.3" dur="2s" repeatCount="indefinite"/>
+      </circle>
+      <circle cx="40" cy="18" r="0.8" fill="#fbbf24" opacity="0.6">
+        <animate attributeName="opacity" values="0.5;1;0.5" dur="3s" repeatCount="indefinite"/>
+      </circle>
+    </svg>
+  );
+}

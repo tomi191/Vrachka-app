@@ -110,8 +110,8 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  // Protected routes
-  const protectedRoutes = ['/dashboard', '/tarot', '/oracle', '/profile', '/onboarding'];
+  // Protected routes (authenticated only)
+  const protectedRoutes = ['/dashboard', '/tarot-readings', '/oracle', '/profile', '/onboarding', '/natal-chart-create'];
   const isProtectedRoute = protectedRoutes.some(route => request.nextUrl.pathname.startsWith(route));
 
   // If user is not logged in and trying to access protected route

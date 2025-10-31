@@ -167,7 +167,7 @@ export default async function HistoryPage({
                   Все още нямаш четения. Започни като изтеглиш първа карта! 🎴
                 </p>
                 <Link
-                  href="/tarot"
+                  href="/tarot-readings"
                   className="inline-block mt-4 px-4 py-2 bg-accent-600 hover:bg-accent-700 text-white rounded-lg transition-colors"
                 >
                   Тегли карта

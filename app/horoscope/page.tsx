@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import Image from 'next/image'
 import Link from 'next/link'
 import { Sparkles } from 'lucide-react'
 import { StructuredData, getBreadcrumbSchema } from '@/components/StructuredData'
@@ -16,11 +17,14 @@ import { BentoTestimonials } from '@/components/landing/BentoTestimonials'
 import { createClient } from '@/lib/supabase/server'
 
 export const metadata: Metadata = {
-  title: 'Дневен Хороскоп за Всички Зодии',
-  description: 'Безплатни дневни хороскопи за всички 12 зодии. Персонализирани астрологични прогнози, любовен хороскоп, кариерни съвети и духовни насоки от AI Врачката.',
+  title: 'Твоят Дневен Хороскоп | Врачка',
+  description: 'Вземи своя безплатен дневен хороскоп от Врачка. Персонализирани астрологични прогнози за всички 12 зодии, любовен хороскоп, кариерни съвети и духовни насоки от нашата AI Врачка.',
   keywords: [
     'дневен хороскоп',
-    'хороскоп днес',
+    'хороскоп за днес',
+    'хороскопи',
+    'vrachka хороскоп',
+    'врачка хороскопи',
     'астрология',
     'зодия',
     'хороскоп за деня',
@@ -28,6 +32,7 @@ export const metadata: Metadata = {
     'седмичен хороскоп',
     'месечен хороскоп',
     'астрологична прогноза',
+    'зодии'
   ],
   openGraph: {
     title: 'Дневен Хороскоп за Всички Зодии | Vrachka',
@@ -173,11 +178,11 @@ export default async function HoroscopePage() {
             </div>
             <h1 className="text-4xl md:text-5xl font-bold mb-4">
               <GradientText from="#9333ea" via="#ec4899" to="#9333ea">
-                Дневен Хороскоп за Всички Зодии
+                Твоят Дневен Хороскоп от Врачка
               </GradientText>
             </h1>
             <p className="text-xl text-zinc-400 max-w-3xl mx-auto">
-              Открийте какво ви носят звездите днес. Персонализирани астрологични прогнози за любов, кариера, здраве и духовно развитие.
+              Във Vrachka, ние ти помагаме да откриеш какво ти носят звездите днес. Персонализирани астрологични прогнози за любов, кариера, здраве и духовно развитие.
             </p>
           </div>
 
@@ -225,27 +230,44 @@ export default async function HoroscopePage() {
           </div>
 
           {/* SEO Content Section */}
-          <div className="max-w-4xl mx-auto space-y-8 mb-16">
-            <div className="glass-card p-8">
-              <h2 className="text-2xl font-bold text-zinc-50 mb-4">Какво е Дневният Хороскоп?</h2>
+          <div className="max-w-6xl mx-auto space-y-24 mb-16">
+            {/* Section 1: What is a Daily Horoscope? */}
+            <div className="grid md:grid-cols-2 gap-8 md:gap-16 items-center">
+              <div>
+                <Image
+                  src="/images/horoscope/what-is-horoscope.png"
+                  alt="Светещо зодиакално колело"
+                  width={1024}
+                  height={512}
+                  className="rounded-lg shadow-2xl"
+                />
+              </div>
               <div className="prose prose-invert max-w-none text-zinc-300">
+                <h2 className="text-3xl font-bold text-zinc-50 mb-4">Какво е Дневният Хороскоп?</h2>
                 <p>
-                  Дневният хороскоп е астрологична прогноза, базирана на позициите на планетите и звездите във вашата зодия за конкретния ден.
-                  Той ви предоставя насоки за любовта, кариерата, здравето и личностното развитие.
+                  Дневният хороскоп е астрологична прогноза, базирана на позициите на планетите и звездите във вашата зодия за конкретния ден. Той ви предоставя насоки за любовта, кариерата, здравето и личностното развитие.
                 </p>
                 <p>
-                  С Vrachka получавате персонализирани хороскопи, генерирани от напреднала AI технология, която отчита не само вашата зодия,
-                  но и множество други астрологични фактори за максимална точност.
+                  С Vrachka получавате персонализирани хороскопи, генерирани от напреднала AI технология, която отчита не само вашата зодия, но и множество други астрологични фактори за максимална точност.
                 </p>
               </div>
             </div>
 
-            <div className="glass-card p-8">
-              <h2 className="text-2xl font-bold text-zinc-50 mb-4">Как Работи Астрологията?</h2>
+            {/* Section 2: How Astrology Works? */}
+            <div className="grid md:grid-cols-2 gap-8 md:gap-16 items-center">
+              <div className="md:order-last">
+                <Image
+                  src="/images/horoscope/how-astrology-works.png"
+                  alt="Как работи астрологията"
+                  width={1024}
+                  height={512}
+                  className="rounded-lg shadow-2xl"
+                />
+              </div>
               <div className="prose prose-invert max-w-none text-zinc-300">
+                <h2 className="text-3xl font-bold text-zinc-50 mb-4">Как Работи Астрологията?</h2>
                 <p>
-                  Астрологията изучава влиянието на небесните тела върху човешкия живот. Всяка от 12-те зодии се управлява от различна планета
-                  и принадлежи към една от четирите стихии - Огън, Земя, Въздух или Вода.
+                  Астрологията изучава влиянието на небесните тела върху човешкия живот. Всяка от 12-те зодии се управлява от различна планета и принадлежи към една от четирите стихии - Огън, Земя, Въздух или Вода.
                 </p>
                 <h3 className="text-xl font-semibold mt-4 text-zinc-200">Четирите Стихии:</h3>
                 <ul>
@@ -257,9 +279,19 @@ export default async function HoroscopePage() {
               </div>
             </div>
 
-            <div className="glass-card p-8">
-              <h2 className="text-2xl font-bold text-zinc-50 mb-4">Защо да Избера Vrachka?</h2>
+            {/* Section 3: Why Choose Vrachka? */}
+            <div className="grid md:grid-cols-2 gap-8 md:gap-16 items-center">
+              <div>
+                <Image
+                  src="/images/horoscope/why-vrachka-horoscope.png"
+                  alt="Защо да избера Vrachka"
+                  width={1024}
+                  height={512}
+                  className="rounded-lg shadow-2xl"
+                />
+              </div>
               <div className="prose prose-invert max-w-none text-zinc-300">
+                <h2 className="text-3xl font-bold text-zinc-50 mb-4">Защо да Избера Vrachka?</h2>
                 <ul>
                   <li><strong>AI Персонализация</strong> - Хороскопи, създадени специално за вас</li>
                   <li><strong>Дневни Актуализации</strong> - Нови прогнози всеки ден</li>
@@ -268,6 +300,7 @@ export default async function HoroscopePage() {
                   <li><strong>Таро Четения</strong> - Допълнителни насоки с AI таро</li>
                   <li><strong>Духовен Оракул</strong> - Консултации с AI Врачката</li>
                   <li><strong>Натална Карта</strong> - Пълен астрологичен анализ на раждането ти</li>
+                  <li><strong>Доверен Източник:</strong> Vrachka е твоят доверен източник за точни и персонализирани астрологични прогнози.</li>
                 </ul>
               </div>
             </div>
@@ -277,14 +310,22 @@ export default async function HoroscopePage() {
         {/* Testimonials Section */}
         <BentoTestimonials />
 
-        <div className="container mx-auto px-4 pb-16">
-          {/* CTA Section */}
-          <div className="glass-card p-12 text-center relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-r from-purple-600/20 to-pink-600/20 -z-10"></div>
-            <h2 className="text-3xl font-bold mb-4 text-zinc-50">
+        {/* Final CTA Section */}
+        <div className="relative py-20">
+          <div className="absolute inset-0">
+            <Image
+              src="/images/horoscope/what-is-horoscope.png"
+              alt="Готови за Персонализиран Хороскоп?"
+              fill
+              className="opacity-30 object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-brand-950 to-transparent"></div>
+          </div>
+          <div className="relative container mx-auto px-4 text-center">
+            <h2 className="text-4xl font-bold mb-4 text-zinc-50">
               Готови за Персонализиран Хороскоп?
             </h2>
-            <p className="text-xl mb-8 text-zinc-300">
+            <p className="text-xl mb-8 text-zinc-300 max-w-2xl mx-auto">
               Създайте безплатен акаунт и получете достъп до дневни хороскопи, таро четения и духовни консултации
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">

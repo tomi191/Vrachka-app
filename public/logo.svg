@@ -1,45 +1,37 @@
-<svg width="240" height="60" viewBox="0 0 240 60" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Vrachka logo">
+<svg width="32" height="32" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <linearGradient id="v-grad" x1="0" y1="0" x2="240" y2="0" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#9333ea"/>
-      <stop offset="50%" stop-color="#ec4899"/>
-      <stop offset="100%" stop-color="#9333ea"/>
-    </linearGradient>
-    <radialGradient id="v-glow" cx="50%" cy="50%" r="50%">
-      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.35"/>
-      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    <radialGradient id="nav-logo-grad" cx="50%" cy="40%" r="60%">
+      <stop offset="0%" stopColor="#e879f9"/>
+      <stop offset="30%" stopColor="#c084fc"/>
+      <stop offset="70%" stopColor="#8b5cf6"/>
+      <stop offset="100%" stopColor="#7c3aed"/>
     </radialGradient>
-    <mask id="crescent-mask" maskUnits="userSpaceOnUse">
-      <rect width="60" height="60" fill="black"/>
-      <!-- big circle visible -->
-      <circle cx="30" cy="30" r="13" fill="white"/>
-      <!-- subtract smaller circle to form crescent -->
-      <circle cx="35" cy="27" r="12" fill="black"/>
+    <radialGradient id="nav-logo-glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stopColor="#ffffff" stopOpacity="0.4"/>
+      <stop offset="50%" stopColor="#e879f9" stopOpacity="0.2"/>
+      <stop offset="100%" stopColor="#ffffff" stopOpacity="0"/>
+    </radialGradient>
+    <mask id="nav-logo-mask" maskUnits="userSpaceOnUse">
+      <rect width="48" height="48" fill="black"/>
+      <circle cx="24" cy="24" r="18" fill="white"/>
+      <ellipse cx="20" cy="20" rx="6" ry="8" fill="black"/>
     </mask>
   </defs>
 
-  <!-- Symbol -->
-  <g transform="translate(6,6)">
-    <!-- outer ring -->
-    <circle cx="24" cy="24" r="20" fill="none" stroke="url(#v-grad)" stroke-width="2.5"/>
-    <!-- inner glow -->
-    <circle cx="24" cy="24" r="16" fill="url(#v-glow)" opacity="0.2"/>
-    <!-- crescent -->
-    <g mask="url(#crescent-mask)" transform="translate(-6,-6)">
-      <circle cx="30" cy="30" r="13" fill="url(#v-grad)"/>
-    </g>
-    <!-- star -->
-    <g transform="translate(34,10)">
-      <path d="M6 0 L7.8 3.9 L12 4.4 L8.9 7.2 L9.7 11.2 L6 9.2 L2.3 11.2 L3.1 7.2 L0 4.4 L4.2 3.9 Z" fill="#EDE9FE"/>
-    </g>
+  <circle cx="24" cy="24" r="22" fill="url(#nav-logo-glow)" opacity="0.3"/>
+
+  <g mask="url(#nav-logo-mask)">
+    <circle cx="24" cy="24" r="18" fill="url(#nav-logo-grad)"/>
   </g>
 
-  <!-- Wordmark -->
-  <g transform="translate(70,14)">
-    <text x="0" y="22" fill="#EDE9FE" font-family="Geist, Inter, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, 'Helvetica Neue', Arial, sans-serif" font-size="26" font-weight="700" letter-spacing="0.5">
-      Vrachka
-    </text>
-    <!-- subtle underline accent -->
-    <rect x="2" y="32" width="112" height="3" rx="1.5" fill="url(#v-grad)" opacity="0.65"/>
+  <g transform="translate(24,24) scale(0.6)">
+    <path d="M0 -6 L1.8 -1.8 L6 0 L1.8 1.8 L0 6 L-1.8 1.8 L-6 0 L-1.8 -1.8 Z" fill="#fef3c7"/>
   </g>
+
+  <circle cx="8" cy="14" r="1" fill="#fbbf24" opacity="0.7">
+    <animate attributeName="opacity" values="0.3;1;0.3" dur="2s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="40" cy="18" r="0.8" fill="#fbbf24" opacity="0.6">
+    <animate attributeName="opacity" values="0.5;1;0.5" dur="3s" repeatCount="indefinite"/>
+  </circle>
 </svg>

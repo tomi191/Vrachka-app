@@ -299,7 +299,7 @@ export function TarotReading({ planType = 'free' }: { planType?: PlanType }) {
           icon={<Sparkles className="w-8 h-8 text-accent-400" />}
           planType={planType}
           requiredPlan="basic"
-          href="/tarot/three-card"
+          href="/tarot-readings/three-card"
         />
         <PremiumFeatureCard
           title="Любовно четене"
@@ -307,7 +307,7 @@ export function TarotReading({ planType = 'free' }: { planType?: PlanType }) {
           icon={<Heart className="w-8 h-8 text-red-400" />}
           planType={planType}
           requiredPlan="ultimate"
-          href="/tarot/love"
+          href="/tarot-readings/love"
         />
         <PremiumFeatureCard
           title="Кариерно четене"
@@ -315,7 +315,7 @@ export function TarotReading({ planType = 'free' }: { planType?: PlanType }) {
           icon={<Briefcase className="w-8 h-8 text-blue-400" />}
           planType={planType}
           requiredPlan="ultimate"
-          href="/tarot/career"
+          href="/tarot-readings/career"
         />
       </div>
     </div>

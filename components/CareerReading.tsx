@@ -91,7 +91,7 @@ export function CareerReading({ hasAccess }: { hasAccess: boolean }) {
     return (
       <div className="space-y-6 animate-fade-in">
         <Link
-          href="/tarot"
+          href="/tarot-readings"
           className="flex items-center gap-2 text-zinc-400 hover:text-zinc-300 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />

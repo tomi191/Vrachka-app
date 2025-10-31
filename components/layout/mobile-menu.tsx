@@ -97,14 +97,14 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
       {/* Menu Panel */}
       <div
         className={cn(
-          "fixed top-0 right-0 h-full w-full max-w-sm bg-mystic-950 z-[70]",
-          "shadow-2xl border-l border-mystic-800",
+          "fixed top-0 right-0 h-full w-full max-w-sm bg-zinc-950/98 backdrop-blur-xl z-[70]",
+          "shadow-2xl border-l border-zinc-700",
           "transition-transform duration-300 ease-out",
           isVisible ? "translate-x-0" : "translate-x-full"
         )}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-mystic-800">
+        <div className="flex items-center justify-between p-4 border-b border-zinc-700">
           <h2 className="text-lg font-bold text-zinc-50">Меню</h2>
           <button
             onClick={onClose}
@@ -146,7 +146,7 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
           </div>
 
           {/* Divider */}
-          <div className="border-t border-mystic-800 my-2" />
+          <div className="border-t border-zinc-700 my-2" />
 
           {/* Account Section */}
           <div className="p-4 space-y-1">

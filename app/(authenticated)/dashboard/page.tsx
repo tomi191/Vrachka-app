@@ -4,6 +4,7 @@ import { zodiacSigns, type ZodiacSign } from "@/lib/zodiac";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Sparkles, CreditCard, Star, Heart, TrendingUp } from "lucide-react";
 import { HoroscopeCard } from "@/components/HoroscopeCard";
+import { MoonPhaseWidget } from "@/components/MoonPhaseWidget";
 import Link from "next/link";
 
 export default async function DashboardPage() {
@@ -54,6 +55,9 @@ export default async function DashboardPage() {
           userPlan={userPlan as 'free' | 'basic' | 'ultimate'}
         />
       )}
+
+      {/* Moon Phase Tracker */}
+      <MoonPhaseWidget zodiacSign={profile?.zodiac_sign as ZodiacSign} />
 
       {/* Ultimate Plan Features */}
       {hasUltimatePlan && (
@@ -126,7 +130,7 @@ export default async function DashboardPage() {
           <p className="text-zinc-300 mb-4">
             Открий своето послание от таро картите
           </p>
-          <Link href="/tarot" className="block w-full px-4 py-3 bg-accent-600 hover:bg-accent-700 text-white rounded-lg transition-colors text-center font-semibold">
+          <Link href="/tarot-readings" className="block w-full px-4 py-3 bg-accent-600 hover:bg-accent-700 text-white rounded-lg transition-colors text-center font-semibold">
             Разкрий картата
           </Link>
         </CardContent>

@@ -8,6 +8,8 @@ import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import type { User as SupabaseUser } from '@supabase/supabase-js'
 
+import { Logo } from '@/components/branding/Logo'
+
 interface NavigationProps {
   user?: SupabaseUser | null;
 }
@@ -16,6 +18,7 @@ export function Navigation({ user }: NavigationProps) {
   const router = useRouter();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
+  const [astrologyDropdownOpen, setAstrologyDropdownOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const toggleMobileMenu = () => {
@@ -45,53 +48,12 @@ export function Navigation({ user }: NavigationProps) {
         <div className="container mx-auto px-6 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2 group" onClick={closeMobileMenu}>
             <div className="relative">
-              {/* SVG Logo */}
-              <svg width="32" height="32" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="transition-all duration-300 group-hover:scale-110">
-                <defs>
-                  <radialGradient id="nav-logo-grad" cx="50%" cy="40%" r="60%">
-                    <stop offset="0%" stopColor="#e879f9"/>
-                    <stop offset="30%" stopColor="#c084fc"/>
-                    <stop offset="70%" stopColor="#8b5cf6"/>
-                    <stop offset="100%" stopColor="#7c3aed"/>
-                  </radialGradient>
-                  <radialGradient id="nav-logo-glow" cx="50%" cy="50%" r="50%">
-                    <stop offset="0%" stopColor="#ffffff" stopOpacity="0.4"/>
-                    <stop offset="50%" stopColor="#e879f9" stopOpacity="0.2"/>
-                    <stop offset="100%" stopColor="#ffffff" stopOpacity="0"/>
-                  </radialGradient>
-                  <mask id="nav-logo-mask" maskUnits="userSpaceOnUse">
-                    <rect width="48" height="48" fill="black"/>
-                    <circle cx="24" cy="24" r="18" fill="white"/>
-                    <ellipse cx="20" cy="20" rx="6" ry="8" fill="black"/>
-                  </mask>
-                </defs>
-
-                {/* Outer glow */}
-                <circle cx="24" cy="24" r="22" fill="url(#nav-logo-glow)" opacity="0.3"/>
-
-                {/* Crystal ball */}
-                <g mask="url(#nav-logo-mask)">
-                  <circle cx="24" cy="24" r="18" fill="url(#nav-logo-grad)"/>
-                </g>
-
-                {/* Central star */}
-                <g transform="translate(24,24) scale(0.6)">
-                  <path d="M0 -6 L1.8 -1.8 L6 0 L1.8 1.8 L0 6 L-1.8 1.8 L-6 0 L-1.8 -1.8 Z" fill="#fef3c7"/>
-                </g>
-
-                {/* Sparkles */}
-                <circle cx="8" cy="14" r="1" fill="#fbbf24" opacity="0.7">
-                  <animate attributeName="opacity" values="0.3;1;0.3" dur="2s" repeatCount="indefinite"/>
-                </circle>
-                <circle cx="40" cy="18" r="0.8" fill="#fbbf24" opacity="0.6">
-                  <animate attributeName="opacity" values="0.5;1;0.5" dur="3s" repeatCount="indefinite"/>
-                </circle>
-              </svg>
+              <Logo className="transition-all duration-300 group-hover:scale-110" />
 
               {/* Glow effect on hover */}
               <div className="absolute inset-0 rounded-full bg-gradient-to-br from-purple-400/20 to-pink-400/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-sm"></div>
             </div>
-            <span className="font-semibold text-lg text-zinc-50 group-hover:text-white transition-colors duration-300">Vrachka</span>
+            <span className="font-semibold text-lg text-zinc-50 group-hover:text-white transition-colors duration-300">Врачка</span>
           </Link>
 
           {/* Desktop Menu */}
@@ -99,14 +61,50 @@ export function Navigation({ user }: NavigationProps) {
             <Link href="/horoscope" className="text-sm text-zinc-400 hover:text-zinc-50 transition-colors">
               Хороскопи
             </Link>
+            <div className="relative">
+              <button
+                onClick={() => setAstrologyDropdownOpen(!astrologyDropdownOpen)}
+                className="flex items-center gap-2 text-sm text-zinc-400 hover:text-zinc-50 transition-colors"
+              >
+                <span>Астрология</span>
+                <ChevronDown className="w-3 h-3" />
+              </button>
+
+              {astrologyDropdownOpen && (
+                <>
+                  {/* Backdrop */}
+                  <div
+                    className="fixed inset-0 z-10"
+                    onClick={() => setAstrologyDropdownOpen(false)}
+                  />
+
+                  {/* Dropdown Menu */}
+                  <div className="absolute right-0 mt-2 w-48 bg-zinc-950/95 backdrop-blur-xl border border-zinc-700 rounded-lg shadow-xl z-20">
+                    <div className="py-2">
+                      <Link
+                        href="/natal-chart"
+                        className="flex items-center gap-3 px-4 py-2 text-sm text-zinc-400 hover:bg-mystic-900 hover:text-zinc-50 transition-colors"
+                        onClick={() => setAstrologyDropdownOpen(false)}
+                      >
+                        Натална Карта
+                      </Link>
+                      <Link
+                        href="/moon-phase"
+                        className="flex items-center gap-3 px-4 py-2 text-sm text-zinc-400 hover:bg-mystic-900 hover:text-zinc-50 transition-colors"
+                        onClick={() => setAstrologyDropdownOpen(false)}
+                      >
+                        Лунна Фаза
+                      </Link>
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+            <Link href="/tarot" className="text-sm text-zinc-400 hover:text-zinc-50 transition-colors">
+              Таро
+            </Link>
             <Link href="/blog" className="text-sm text-zinc-400 hover:text-zinc-50 transition-colors">
               Блог
-            </Link>
-            <Link href="/features" className="text-sm text-zinc-400 hover:text-zinc-50 transition-colors">
-              Функции
-            </Link>
-            <Link href="/pricing" className="text-sm text-zinc-400 hover:text-zinc-50 transition-colors">
-              Цени
             </Link>
             <Link href="/about" className="text-sm text-zinc-400 hover:text-zinc-50 transition-colors">
               За нас
@@ -136,7 +134,7 @@ export function Navigation({ user }: NavigationProps) {
                     />
 
                     {/* Dropdown Menu */}
-                    <div className="absolute right-0 mt-2 w-48 bg-mystic-950 border border-mystic-800 rounded-lg shadow-xl z-20">
+                    <div className="absolute right-0 mt-2 w-48 bg-zinc-950/95 backdrop-blur-xl border border-zinc-700 rounded-lg shadow-xl z-20">
                       <div className="py-2">
                         <Link
                           href="/dashboard"
@@ -147,7 +145,7 @@ export function Navigation({ user }: NavigationProps) {
                           Dashboard
                         </Link>
                         <Link
-                          href="/tarot"
+                          href="/tarot-readings"
                           className="flex items-center gap-3 px-4 py-2 text-sm text-zinc-400 hover:bg-mystic-900 hover:text-zinc-50 transition-colors"
                           onClick={() => setProfileDropdownOpen(false)}
                         >
@@ -232,7 +230,7 @@ export function Navigation({ user }: NavigationProps) {
 
       {/* Mobile Menu Drawer */}
       <div
-        className={`fixed top-16 right-0 h-[calc(100vh-4rem)] w-64 bg-brand-950 border-l border-zinc-800/50 z-40 md:hidden transform transition-transform duration-300 ease-in-out ${
+        className={`fixed top-16 right-0 h-[calc(100vh-4rem)] w-64 bg-zinc-950/98 backdrop-blur-xl border-l border-zinc-700 z-40 md:hidden transform transition-transform duration-300 ease-in-out ${
           mobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
       >
@@ -245,25 +243,32 @@ export function Navigation({ user }: NavigationProps) {
             Хороскопи
           </Link>
           <Link
+            href="/natal-chart"
+            className="text-zinc-400 hover:text-zinc-50 transition-colors py-2"
+            onClick={closeMobileMenu}
+          >
+            Натална карта
+          </Link>
+          <Link
+            href="/moon-phase"
+            className="text-zinc-400 hover:text-zinc-50 transition-colors py-2"
+            onClick={closeMobileMenu}
+          >
+            Лунна фаза
+          </Link>
+          <Link
+            href="/tarot"
+            className="text-zinc-400 hover:text-zinc-50 transition-colors py-2"
+            onClick={closeMobileMenu}
+          >
+            Таро
+          </Link>
+          <Link
             href="/blog"
             className="text-zinc-400 hover:text-zinc-50 transition-colors py-2"
             onClick={closeMobileMenu}
           >
             Блог
-          </Link>
-          <Link
-            href="/features"
-            className="text-zinc-400 hover:text-zinc-50 transition-colors py-2"
-            onClick={closeMobileMenu}
-          >
-            Функции
-          </Link>
-          <Link
-            href="/pricing"
-            className="text-zinc-400 hover:text-zinc-50 transition-colors py-2"
-            onClick={closeMobileMenu}
-          >
-            Цени
           </Link>
           <Link
             href="/about"

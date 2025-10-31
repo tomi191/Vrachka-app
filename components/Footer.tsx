@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { Sparkles, Facebook, Mail } from 'lucide-react'
+import { Logo } from '@/components/branding/Logo'
 import { NewsletterSubscribeForm } from '@/components/NewsletterSubscribeForm'
 
 export function Footer() {
@@ -25,13 +26,11 @@ export function Footer() {
           {/* Brand */}
           <div>
             <div className="flex items-center gap-2 mb-4">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-accent-500 to-accent-700 flex items-center justify-center">
-                <Sparkles className="w-5 h-5 text-white" />
-              </div>
-              <span className="font-semibold text-zinc-50">Vrachka</span>
+              <Logo className="w-8 h-8" />
+              <span className="font-semibold text-zinc-50">Врачка</span>
             </div>
             <p className="text-sm text-zinc-500 mb-4">
-              Твоят духовен гид с AI технология
+              Разкрийте бъдещето си с Vrachka: AI хороскопи, таро и астрология.
             </p>
 
             {/* Social Links */}
@@ -78,6 +77,9 @@ export function Footer() {
           <div>
             <h4 className="font-semibold text-zinc-50 mb-4">Функции</h4>
             <div className="flex flex-col gap-2">
+              <Link href="/features" className="text-sm text-zinc-500 hover:text-zinc-300 transition-colors">
+                Всички Функции
+              </Link>
               <Link href="/oracle" className="text-sm text-zinc-500 hover:text-zinc-300 transition-colors">
                 AI Оракул
               </Link>
