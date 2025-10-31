@@ -69,16 +69,52 @@ export async function GET(req: NextRequest) {
           const trialEnd = new Date(profile.trial_end);
           const daysLeft = Math.ceil((trialEnd.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
 
-          await sendTrialExpiringEmail(user.user.email, {
+          const result = await sendTrialExpiringEmail(user.user.email, {
             firstName: profile.full_name?.split(' ')[0] || '',
             expiresAt: expiryDate,
           });
 
-          successCount++;
-          console.log(`[Cron] Trial expiring reminder sent to ${user.user.email}`);
+          if (result.success) {
+            // Log successful email send
+            await supabase.rpc('log_email_sent', {
+              p_email_type: 'trial_expiring',
+              p_recipient_email: user.user.email,
+              p_recipient_name: profile.full_name || null,
+              p_subject: '⏰ Пробният ти период изтича скоро!',
+              p_template_used: 'TrialExpiringEmail',
+              p_subscriber_id: null,
+              p_user_id: profile.id,
+              p_metadata: {
+                trial_tier: profile.trial_tier,
+                trial_end: profile.trial_end,
+                days_left: daysLeft,
+              },
+            });
+
+            successCount++;
+            console.log(`[Cron] Trial expiring reminder sent to ${user.user.email}`);
+          } else {
+            throw new Error('Failed to send trial expiring email');
+          }
         }
       } catch (emailError) {
         console.error(`[Cron] Error sending trial expiring reminder to profile ${profile.id}:`, emailError);
+
+        // Log failure to database
+        try {
+          const { data: user } = await supabase.auth.admin.getUserById(profile.id);
+          if (user?.user?.email) {
+            await supabase.rpc('log_email_failure', {
+              p_email_type: 'trial_expiring',
+              p_recipient_email: user.user.email,
+              p_error_message: emailError instanceof Error ? emailError.message : 'Unknown error',
+              p_subscriber_id: null,
+            });
+          }
+        } catch (logError) {
+          console.error('[Cron] Failed to log email failure:', logError);
+        }
+
         failureCount++;
       }
     }

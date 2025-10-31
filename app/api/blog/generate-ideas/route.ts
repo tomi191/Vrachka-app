@@ -165,7 +165,7 @@ export async function POST(req: NextRequest) {
     let response;
     try {
       response = await createOpenRouterCompletion({
-        model: 'anthropic/claude-3-haiku',
+        model: 'google/gemini-2.5-pro',
         messages: [
           {
             role: 'user',
@@ -198,7 +198,14 @@ export async function POST(req: NextRequest) {
     // Parse response
     let ideas;
     try {
-      const content = response.choices[0].message.content.trim();
+      let content = response.choices[0].message.content.trim();
+      
+      // First, try to find a JSON array if there's extra text
+      const jsonMatch = content.match(/\s*(\[[\s\S]*\])\s*/);
+      if (jsonMatch && jsonMatch[1]) {
+        content = jsonMatch[1];
+      }
+
       // Remove markdown code blocks if present
       const cleanContent = content
         .replace(/^```json\s*/i, '')
@@ -209,11 +216,12 @@ export async function POST(req: NextRequest) {
       ideas = JSON.parse(cleanContent);
     } catch (parseError) {
       console.error('Failed to parse AI response:', parseError);
-      console.log('Raw response:', response.choices[0]?.message?.content?.substring(0, 500) || 'No content');
+      console.log('Raw response:', response.choices[0]?.message?.content?.substring(0, 1000) || 'No content');
       return NextResponse.json(
         {
           error: 'AI response was not valid JSON',
-          details: parseError instanceof Error ? parseError.message : 'Parse error'
+          details: parseError instanceof Error ? parseError.message : 'Parse error',
+          rawResponse: response.choices[0]?.message?.content || null
         },
         { status: 500 }
       );

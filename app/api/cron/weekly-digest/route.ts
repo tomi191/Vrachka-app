@@ -53,17 +53,51 @@ export async function GET(req: NextRequest) {
           // Get weekly horoscope for user's zodiac sign
           const weeklyHighlight = `Седмицата носи нови възможности за ${profile.zodiac_sign}. Следи своя дневен хороскоп за детайли!`;
 
-          await sendWeeklyDigestEmail(user.user.email, {
+          const result = await sendWeeklyDigestEmail(user.user.email, {
             firstName: profile.full_name?.split(' ')[0] || '',
             zodiacSign: profile.zodiac_sign || 'твоя знак',
             weeklyHighlight,
           });
 
-          successCount++;
-          console.log(`[Cron] Weekly digest sent to ${user.user.email}`);
+          if (result.success) {
+            // Log successful email send
+            await supabase.rpc('log_email_sent', {
+              p_email_type: 'weekly_digest',
+              p_recipient_email: user.user.email,
+              p_recipient_name: profile.full_name || null,
+              p_subject: `Твоята седмична прогноза - ${profile.zodiac_sign} 🌙`,
+              p_template_used: 'WeeklyDigestEmail',
+              p_subscriber_id: null,
+              p_user_id: profile.id,
+              p_metadata: {
+                zodiac_sign: profile.zodiac_sign,
+              },
+            });
+
+            successCount++;
+            console.log(`[Cron] Weekly digest sent to ${user.user.email}`);
+          } else {
+            throw new Error('Failed to send weekly digest email');
+          }
         }
       } catch (emailError) {
         console.error(`[Cron] Error sending weekly digest to profile ${profile.id}:`, emailError);
+
+        // Log failure to database
+        try {
+          const { data: user } = await supabase.auth.admin.getUserById(profile.id);
+          if (user?.user?.email) {
+            await supabase.rpc('log_email_failure', {
+              p_email_type: 'weekly_digest',
+              p_recipient_email: user.user.email,
+              p_error_message: emailError instanceof Error ? emailError.message : 'Unknown error',
+              p_subscriber_id: null,
+            });
+          }
+        } catch (logError) {
+          console.error('[Cron] Failed to log email failure:', logError);
+        }
+
         failureCount++;
       }
     }

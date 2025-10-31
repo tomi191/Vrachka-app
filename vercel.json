@@ -2,11 +2,28 @@
   "crons": [
     {
       "path": "/api/cron/generate-horoscopes",
-      "schedule": "5 22 * * *"
+      "schedule": "0 4 * * *",
+      "comment": "Generate daily horoscopes at 6:00 AM EET (4:00 UTC)"
     },
     {
       "path": "/api/cron/send-daily-horoscope",
-      "schedule": "0 7 * * *"
+      "schedule": "0 5 * * *",
+      "comment": "Send daily horoscope emails at 7:00 AM EET (5:00 UTC)"
+    },
+    {
+      "path": "/api/cron/renewal-reminder",
+      "schedule": "0 7 * * *",
+      "comment": "Send renewal reminders at 9:00 AM EET (7:00 UTC)"
+    },
+    {
+      "path": "/api/cron/trial-expiring",
+      "schedule": "30 7 * * *",
+      "comment": "Send trial expiring warnings at 9:30 AM EET (7:30 UTC)"
+    },
+    {
+      "path": "/api/cron/weekly-digest",
+      "schedule": "0 8 * * 1",
+      "comment": "Send weekly digest on Mondays at 10:00 AM EET (8:00 UTC)"
     }
   ]
 }

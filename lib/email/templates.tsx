@@ -991,6 +991,107 @@ export const TrialExpiringEmail = ({ firstName, expiresAt }: { firstName: string
   </EmailWrapper>
 );
 
+// Daily Horoscope Email Template
+export const DailyHoroscopeEmail = ({
+  firstName,
+  zodiacSign,
+  horoscopeText,
+  date,
+}: {
+  firstName: string;
+  zodiacSign: string;
+  horoscopeText: string;
+  date: string;
+}) => (
+  <EmailWrapper>
+    <EmailHeader />
+    <tr>
+      <td style={{
+        backgroundColor: '#18181b',
+        padding: '40px 30px',
+        borderRadius: '12px',
+      }}>
+        <h1 style={{
+          margin: '0 0 20px 0',
+          fontSize: '28px',
+          fontWeight: 'bold',
+          color: '#ffffff',
+        }}>
+          ✨ Твоят дневен хороскоп
+        </h1>
+        <p style={{
+          margin: '0 0 8px 0',
+          fontSize: '14px',
+          color: '#a1a1aa',
+        }}>
+          {date}
+        </p>
+        <p style={{
+          margin: '0 0 16px 0',
+          fontSize: '16px',
+          lineHeight: '24px',
+          color: '#d4d4d8',
+        }}>
+          Здравей{firstName ? `, ${firstName}` : ''}!
+        </p>
+        <p style={{
+          margin: '0 0 24px 0',
+          fontSize: '16px',
+          lineHeight: '24px',
+          color: '#d4d4d8',
+        }}>
+          Ето какво подготвят звездите за теб днес като {zodiacSign}:
+        </p>
+
+        <div style={{
+          padding: '24px',
+          backgroundColor: '#27272a',
+          borderRadius: '12px',
+          borderLeft: '4px solid #8b5cf6',
+          marginBottom: '24px',
+        }}>
+          <p style={{
+            margin: 0,
+            fontSize: '16px',
+            lineHeight: '28px',
+            color: '#ffffff',
+          }}>
+            {horoscopeText}
+          </p>
+        </div>
+
+        <p style={{
+          margin: '0 0 16px 0',
+          fontSize: '16px',
+          lineHeight: '24px',
+          color: '#d4d4d8',
+        }}>
+          Искаш да разбереш повече за деня си?
+        </p>
+
+        <div style={{ textAlign: 'center' }}>
+          <Button href="https://vrachka.eu/dashboard">
+            Виж подробен хороскоп →
+          </Button>
+        </div>
+
+        <p style={{
+          margin: '24px 0 0 0',
+          padding: '16px',
+          backgroundColor: '#27272a',
+          borderRadius: '8px',
+          fontSize: '14px',
+          lineHeight: '20px',
+          color: '#a1a1aa',
+        }}>
+          💡 Изтегли таро карта на деня или попитай AI Врачката за повече насоки!
+        </p>
+      </td>
+    </tr>
+    <EmailFooter />
+  </EmailWrapper>
+);
+
 // Payment Failed Email Template
 export const PaymentFailedEmail = ({ firstName, planType, nextRetry }: { firstName: string; planType: string; nextRetry: string }) => (
   <EmailWrapper>

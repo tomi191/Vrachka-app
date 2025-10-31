@@ -72,18 +72,53 @@ export async function GET(req: NextRequest) {
             year: 'numeric'
           });
 
-          await sendSubscriptionRenewalEmail(user.user.email, {
+          const result = await sendSubscriptionRenewalEmail(user.user.email, {
             firstName: profile?.full_name?.split(' ')[0] || '',
             plan: planName,
             amount,
             renewalDate,
           });
 
-          successCount++;
-          console.log(`[Cron] Renewal reminder sent to ${user.user.email}`);
+          if (result.success) {
+            // Log successful email send
+            await supabase.rpc('log_email_sent', {
+              p_email_type: 'renewal_reminder',
+              p_recipient_email: user.user.email,
+              p_recipient_name: profile?.full_name || null,
+              p_subject: 'Твоят абонамент се удължава скоро',
+              p_template_used: 'SubscriptionRenewalEmail',
+              p_subscriber_id: null,
+              p_user_id: subscription.user_id,
+              p_metadata: {
+                plan: subscription.plan_type,
+                renewal_date: subscription.current_period_end,
+              },
+            });
+
+            successCount++;
+            console.log(`[Cron] Renewal reminder sent to ${user.user.email}`);
+          } else {
+            throw new Error('Failed to send renewal email');
+          }
         }
       } catch (emailError) {
         console.error(`[Cron] Error sending renewal reminder to user ${subscription.user_id}:`, emailError);
+
+        // Log failure to database
+        try {
+          const { data: user } = await supabase.auth.admin.getUserById(subscription.user_id);
+          if (user?.user?.email) {
+            await supabase.rpc('log_email_failure', {
+              p_email_type: 'renewal_reminder',
+              p_recipient_email: user.user.email,
+              p_error_message: emailError instanceof Error ? emailError.message : 'Unknown error',
+              p_subscriber_id: null,
+            });
+          }
+        } catch (logError) {
+          console.error('[Cron] Failed to log email failure:', logError);
+        }
+
         failureCount++;
       }
     }
