@@ -307,7 +307,7 @@ Vrachka.eu има **solid SEO foundation** с правилно structured дан
 ⚠️ **Meta Description:** Too long (176 chars)
 
 ❌ **Missing Keywords:**
-   - "таро разклад" - P1 keyword
+   - "таро подредба" - P1 keyword
    - "таро за любов" - P1 variant
 
 #### Recommendations:
@@ -413,7 +413,7 @@ Generate the following SEO metadata:
    - Array of 5-10 relevant keywords
    - Include: primary keyword, secondary keywords, long-tail variants
    - Based on SEO-KEYWORD-LIBRARY.md
-   - Example for tarot love post: ['таро за любов', 'любовно таро', 'таро разклад', 'таро четене', 'таро любов онлайн']
+   - Example for tarot love post: ['таро за любов', 'любовно таро', 'таро подредба', 'таро четене', 'таро любов онлайн']
 
 4. EXCERPT:
    - 2-3 sentences (150-200 chars)
