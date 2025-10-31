@@ -60,7 +60,7 @@ export async function POST(request: Request) {
       targetWordCount: targetWordCount || 2000,
     });
 
-    // Call OpenRouter API (Claude 3.5 Sonnet)
+    // Call OpenRouter API (Google Gemini 2.5 Pro - better Bulgarian language, natural tone)
     const openRouterResponse = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -70,15 +70,15 @@ export async function POST(request: Request) {
         'X-Title': 'Vrachka AI Blog Generator',
       },
       body: JSON.stringify({
-        model: 'anthropic/claude-3.5-sonnet',
+        model: 'google/gemini-2.5-pro',
         messages: [
           {
             role: 'user',
             content: prompt,
           },
         ],
-        temperature: 0.8, // Higher for creativity
-        max_tokens: 8000, // Enough for long articles
+        temperature: 0.8, // Higher for creativity and natural tone
+        max_tokens: 12000, // Increased for full 2000+ word articles
       }),
     });
 

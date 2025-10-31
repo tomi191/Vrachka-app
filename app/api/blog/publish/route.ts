@@ -79,7 +79,7 @@ export async function POST(request: Request) {
         status: status || 'draft',
         published_at: status === 'published' ? new Date().toISOString() : null,
         ai_generated: true,
-        model_used: 'claude-3.5-sonnet',
+        model_used: 'google/gemini-2.5-pro',
         created_by: user.id,
       })
       .select()
