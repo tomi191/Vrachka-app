@@ -101,7 +101,6 @@ export function TarotSpreadsGrid({ user, userPlan }: TarotSpreadsGridProps) {
     <>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
         {tarotSpreads.map((spread) => {
-          const Icon = spread.icon;
           const userHasAccess = user && hasAccess(userPlan, spread.plan);
           const isLocked = !userHasAccess;
 
