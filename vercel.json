@@ -1,24 +1,8 @@
 {
   "crons": [
     {
-      "path": "/api/cron/generate-horoscopes",
-      "schedule": "0 4 * * *"
-    },
-    {
-      "path": "/api/cron/send-daily-horoscope",
+      "path": "/api/cron/daily-horoscope-workflow",
       "schedule": "0 5 * * *"
-    },
-    {
-      "path": "/api/cron/renewal-reminder",
-      "schedule": "0 7 * * *"
-    },
-    {
-      "path": "/api/cron/trial-expiring",
-      "schedule": "30 7 * * *"
-    },
-    {
-      "path": "/api/cron/weekly-digest",
-      "schedule": "0 8 * * 1"
     }
   ]
 }
