@@ -42,11 +42,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }
 
   try {
-    // 3. Fetch Blog Posts
+    // 3. Fetch Blog Posts (published_at is not null = published)
     const { data: blogPosts } = await supabase
       .from('blog_posts')
       .select('slug, updated_at')
-      .eq('published', true)
+      .not('published_at', 'is', null)
     
     const blogPostRoutes = blogPosts?.map((post: any) => ({
       url: `${baseUrl}/blog/${post.slug}`,
