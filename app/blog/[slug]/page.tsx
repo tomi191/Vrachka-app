@@ -11,7 +11,6 @@ import Breadcrumbs, { generateBreadcrumbSchema } from '@/components/blog/Breadcr
 import ShareButtons from '@/components/blog/ShareButtons';
 import BackToTop from '@/components/blog/BackToTop';
 import NewsletterSubscribe from '@/components/blog/NewsletterSubscribe';
-import { TableOfContents } from '@/components/blog/TableOfContents';
 import { Navigation } from '@/components/Navigation';
 import { TopHeader } from '@/components/layout/top-header';
 import { BottomNav } from '@/components/layout/bottom-nav';
@@ -539,11 +538,6 @@ export default async function BlogPostPage({ params }: Props) {
 
             {/* Sidebar - 3 columns on large screens (narrower to give more space to content) */}
             <aside className="lg:col-span-3 space-y-6">
-              {/* Table of Contents */}
-              <div className="hidden lg:block">
-                <TableOfContents content={post.content} />
-              </div>
-
               {/* Most Popular Posts */}
               {popularPosts && popularPosts.length > 0 && (
                 <div className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800/50 rounded-lg p-6">
