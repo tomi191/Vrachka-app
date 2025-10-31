@@ -398,9 +398,9 @@ export default async function BlogPostPage({ params }: Props) {
           />
 
           {/* Two column layout: Main content + Sidebar */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            {/* Main content - 8 columns on large screens */}
-            <article className="lg:col-span-8">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
+            {/* Main content - 9 columns on large screens (wider for better readability) */}
+            <article className="lg:col-span-9">
               {/* Hero image */}
               {post.featured_image_url && (
                 <div className="w-full h-[250px] sm:h-[350px] md:h-[450px] overflow-hidden rounded-lg mb-6 sm:mb-8 shadow-2xl">
@@ -537,8 +537,8 @@ export default async function BlogPostPage({ params }: Props) {
               )}
             </article>
 
-            {/* Sidebar - 4 columns on large screens */}
-            <aside className="lg:col-span-4 space-y-6">
+            {/* Sidebar - 3 columns on large screens (narrower to give more space to content) */}
+            <aside className="lg:col-span-3 space-y-6">
               {/* Table of Contents */}
               <div className="hidden lg:block">
                 <TableOfContents content={post.content} />

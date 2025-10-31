@@ -1,8 +1,8 @@
 # 📊 VRACHKA - PROJECT STATUS (Source of Truth)
 
-**Last Updated:** 30 Октомври 2025
-**Status:** ✅ MVP Ready for Production
-**Version:** 1.0.0
+**Last Updated:** 31 Октомври 2025
+**Status:** ✅ DEPLOYED to Production (Vercel)
+**Version:** 1.1.0 - Phase 2 P0 Complete
 
 ---
 
@@ -10,14 +10,218 @@
 
 | Metric | Value |
 |--------|-------|
-| **Production Ready** | ✅ YES |
-| **Core Features** | 13 working |
+| **Production Status** | ✅ LIVE on Vercel |
+| **Current Version** | 1.1.0 - Phase 2 P0 |
+| **Core Features** | 14 working (added Moon Phase) |
 | **Advanced Features** | 3 flagship (Natal Chart, Synastry, Personal Horoscope) |
+| **Public Landing Pages** | 3 (Tarot, Natal Chart, Moon Phase) |
+| **Total Routes** | 98 routes |
 | **API Endpoints** | 40+ |
 | **Database Tables** | 25+ |
 | **AI Models** | 5 (Gemini, Claude, DeepSeek, GPT-4, Gemini Image) |
 | **Subscription Tiers** | 3 (Free/Basic/Ultimate) |
 | **Stripe Integration** | ✅ Working (Test + Production) |
+| **Build Time** | ~50 seconds |
+
+---
+
+## 🆕 PHASE 2 P0 FEATURES (JUST DEPLOYED - 31 Oct 2025)
+
+This section documents the features deployed in Version 1.1.0 - our first major update after MVP.
+
+### 🌙 Moon Phase System
+**Status:** ✅ LIVE in Production
+
+Complete moon phase tracking system with real-time calculations and personalized advice.
+
+**Features:**
+- ✅ **LiveMoonPhaseWidget** - Real-time moon phase display with spiritual meaning
+  - Current phase name and emoji (8 phases: New Moon, Waxing Crescent, First Quarter, etc.)
+  - Illumination percentage calculation
+  - Moonrise/moonset times (calculated for Sofia, Bulgaria)
+  - Spiritual meaning for each phase
+  - Personalized advice based on user's zodiac sign element (Fire/Earth/Air/Water)
+- ✅ **MoonCalendar** - Full lunar calendar view
+  - 30-day moon phase visualization
+  - Daily phase names and illumination
+  - Interactive calendar interface
+- ✅ **Public Landing Page** - `/moon-phase`
+  - SEO-optimized public page
+  - CTA for registration/subscription
+  - Educational content about moon phases
+
+**Technical Details:**
+- Library: `suncalc` for astronomical calculations
+- Location: Sofia, Bulgaria (42.6977°N, 23.3219°E) as default
+- Refresh: Real-time calculation on component mount
+- Personalization: Zodiac-based advice for 4 element groups
+
+**Files:**
+- `components/MoonPhaseWidget.tsx` - Dashboard widget
+- `components/LiveMoonPhaseWidget.tsx` - Public page widget
+- `components/MoonCalendar.tsx` - Calendar component
+- `app/moon-phase/page.tsx` - Public landing page
+- `app/(authenticated)/dashboard/page.tsx` - Integrated on dashboard
+
+**User Access:**
+- 🆓 FREE: Public page view only
+- 💙 BASIC: Dashboard widget with personalized advice
+- 👑 ULTIMATE: Full access with zodiac personalization
+
+---
+
+### 🎴 Public SEO Landing Pages
+**Status:** ✅ LIVE in Production
+
+Three new public landing pages designed for SEO and conversion optimization.
+
+**Pages:**
+1. **`/tarot`** - Tarot Readings Landing Page
+   - TarotSpreadsGrid component showcasing all 4 spread types
+   - Plan badges (🆓 FREE, 💙 BASIC, 👑 ULTIMATE)
+   - Lock indicators for premium spreads
+   - SignupPromptDialog for free users
+   - Direct links to authenticated spreads for logged-in users
+   - Images for each spread type
+
+2. **`/natal-chart`** - Natal Chart Teaser Page
+   - Educational content about natal charts
+   - Feature highlights (10 planets, 12 houses, aspects)
+   - Upgrade CTA for non-Ultimate users
+   - Direct access for Ultimate plan users
+
+3. **`/moon-phase`** - Moon Phase Landing Page
+   - LiveMoonPhaseWidget with current phase
+   - MoonCalendar with 30-day view
+   - Educational content about lunar cycles
+   - Registration CTA for personalized experience
+
+**SEO Optimization:**
+- Proper meta tags and descriptions
+- Structured data (in progress)
+- Keyword-optimized content
+- Mobile-responsive design
+- Fast loading times
+
+**Conversion Elements:**
+- Clear CTAs based on user state (logged in/out)
+- Plan-based access indicators
+- Benefit-focused messaging
+- Signup modals with feature lists
+
+**Files:**
+- `app/tarot/page.tsx` - Tarot landing
+- `app/natal-chart/page.tsx` - Natal chart landing (Ultimate teaser)
+- `app/moon-phase/page.tsx` - Moon phase landing
+- `components/tarot/TarotSpreadsGrid.tsx` - Spread showcase component
+
+---
+
+### 🗂️ Route Restructuring
+**Status:** ✅ COMPLETE
+
+Reorganized routes to clearly separate public vs authenticated pages for better SEO and UX.
+
+**Changes:**
+- `/tarot` → Public landing page (NEW)
+- `/tarot-readings` → Authenticated tarot readings (RENAMED from `/tarot`)
+- `/tarot-readings/three-card` → Three-card spread
+- `/tarot-readings/love` → Love spread (Ultimate)
+- `/tarot-readings/career` → Career spread (Ultimate)
+- `/natal-chart` → Public landing page (NEW, Ultimate teaser)
+- `/moon-phase` → Public landing page (NEW)
+
+**Benefits:**
+- Clear separation of public marketing pages vs app features
+- Better for SEO (public pages indexable)
+- Improved navigation structure
+- Easier to add more public content pages
+
+**Files Updated:**
+- `components/layout/bottom-nav.tsx` - Updated navigation links
+- `components/layout/mobile-menu.tsx` - Updated menu structure
+- `components/tarot/TarotSpreadsGrid.tsx` - Updated spread URLs
+- All tarot reading components - Updated internal links
+
+---
+
+### 🎨 UX Improvements
+**Status:** ✅ LIVE in Production
+
+Multiple user experience enhancements based on usability testing.
+
+**Improvements:**
+1. **Darker Dropdown Menus**
+   - Changed from `mystic-800` to `mystic-950` backgrounds
+   - Better contrast and readability
+   - Reduced eye strain in dark mode
+   - Files: `components/layout/user-dropdown.tsx`, `components/layout/mobile-menu.tsx`
+
+2. **Enhanced Signup Prompts**
+   - New `SignupPromptDialog` component with rich benefit lists
+   - Feature-specific messaging (e.g., "Безплатна Таро Карта Всеки Ден")
+   - Emoji-enhanced benefit bullets
+   - Clear call-to-action buttons
+   - File: `components/auth/SignupPromptDialog.tsx`
+
+3. **Plan-Based Access Control Improvements**
+   - Visual lock indicators on premium content
+   - Plan badges on all feature cards
+   - Clear upgrade prompts with benefit explanations
+   - "Unlock" buttons redirect to appropriate pages (pricing vs registration)
+
+4. **Mobile Menu Enhancements**
+   - Improved animation (slide-in from right)
+   - Backdrop blur effect
+   - Better touch targets
+   - Organized sections (Content, Account)
+
+**Files:**
+- `components/auth/SignupPromptDialog.tsx` - New reusable signup modal
+- `components/layout/user-dropdown.tsx` - Darker dropdown
+- `components/layout/mobile-menu.tsx` - Enhanced mobile navigation
+- `components/tarot/TarotSpreadsGrid.tsx` - Plan-based access UI
+
+---
+
+### 🚀 Production Deployment
+**Status:** ✅ DEPLOYED to Vercel
+
+Successfully deployed to production after fixing build errors.
+
+**Deployment Details:**
+- **Platform:** Vercel
+- **Build Time:** ~50 seconds
+- **Total Routes:** 98 routes
+- **Build Status:** ✅ SUCCESS
+- **Date:** 31 October 2025
+
+**Build Fixes:**
+Three TypeScript errors fixed during deployment:
+
+1. **Dashboard Type Error** (`app/(authenticated)/dashboard/page.tsx:60`)
+   - Fixed: ZodiacSign type casting to allow `undefined`
+   - Commit: `cfd83da`
+
+2. **MoonPhaseWidget Import Error** (`components/MoonPhaseWidget.tsx:8`)
+   - Fixed: Wrong ZodiacSign type import path
+   - Changed from `/lib/constants/zodiac` to `/lib/zodiac`
+   - Commit: `f88d57d`
+
+3. **TarotSpreadsGrid Property Error** (`components/tarot/TarotSpreadsGrid.tsx:104`)
+   - Fixed: Removed unused `spread.icon` property access
+   - Commit: `4e08950`
+
+**Build Warnings:**
+- ~160 ESLint warnings (unused imports, `any` types, image optimization)
+- **Status:** Ignored for now (non-blocking, will address in Phase 2 P1)
+- All warnings are non-critical and don't affect functionality
+
+**Environment:**
+- Production Supabase database
+- Production Stripe keys (test mode for initial testing)
+- All AI providers configured
+- Email service (Resend) connected
 
 ---
 
@@ -659,19 +863,26 @@ supabase/
 ## 🚀 DEPLOYMENT STATUS
 
 ### Current Deployment
-- **Platform:** Not yet deployed (local development)
-- **Target:** Vercel (Next.js hosting)
-- **Database:** Supabase (production ready)
-- **Payments:** Stripe (test mode configured, production ready)
+- **Platform:** ✅ Vercel (LIVE)
+- **Status:** Production - Version 1.1.0
+- **Deployment Date:** 31 October 2025
+- **Database:** Supabase (production)
+- **Payments:** Stripe (configured, test mode for now)
+- **Build Time:** ~50 seconds
+- **Routes:** 98 total
+- **Environment:** All environment variables configured
 
-### Pre-Deployment Checklist
+### Deployment Checklist
 - ✅ MVP features working
+- ✅ Phase 2 P0 features deployed
 - ✅ Database schema complete
 - ✅ RLS policies in place
 - ✅ Stripe integration tested
-- ⚠️ Vercel Cron configuration needed
-- ⚠️ Production environment variables needed
-- ⚠️ Domain setup needed
+- ✅ Production environment variables configured
+- ✅ Vercel deployment successful
+- ⚠️ Vercel Cron configuration needed (Phase 2 P1)
+- ⚠️ Custom domain setup (planned)
+- ⚠️ Stripe production mode activation (after testing)
 
 ### Required Environment Variables
 ```env
@@ -894,6 +1105,15 @@ NEXT_PUBLIC_APP_URL=
 ---
 
 ## 🔄 UPDATE LOG
+
+**31 Oct 2025:** 🚀 Phase 2 P0 DEPLOYED to Vercel Production
+- Added Moon Phase System (LiveMoonPhaseWidget, MoonCalendar, public page)
+- Added 3 public SEO landing pages (/tarot, /natal-chart, /moon-phase)
+- Route restructuring (separated public vs authenticated routes)
+- UX improvements (darker dropdowns, enhanced signup prompts)
+- Fixed 3 TypeScript build errors
+- Successfully deployed 98 routes to Vercel
+- Updated version to 1.1.0
 
 **30 Oct 2025:** Initial PROJECT-STATUS.md created based on comprehensive codebase analysis
 

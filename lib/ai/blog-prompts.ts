@@ -75,16 +75,16 @@ IMAGE MARKERS (ЗАДЪЛЖИТЕЛНО):
 ФОРМАТ НА OUTPUT:
 Генерирай съдържанието в HTML format с:
 - <!-- HERO_IMAGE --> в началото
-- <h2> за подзаглавия (КРАТКИ И ЯСНИ за TOC!)
+- <h2> за подзаглавия (КРАТКИ И ЯСНИ - ще се използват за Table of Contents!)
 - ЗАДЪЛЖИТЕЛНО: Всеки H2 елемент трябва да бъде последван от поне един <p> елемент.
 - <p> за параграфи
 - <ul>/<ol> за bullets/lists
 - <strong> за emphasis (рядко!)
 - <a href="/path">text</a> за internal links
-- <!-- TOC --> веднага след Hook въведението (за auto-generated table of contents)
 - <!-- VRACHKA:quote:текст --> за експертни цитати
 - <!-- IMAGE:1 --> и <!-- IMAGE:2 --> маркери (с двоеточие!)
 - Няма <h1> - заглавието идва отделно
+- НЕ ВКЛЮЧВАЙ <!-- TOC --> marker - Table of Contents се генерира автоматично
 
 НЕ ВКЛЮЧВАЙ image URL-и - само маркери (HERO_IMAGE, IMAGE:1, IMAGE:2) където посочих.`;
 

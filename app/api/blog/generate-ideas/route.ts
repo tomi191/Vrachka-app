@@ -220,15 +220,11 @@ export async function POST(req: NextRequest) {
       // Don't fail the request if database save fails - ideas are still returned
     }
 
+    // Return structured response
     return NextResponse.json({
       success: true,
-      ideas,
-      metadata: {
-        count: ideas.length,
-        model: 'Claude 3 Haiku',
-        cost: 0.0002,
-        saved: true,
-      },
+      ideas: generatedIdeas,
+      generationTime,
     });
   } catch (error) {
     console.error('Blog ideas generation error:', error);
