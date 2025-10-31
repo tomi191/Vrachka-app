@@ -83,7 +83,7 @@ export async function sendEmail(options: SendEmailOptions): Promise<SendEmailRes
 
   try {
     // Render React template to HTML
-    const html = render(template);
+    const html = await render(template);
 
     // Send email via Resend with retry logic
     const result = await sendWithRetry({
