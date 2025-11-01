@@ -126,11 +126,28 @@ export default async function BlogPostPage({ params }: Props) {
 
   // Remove old inline table of contents from legacy posts
   const removeOldTableOfContents = (htmlContent: string) => {
-    // Remove old styled TOC blocks with inline styles
-    return htmlContent.replace(
-      /<div\s+style="[^"]*">\s*<h2[^>]*>В тази статия:<\/h2>\s*<ol>[\s\S]*?<\/ol>\s*<\/div>/gi,
+    // Remove all old styled TOC blocks with inline styles
+    let cleaned = htmlContent;
+
+    // Pattern 1: "В тази статия:" format
+    cleaned = cleaned.replace(
+      /<div\s+style="[^"]*">\s*<h2[^>]*>В тази статия:<\/h2>\s*<ol[\s\S]*?<\/ol>\s*<\/div>/gi,
       ''
     );
+
+    // Pattern 2: "В тази статия ще разгледаме:" format
+    cleaned = cleaned.replace(
+      /<div\s+style="[^"]*">\s*<h2[^>]*>В тази статия ще разгледаме:<\/h2>\s*<ol[\s\S]*?<\/ol>\s*<\/div>/gi,
+      ''
+    );
+
+    // Pattern 3: Any TOC with inline styles (catch-all)
+    cleaned = cleaned.replace(
+      /<div\s+style="padding:\s*20px[^"]*">\s*<h2[^>]*>В тази статия[^<]*<\/h2>\s*<ol[\s\S]*?<\/ol>\s*<\/div>/gi,
+      ''
+    );
+
+    return cleaned;
   };
 
   // Process Vrachka expert quotes
