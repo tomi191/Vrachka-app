@@ -4,6 +4,12 @@ import { Footer } from "@/components/Footer";
 import { GradientText } from "@/components/ui/gradient-text";
 import Link from "next/link";
 
+export const metadata = {
+  title: "Политика за поверителност | Vrachka",
+  description: "Научи как Vrachka защитава твоята лична информация и зачита твоята поверителност. GDPR съвместима политика.",
+  keywords: ['политика за поверителност', 'GDPR', 'защита на данни', 'лични данни'],
+};
+
 export default function PrivacyPage() {
   return (
     <div className="min-h-screen bg-gradient-dark">

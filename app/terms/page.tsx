@@ -4,6 +4,12 @@ import { Footer } from "@/components/Footer";
 import { GradientText } from "@/components/ui/gradient-text";
 import Link from "next/link";
 
+export const metadata = {
+  title: "Общи условия за ползване | Vrachka",
+  description: "Прочети общите условия за ползване на Vrachka - правила, отговорности и условия за използване на нашата астрологична платформа.",
+  keywords: ['общи условия', 'правила', 'условия за ползване', 'terms of service'],
+};
+
 export default function TermsPage() {
   return (
     <div className="min-h-screen bg-gradient-dark">
