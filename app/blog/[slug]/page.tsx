@@ -25,7 +25,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const supabase = await createClient();
   const { data: post } = await supabase
     .from('blog_posts')
-    .select('title, meta_title, meta_description, og_image_url, keywords')
+    .select('title, meta_title, meta_description, excerpt, featured_image_url, keywords')
     .eq('slug', slug)
     .eq('status', 'published')
     .single();
@@ -34,14 +34,25 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     return { title: 'Статия не е намерена | Vrachka' };
   }
 
+  // Use hero image as OG image for social sharing
+  const ogImage = post.featured_image_url || '/og-image-blog.png';
+
   return {
     title: post.meta_title || post.title,
-    description: post.meta_description || undefined,
+    description: post.meta_description || post.excerpt || undefined,
     keywords: post.keywords?.join(', '),
     openGraph: {
       title: post.meta_title || post.title,
-      description: post.meta_description || undefined,
-      images: post.og_image_url ? [post.og_image_url] : [],
+      description: post.meta_description || post.excerpt || undefined,
+      images: [ogImage],
+      type: 'article',
+      url: `https://vrachka.eu/blog/${slug}`,
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: post.meta_title || post.title,
+      description: post.meta_description || post.excerpt || undefined,
+      images: [ogImage],
     },
   };
 }
