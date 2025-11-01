@@ -163,11 +163,11 @@ export default async function NumerologyPage() {
   const { data: { user } } = await supabase.auth.getUser();
 
   return (
-    <>
+    <div className="min-h-screen bg-brand-950 relative">
       <Navigation user={user} />
       <MysticBackground />
-      <div className="min-h-screen bg-brand-950 relative pt-24">
 
+      <div className="relative z-10 pt-24">
         {/* Hero Section */}
         <section className="relative py-20 px-4 overflow-hidden">
 
@@ -478,7 +478,8 @@ export default async function NumerologyPage() {
           </div>
         </section>
       </div>
+
       <Footer />
-    </>
+    </div>
   );
 }

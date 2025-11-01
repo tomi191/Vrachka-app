@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Lock, ArrowLeft, Loader2, CheckCircle, Eye, EyeOff } from 'lucide-react';
 import Link from 'next/link';
+import { MysticBackground } from '@/components/background/MysticBackground';
 
 export default function ResetPasswordPage() {
   const router = useRouter();
@@ -74,8 +75,9 @@ export default function ResetPasswordPage() {
 
   if (success) {
     return (
-      <div className="min-h-screen bg-gradient-dark flex items-center justify-center p-4">
-        <div className="max-w-md w-full">
+      <div className="min-h-screen bg-brand-950 relative flex items-center justify-center p-4">
+        <MysticBackground />
+        <div className="max-w-md w-full relative z-10">
           <div className="glass-card p-8 text-center">
             {/* Success Icon */}
             <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-green-500/20 mb-6">
@@ -104,8 +106,9 @@ export default function ResetPasswordPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-dark flex items-center justify-center p-4">
-      <div className="max-w-md w-full">
+    <div className="min-h-screen bg-brand-950 relative flex items-center justify-center p-4">
+      <MysticBackground />
+      <div className="max-w-md w-full relative z-10">
         {/* Back Button */}
         <Link
           href="/auth/login"

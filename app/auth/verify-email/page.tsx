@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation';
 import { Metadata } from 'next';
 import { Mail, Sparkles, RefreshCw, CheckCircle } from 'lucide-react';
 import Link from 'next/link';
+import { MysticBackground } from '@/components/background/MysticBackground';
 
 export const metadata: Metadata = {
   title: 'Потвърди Email',
@@ -34,8 +35,9 @@ export default async function VerifyEmailPage({
   const params = await searchParams;
 
   return (
-    <div className="min-h-screen bg-gradient-dark flex items-center justify-center p-4">
-      <div className="max-w-md w-full">
+    <div className="min-h-screen bg-brand-950 relative flex items-center justify-center p-4">
+      <MysticBackground />
+      <div className="max-w-md w-full relative z-10">
         <div className="glass-card p-8 text-center">
           {/* Icon */}
           <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-accent-500/20 mb-6">

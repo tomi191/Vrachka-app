@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { MysticBackground } from "@/components/background/MysticBackground";
 
 export const dynamic = 'force-dynamic';
 
@@ -69,7 +70,8 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-brand-950 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-brand-950 relative flex items-center justify-center p-4">
+      <MysticBackground />
       <div className="w-full max-w-md space-y-6 animate-fade-in">
         {/* Logo */}
         <div className="text-center space-y-2">

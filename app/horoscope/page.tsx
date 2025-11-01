@@ -153,7 +153,7 @@ export default async function HoroscopePage() {
   const { data: { user } } = await supabase.auth.getUser();
 
   return (
-    <>
+    <div className="min-h-screen bg-brand-950 relative">
       <StructuredData data={breadcrumbData} />
 
       {/* Desktop: Navigation with Profile dropdown */}
@@ -168,7 +168,7 @@ export default async function HoroscopePage() {
 
       <MysticBackground />
 
-      <div className="min-h-screen bg-gradient-dark">
+      <div className="relative z-10">
         {/* Hero Section */}
         <div className="container mx-auto px-4 pt-32 pb-16">
           <div className="text-center mb-12">
@@ -348,6 +348,6 @@ export default async function HoroscopePage() {
 
       {/* Bottom Navigation - mobile only for logged-in users */}
       {user && <BottomNav />}
-    </>
+    </div>
   )
 }

@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Mail, ArrowLeft, Loader2, CheckCircle } from 'lucide-react';
 import Link from 'next/link';
+import { MysticBackground } from '@/components/background/MysticBackground';
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('');
@@ -41,8 +42,9 @@ export default function ForgotPasswordPage() {
 
   if (success) {
     return (
-      <div className="min-h-screen bg-gradient-dark flex items-center justify-center p-4">
-        <div className="max-w-md w-full">
+      <div className="min-h-screen bg-brand-950 relative flex items-center justify-center p-4">
+        <MysticBackground />
+        <div className="max-w-md w-full relative z-10">
           <div className="glass-card p-8 text-center">
             {/* Success Icon */}
             <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-green-500/20 mb-6">
@@ -87,8 +89,9 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-dark flex items-center justify-center p-4">
-      <div className="max-w-md w-full">
+    <div className="min-h-screen bg-brand-950 relative flex items-center justify-center p-4">
+      <MysticBackground />
+      <div className="max-w-md w-full relative z-10">
         {/* Back Button */}
         <Link
           href="/auth/login"
