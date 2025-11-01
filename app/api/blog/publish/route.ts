@@ -1,6 +1,10 @@
 import { createClient } from '@/lib/supabase/server';
 import { NextResponse } from 'next/server';
 import { linkImagesToPost } from '@/lib/supabase/blog-images';
+import { getViberService } from '@/lib/viber/viber-service';
+import { createBlogNotificationMessage } from '@/lib/viber/templates/blog-notification';
+import { logViberNotification, hasExistingNotification } from '@/lib/viber/viber-logger';
+import type { BlogPostNotificationData } from '@/lib/viber/types';
 
 export async function POST(request: Request) {
   try {
@@ -134,6 +138,48 @@ export async function POST(request: Request) {
       } catch (linkError) {
         console.error('[Blog Publish] Failed to link images:', linkError);
         // Don't fail the whole request if linking fails
+      }
+    }
+
+    // Send Viber notification for published posts
+    if (status === 'published') {
+      try {
+        // Check if notification already sent (prevent duplicates)
+        const alreadyNotified = await hasExistingNotification(blogPost.id);
+
+        if (alreadyNotified) {
+          console.log('[Blog Publish] Viber notification already sent for this post');
+        } else {
+          const viberService = getViberService();
+
+          if (viberService) {
+            const notificationData: BlogPostNotificationData = {
+              id: blogPost.id,
+              title: blogPost.title,
+              excerpt: blogPost.excerpt || '',
+              slug: blogPost.slug,
+              featured_image_url: blogPost.featured_image_url,
+              category: blogPost.category,
+            };
+
+            const message = createBlogNotificationMessage(notificationData);
+            const result = await viberService.postToChannel(message);
+
+            // Log the result to database
+            await logViberNotification(notificationData, result);
+
+            if (result.success) {
+              console.log('[Blog Publish] Viber notification sent successfully');
+            } else {
+              console.error('[Blog Publish] Viber notification failed:', result.error);
+            }
+          } else {
+            console.log('[Blog Publish] Viber service not configured - skipping notification');
+          }
+        }
+      } catch (viberError) {
+        // Log error but don't fail the publish
+        console.error('[Blog Publish] Viber notification error:', viberError);
       }
     }
 
