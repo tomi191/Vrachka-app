@@ -129,7 +129,7 @@ export function Navigation({ user }: NavigationProps) {
                         Нумерология
                       </Link>
                       <Link
-                        href="/life-path-number"
+                        href="/numerology/life-path-number"
                         className="flex items-center gap-3 px-4 py-2 text-sm text-zinc-400 hover:bg-mystic-900 hover:text-zinc-50 transition-colors"
                         onClick={() => setNumerologyDropdownOpen(false)}
                       >
@@ -304,7 +304,7 @@ export function Navigation({ user }: NavigationProps) {
             Нумерология
           </Link>
           <Link
-            href="/life-path-number"
+            href="/numerology/life-path-number"
             className="text-zinc-400 hover:text-zinc-50 transition-colors py-2"
             onClick={closeMobileMenu}
           >

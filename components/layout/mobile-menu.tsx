@@ -28,7 +28,7 @@ const menuSections = {
     { name: "Блог", href: "/blog", icon: BookOpen },
     { name: "Хороскопи", href: "/horoscope", icon: Stars },
     { name: "Нумерология", href: "/numerology", icon: Calculator },
-    { name: "Лично число", href: "/life-path-number", icon: Sparkles },
+    { name: "Лично число", href: "/numerology/life-path-number", icon: Sparkles },
     { name: "За нас", href: "/about", icon: Info },
     { name: "Контакти", href: "/contact", icon: Mail },
   ],

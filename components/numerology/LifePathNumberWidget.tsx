@@ -148,7 +148,7 @@ export default function LifePathNumberWidget({
         {/* Public Calculator Link */}
         <div className="mt-3 text-center">
           <Link
-            href="/life-path-number"
+            href="/numerology/life-path-number"
             className="text-xs text-zinc-500 hover:text-zinc-400 transition-colors inline-flex items-center gap-1"
           >
             <Calculator className="w-3 h-3" />
