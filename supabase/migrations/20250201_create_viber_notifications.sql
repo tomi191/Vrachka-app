@@ -70,14 +70,47 @@ CREATE POLICY "Admins can view all viber notifications"
     )
   );
 
--- Only system/service role can insert notifications
+-- Admin users can insert notifications (for blog publishing)
+CREATE POLICY "Admins can insert viber notifications"
+  ON viber_notifications
+  FOR INSERT
+  TO authenticated
+  WITH CHECK (
+    EXISTS (
+      SELECT 1 FROM profiles
+      WHERE profiles.id = auth.uid()
+      AND profiles.is_admin = true
+    )
+  );
+
+-- Service role can also insert notifications
 CREATE POLICY "Service role can insert viber notifications"
   ON viber_notifications
   FOR INSERT
   TO service_role
   WITH CHECK (true);
 
--- Only system/service role can update notifications (for retry logic)
+-- Admin users can update notifications (for retry logic)
+CREATE POLICY "Admins can update viber notifications"
+  ON viber_notifications
+  FOR UPDATE
+  TO authenticated
+  USING (
+    EXISTS (
+      SELECT 1 FROM profiles
+      WHERE profiles.id = auth.uid()
+      AND profiles.is_admin = true
+    )
+  )
+  WITH CHECK (
+    EXISTS (
+      SELECT 1 FROM profiles
+      WHERE profiles.id = auth.uid()
+      AND profiles.is_admin = true
+    )
+  );
+
+-- Service role can also update notifications
 CREATE POLICY "Service role can update viber notifications"
   ON viber_notifications
   FOR UPDATE

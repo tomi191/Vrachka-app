@@ -83,28 +83,44 @@ export class ViberService {
   }
 
   /**
-   * Post a message to the Viber channel
+   * Post a message to the Viber channel using Broadcast API
+   * (doesn't require webhook setup)
    */
   async postToChannel(
     message: Omit<ViberPostRequest, 'from'>
   ): Promise<SendNotificationResult> {
     try {
-      // Ensure we have the channel ID
-      const channelId = await this.ensureChannelId();
+      // Get channel subscribers
+      const subscribers = await this.getChannelSubscribers();
 
-      const request: ViberPostRequest = {
-        ...message,
-        from: channelId,
+      if (subscribers.length === 0) {
+        return {
+          success: false,
+          error: 'No subscribers found in the channel',
+        };
+      }
+
+      // Use broadcast API instead of post (doesn't require webhook)
+      const broadcastRequest = {
+        broadcast_list: subscribers,
+        type: message.type,
+        text: message.text,
+        media: message.media,
+        rich_media: message.rich_media,
+        keyboard: message.keyboard,
+        tracking_data: message.tracking_data,
+        min_api_version: 7, // Minimum API version for rich media
       };
 
       const response = await this.makeRequestWithRetry<ViberAPIResponse>(
-        'post',
-        request
+        'broadcast_message',
+        broadcastRequest
       );
 
       if (response.status === 0) {
-        console.log('[Viber Service] Message posted successfully:', {
+        console.log('[Viber Service] Broadcast sent successfully:', {
           messageToken: response.message_token,
+          subscriberCount: subscribers.length,
         });
 
         return {
@@ -126,12 +142,37 @@ export class ViberService {
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : 'Unknown error';
-      console.error('[Viber Service] Failed to post to channel:', errorMessage);
+      console.error('[Viber Service] Failed to broadcast to channel:', errorMessage);
 
       return {
         success: false,
         error: errorMessage,
       };
+    }
+  }
+
+  /**
+   * Get all channel subscribers (needed for broadcast)
+   */
+  private async getChannelSubscribers(): Promise<string[]> {
+    try {
+      const channelId = await this.ensureChannelId();
+
+      // Get account info which includes subscribers
+      const accountInfo = await this.getAccountInfo();
+
+      // For channels, we need to get subscribers via the API
+      // Note: Viber doesn't provide a direct way to get all subscriber IDs
+      // We'll use the channel members as a fallback
+      const members = accountInfo.members || [];
+      const subscriberIds = members.map((member) => member.id);
+
+      console.log('[Viber Service] Found subscribers:', subscriberIds.length);
+
+      return subscriberIds;
+    } catch (error) {
+      console.error('[Viber Service] Failed to get subscribers:', error);
+      return [];
     }
   }
 
