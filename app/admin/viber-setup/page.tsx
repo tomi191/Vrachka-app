@@ -128,7 +128,7 @@ export default function ViberSetupPage() {
               </div>
             ) : (
               <p className="text-sm text-muted-foreground">
-                Click "Check Status" to see current webhook configuration
+                Click &quot;Check Status&quot; to see current webhook configuration
               </p>
             )}
           </div>
@@ -182,9 +182,9 @@ export default function ViberSetupPage() {
           <div className="border-t pt-6 space-y-3">
             <h3 className="text-lg font-semibold">Setup Instructions</h3>
             <ol className="list-decimal list-inside space-y-2 text-sm text-muted-foreground">
-              <li>Click "Check Status" to see current webhook configuration</li>
+              <li>Click &quot;Check Status&quot; to see current webhook configuration</li>
               <li>
-                If not configured, click "Setup Webhook" to configure it (one-time setup)
+                If not configured, click &quot;Setup Webhook&quot; to configure it (one-time setup)
               </li>
               <li>
                 After successful setup, test by publishing a new blog post from{' '}
@@ -201,14 +201,14 @@ export default function ViberSetupPage() {
             <h3 className="text-lg font-semibold">Troubleshooting</h3>
             <div className="text-sm text-muted-foreground space-y-2">
               <p>
-                <strong>Error: "Unauthorized"</strong> - You must be logged in as an admin
+                <strong>Error: &quot;Unauthorized&quot;</strong> - You must be logged in as an admin
               </p>
               <p>
-                <strong>Error: "Viber service not configured"</strong> - Check that
+                <strong>Error: &quot;Viber service not configured&quot;</strong> - Check that
                 VIBER_AUTH_TOKEN is set in .env.local
               </p>
               <p>
-                <strong>Error: "Webhook URL must use HTTPS"</strong> - Make sure
+                <strong>Error: &quot;Webhook URL must use HTTPS&quot;</strong> - Make sure
                 NEXT_PUBLIC_BASE_URL starts with https://
               </p>
               <p>
