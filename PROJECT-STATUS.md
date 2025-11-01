@@ -2,7 +2,7 @@
 
 **Last Updated:** 1 Ноември 2025
 **Status:** ✅ DEPLOYED to Production (Vercel)
-**Version:** 1.3.0 - SEO Manager + Blog OG Images
+**Version:** 1.3.1 - Horoscope CTA Redesign
 
 ---
 
@@ -1646,7 +1646,35 @@ NEXT_PUBLIC_APP_URL=
 
 ## 🔄 UPDATE LOG
 
-**1 Nov 2025:** 🔍 SEO Manager System + Blog OG Images - Version 1.3.0
+**1 Nov 2025 (Evening):** 🎨 Horoscope CTA Redesign - Version 1.3.1
+- **Horoscope CTA Section:** Redesigned for better UX and consistency
+  - ✅ Replaced overly bright gradient background with glass-card design
+  - ✅ Added subtle gradient overlay (purple/pink at 10% opacity)
+  - ✅ Added "✨ AI Персонализация" badge for emphasis
+  - ✅ Simplified heading: "Твоят Персонален Хороскоп"
+  - ✅ Shortened description for better readability
+  - ✅ Removed ShimmerButton, replaced with standard gradient Button
+  - ✅ Improved button contrast and hover states
+  - ✅ Larger button sizes (py-6) for better mobile UX
+  - ✅ Better spacing and responsive design
+
+- **Visual Improvements:**
+  - Consistent with other page sections (glass-card style)
+  - Better readability and contrast
+  - Professional appearance vs previous "flashy" design
+  - Maintains brand colors while being more subtle
+
+- **File Modified:**
+  - `app/horoscope/[sign]/page.tsx:543-583` - Complete CTA section redesign
+
+- **Build Status:** ✅ SUCCESS (107 pages generated)
+- **Git Commit:** bd83684
+- **Impact:**
+  - +Better visual consistency across horoscope pages
+  - +Improved readability and user engagement
+  - +Professional appearance suitable for all zodiac pages
+
+**1 Nov 2025 (Morning):** 🔍 SEO Manager System + Blog OG Images - Version 1.3.0
 - **SEO Manager System:** Complete metadata management with AI regeneration
   - ✅ `lib/seo/keyword-library.ts` - Parse 690+ keywords from SEO library
   - ✅ `lib/seo/score-calculator.ts` - 0-100 scoring with 7 factors
