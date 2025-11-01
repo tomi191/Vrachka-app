@@ -166,13 +166,10 @@ export default async function NumerologyPage() {
     <>
       <Navigation user={user} />
       <MysticBackground />
-      <div className="min-h-screen bg-gradient-dark relative pt-24">
+      <div className="min-h-screen bg-brand-950 relative pt-24">
 
         {/* Hero Section */}
         <section className="relative py-20 px-4 overflow-hidden">
-          {/* Background Effects */}
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,rgba(168,85,247,0.15),transparent_50%)]" />
-          <div className="absolute inset-0 bg-grid-zinc-800/50 [mask-image:radial-gradient(ellipse_at_center,black_20%,transparent_70%)]" />
 
           <div className="max-w-4xl mx-auto relative z-10 text-center space-y-8">
             {/* Badge */}
