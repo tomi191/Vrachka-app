@@ -83,44 +83,38 @@ export class ViberService {
   }
 
   /**
-   * Post a message to the Viber channel using Broadcast API
-   * (doesn't require webhook setup)
+   * Post a message to the Viber channel feed
+   * Requires webhook setup (use setWebhook() first if not configured)
    */
   async postToChannel(
     message: Omit<ViberPostRequest, 'from'>
   ): Promise<SendNotificationResult> {
     try {
-      // Get channel subscribers
-      const subscribers = await this.getChannelSubscribers();
+      // Ensure we have the channel ID
+      const channelId = await this.ensureChannelId();
 
-      if (subscribers.length === 0) {
-        return {
-          success: false,
-          error: 'No subscribers found in the channel',
-        };
-      }
-
-      // Use broadcast API instead of post (doesn't require webhook)
-      const broadcastRequest = {
-        broadcast_list: subscribers,
+      // Use /pa/post endpoint to post to channel feed
+      const postRequest = {
+        from: channelId,
         type: message.type,
         text: message.text,
         media: message.media,
         rich_media: message.rich_media,
         keyboard: message.keyboard,
         tracking_data: message.tracking_data,
+        alt_text: message.alt_text,
         min_api_version: 7, // Minimum API version for rich media
       };
 
       const response = await this.makeRequestWithRetry<ViberAPIResponse>(
-        'broadcast_message',
-        broadcastRequest
+        'post',
+        postRequest
       );
 
       if (response.status === 0) {
-        console.log('[Viber Service] Broadcast sent successfully:', {
+        console.log('[Viber Service] Post published to channel successfully:', {
           messageToken: response.message_token,
-          subscriberCount: subscribers.length,
+          channelId,
         });
 
         return {
@@ -134,6 +128,16 @@ export class ViberService {
       const error = `Viber API error ${response.status}: ${response.status_message}`;
       console.error('[Viber Service]', error);
 
+      // Provide helpful message for webhook error
+      if (response.status === 10) {
+        console.error('[Viber Service] Webhook not set. Please run setWebhook() first.');
+        return {
+          success: false,
+          error: `${error} - Webhook not configured. Please set up webhook first.`,
+          details: response,
+        };
+      }
+
       return {
         success: false,
         error,
@@ -142,7 +146,7 @@ export class ViberService {
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : 'Unknown error';
-      console.error('[Viber Service] Failed to broadcast to channel:', errorMessage);
+      console.error('[Viber Service] Failed to post to channel:', errorMessage);
 
       return {
         success: false,
@@ -152,27 +156,70 @@ export class ViberService {
   }
 
   /**
-   * Get all channel subscribers (needed for broadcast)
+   * Set webhook URL for Viber API
+   * This is required to enable the /pa/post endpoint
+   *
+   * @param webhookUrl - Full HTTPS URL to your webhook endpoint
+   * @param eventTypes - Array of event types to subscribe to (default: ['subscribed', 'unsubscribed'])
    */
-  private async getChannelSubscribers(): Promise<string[]> {
+  async setWebhook(
+    webhookUrl: string,
+    eventTypes: string[] = ['subscribed', 'unsubscribed']
+  ): Promise<{ success: boolean; error?: string }> {
     try {
-      const channelId = await this.ensureChannelId();
+      if (!webhookUrl.startsWith('https://')) {
+        return {
+          success: false,
+          error: 'Webhook URL must use HTTPS with a valid SSL certificate',
+        };
+      }
 
-      // Get account info which includes subscribers
+      const response = await this.makeRequest<ViberAPIResponse>(
+        'set_webhook',
+        {
+          url: webhookUrl,
+          event_types: eventTypes,
+          send_name: true,
+          send_photo: true,
+        }
+      );
+
+      if (response.status === 0) {
+        console.log('[Viber Service] Webhook set successfully:', webhookUrl);
+        return { success: true };
+      }
+
+      const error = `Failed to set webhook: ${response.status_message}`;
+      console.error('[Viber Service]', error);
+      return { success: false, error };
+
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      console.error('[Viber Service] Failed to set webhook:', errorMessage);
+      return { success: false, error: errorMessage };
+    }
+  }
+
+  /**
+   * Get current webhook info
+   */
+  async getWebhookInfo(): Promise<{
+    success: boolean;
+    webhookUrl?: string;
+    eventTypes?: string[];
+    error?: string;
+  }> {
+    try {
       const accountInfo = await this.getAccountInfo();
 
-      // For channels, we need to get subscribers via the API
-      // Note: Viber doesn't provide a direct way to get all subscriber IDs
-      // We'll use the channel members as a fallback
-      const members = accountInfo.members || [];
-      const subscriberIds = members.map((member) => member.id);
-
-      console.log('[Viber Service] Found subscribers:', subscriberIds.length);
-
-      return subscriberIds;
+      return {
+        success: true,
+        webhookUrl: accountInfo.webhook,
+        eventTypes: accountInfo.event_types,
+      };
     } catch (error) {
-      console.error('[Viber Service] Failed to get subscribers:', error);
-      return [];
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      return { success: false, error: errorMessage };
     }
   }
 
