@@ -16,18 +16,18 @@ interface ZodiacSign {
 }
 
 const ZODIAC_SIGNS: ZodiacSign[] = [
-  { sign: 'aries', emoji: '♈', nameBg: 'Овен', color: '#E74C3C' },
-  { sign: 'taurus', emoji: '♉', nameBg: 'Телец', color: '#27AE60' },
-  { sign: 'gemini', emoji: '♊', nameBg: 'Близнаци', color: '#F39C12' },
-  { sign: 'cancer', emoji: '♋', nameBg: 'Рак', color: '#95A5A6' },
-  { sign: 'leo', emoji: '♌', nameBg: 'Лъв', color: '#E67E22' },
-  { sign: 'virgo', emoji: '♍', nameBg: 'Дева', color: '#16A085' },
-  { sign: 'libra', emoji: '♎', nameBg: 'Везни', color: '#2980B9' },
-  { sign: 'scorpio', emoji: '♏', nameBg: 'Скорпион', color: '#8E44AD' },
-  { sign: 'sagittarius', emoji: '♐', nameBg: 'Стрелец', color: '#C0392B' },
-  { sign: 'capricorn', emoji: '♑', nameBg: 'Козирог', color: '#34495E' },
-  { sign: 'aquarius', emoji: '♒', nameBg: 'Водолей', color: '#3498DB' },
-  { sign: 'pisces', emoji: '♓', nameBg: 'Риби', color: '#9B59B6' },
+  { sign: 'oven', emoji: '♈', nameBg: 'Овен', color: '#E74C3C' },
+  { sign: 'telec', emoji: '♉', nameBg: 'Телец', color: '#27AE60' },
+  { sign: 'bliznaci', emoji: '♊', nameBg: 'Близнаци', color: '#F39C12' },
+  { sign: 'rak', emoji: '♋', nameBg: 'Рак', color: '#95A5A6' },
+  { sign: 'lav', emoji: '♌', nameBg: 'Лъв', color: '#E67E22' },
+  { sign: 'deva', emoji: '♍', nameBg: 'Дева', color: '#16A085' },
+  { sign: 'vezni', emoji: '♎', nameBg: 'Везни', color: '#2980B9' },
+  { sign: 'skorpion', emoji: '♏', nameBg: 'Скорпион', color: '#8E44AD' },
+  { sign: 'strelec', emoji: '♐', nameBg: 'Стрелец', color: '#C0392B' },
+  { sign: 'kozirog', emoji: '♑', nameBg: 'Козирог', color: '#34495E' },
+  { sign: 'vodolej', emoji: '♒', nameBg: 'Водолей', color: '#3498DB' },
+  { sign: 'ribi', emoji: '♓', nameBg: 'Риби', color: '#9B59B6' },
 ];
 
 /**
