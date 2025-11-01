@@ -32,7 +32,13 @@
       "Bash(git commit:*)",
       "Bash(where:*)",
       "mcp__playwright__browser_navigate",
-      "mcp__playwright__browser_close"
+      "mcp__playwright__browser_close",
+      "Bash(test:*)",
+      "Bash(git log:*)",
+      "WebFetch(domain:developers.viber.com)",
+      "WebFetch(domain:errorwise.com)",
+      "WebFetch(domain:creators.viber.com)",
+      "WebFetch(domain:github.com)"
     ],
     "deny": [],
     "ask": []

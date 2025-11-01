@@ -541,28 +541,44 @@ export default async function ZodiacSignPage({ params }: { params: Promise<{ sig
           </div>
 
           {/* CTA */}
-          <div className="rounded-2xl bg-gradient-to-r from-purple-600 to-pink-600 text-white p-8 text-center shadow-xl shadow-purple-500/20">
-            <h2 className="text-2xl font-bold mb-3">
-              Искаш Персонализиран Хороскоп за Днес?
-            </h2>
-            <p className="text-lg mb-6 text-purple-100">
-              Получи AI-генериран дневен хороскоп, специално за теб - базиран не само на зодията ти, но и на твоята лична натална карта
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/auth/register">
-                <ShimmerButton
-                  className="text-lg px-8"
-                  background="linear-gradient(135deg, #ffffff 0%, #f3f4f6 100%)"
-                  shimmerColor="#9333ea"
-                >
-                  Започни Безплатно
-                </ShimmerButton>
-              </Link>
-              <Link href="/pricing">
-                <Button size="lg" variant="outline" className="text-lg px-8 bg-white/10 hover:bg-white/20 text-white border-white">
-                  Виж Плановете
-                </Button>
-              </Link>
+          <div className="glass-card p-8 md:p-10 text-center relative overflow-hidden">
+            {/* Background gradient overlay */}
+            <div className="absolute inset-0 bg-gradient-to-br from-purple-600/10 via-pink-600/10 to-purple-600/10 pointer-events-none" />
+
+            <div className="relative z-10">
+              {/* Badge */}
+              <Badge className="mb-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white border-0 px-4 py-1.5 text-sm font-semibold">
+                ✨ AI Персонализация
+              </Badge>
+
+              <h2 className="text-2xl md:text-3xl font-bold mb-3 text-zinc-50">
+                Твоят Персонален Хороскоп
+              </h2>
+
+              <p className="text-lg mb-8 text-zinc-400 max-w-2xl mx-auto">
+                Получи AI-генериран дневен хороскоп, базиран на твоята натална карта
+              </p>
+
+              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                <Link href="/auth/register">
+                  <Button
+                    size="lg"
+                    className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white text-lg px-8 py-6 shadow-lg shadow-purple-500/25 border-0"
+                  >
+                    Започни Безплатно
+                  </Button>
+                </Link>
+
+                <Link href="/pricing">
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    className="text-lg px-8 py-6 border-2 border-zinc-700 hover:border-purple-500 hover:bg-zinc-800/50 text-zinc-300"
+                  >
+                    Виж Плановете
+                  </Button>
+                </Link>
+              </div>
             </div>
           </div>
         </div>
