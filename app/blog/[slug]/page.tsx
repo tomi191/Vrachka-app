@@ -113,6 +113,15 @@ export default async function BlogPostPage({ params }: Props) {
     return rawContent;
   };
 
+  // Remove old inline table of contents from legacy posts
+  const removeOldTableOfContents = (htmlContent: string) => {
+    // Remove old styled TOC blocks with inline styles
+    return htmlContent.replace(
+      /<div\s+style="[^"]*">\s*<h2[^>]*>В тази статия:<\/h2>\s*<ol>[\s\S]*?<\/ol>\s*<\/div>/gi,
+      ''
+    );
+  };
+
   // Process Vrachka expert quotes
   const processVrachkaQuotes = (htmlContent: string) => {
     // Match <!-- VRACHKA:quote:текст -->
@@ -134,43 +143,66 @@ export default async function BlogPostPage({ params }: Props) {
     );
   };
 
-  // Generate Table of Contents from H2 headings
+  // Generate Table of Contents from H2/H3 headings
   const generateTableOfContents = (htmlContent: string): { toc: string; content: string } => {
-    // Extract H2 headings
-    const h2Regex = /<h2[^>]*>(.*?)<\/h2>/gi;
-    const headings: Array<{ text: string; id: string }> = [];
+    
+    const slugify = (text: string): string => {
+        if (!text) return '';
+
+        const cyrillicMap: { [key: string]: string } = {
+            'а': 'a', 'б': 'b', 'в': 'v', 'г': 'g', 'д': 'd', 'е': 'e', 'ж': 'zh', 'з': 'z', 'и': 'i',
+            'й': 'y', 'к': 'k', 'л': 'l', 'м': 'm', 'н': 'n', 'о': 'o', 'п': 'p', 'р': 'r', 'с': 's',
+            'т': 't', 'у': 'u', 'ф': 'f', 'х': 'h', 'ц': 'ts', 'ч': 'ch', 'ш': 'sh', 'щ': 'sht',
+            'ъ': 'a', 'ь': 'y', 'ю': 'yu', 'я': 'ya'
+        };
+
+        return text.toLowerCase()
+            .split('').map(char => cyrillicMap[char] || char).join('')
+            .replace(/[^a-z0-9\s-]/g, '') // Remove non-alphanumeric characters
+            .trim()
+            .replace(/\s+/g, '-') // Replace spaces with hyphens
+            .replace(/-+/g, '-'); // Replace multiple hyphens with a single one
+    };
+
+    // 1. First, remove any old, hardcoded TOC to prevent duplicates.
+    const contentWithoutOldToc = htmlContent.replace(
+      /<div class="glass-card.*?">\s*<h2.*?>.*?В тази статия.*?<\/h2>[\s\S]*?<\/ol>\s*<\/div>/gi,
+      ''
+    );
+
+    const headingRegex = /<(h2|h3|h4)([^>]*)>(.*?)<\/(h2|h3|h4)>/gi;
+    const headings: Array<{ text: string; id: string; level: number }> = [];
     let match;
 
-    while ((match = h2Regex.exec(htmlContent)) !== null) {
-      const headingText = match[1].replace(/<[^>]*>/g, ''); // Strip inner HTML tags
-      // Generate slug from heading (Cyrillic-safe)
-      const slug = headingText
-        .toLowerCase()
-        .trim()
-        .replace(/\s+/g, '-') // Replace spaces with hyphens
-        .replace(/[^\u0400-\u04FFa-z0-9-]/g, '') // Keep only Cyrillic, Latin, numbers, hyphens
-        .replace(/-+/g, '-') // Replace multiple hyphens with single
-        .replace(/^-|-$/g, ''); // Remove leading/trailing hyphens
+    // 2. Extract all H2, H3, and H4 headings.
+    while ((match = headingRegex.exec(contentWithoutOldToc)) !== null) {
+      let level = 0;
+      if (match[1] === 'h2') level = 2;
+      else if (match[1] === 'h3' || match[1] === 'h4') level = 3; // Treat h3 and h4 as level 3 for TOC
 
-      headings.push({ text: headingText, id: slug });
+      const headingText = match[3].replace(/<[^>]*>/g, '').trim();
+      if (!headingText || level === 0) continue;
+
+      const slug = slugify(headingText);
+      if (slug) {
+        headings.push({ text: headingText, id: slug, level });
+      }
     }
 
-    // Generate TOC HTML
+    // 3. Generate the HTML for the TOC.
     let tocHtml = '';
-    if (headings.length > 0) {
+    if (headings.length > 1) { // Only show TOC if there's more than one heading
       tocHtml = `
         <div class="glass-card p-6 my-8 border border-accent-500/20 bg-gradient-to-br from-zinc-900/80 to-zinc-900/60">
           <h2 class="text-xl font-bold text-accent-400 mb-4 flex items-center gap-2">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"></path>
-            </svg>
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"></path></svg>
             В тази статия
           </h2>
           <ol class="space-y-2 text-zinc-300">
             ${headings
               .map(
                 (h, i) =>
-                  `<li class="flex items-start gap-3 group hover:text-accent-300 transition-colors">
+                  `<li class="flex items-start gap-3 group hover:text-accent-300 transition-colors ${h.level === 3 ? 'ml-4' : ''}">
                      <span class="text-accent-500/60 font-semibold flex-shrink-0 min-w-[1.5rem]">${i + 1}.</span>
                      <a href="#${h.id}" class="hover:underline">${h.text}</a>
                    </li>`
@@ -181,22 +213,37 @@ export default async function BlogPostPage({ params }: Props) {
       `;
     }
 
-    // Add IDs to H2 elements in content
-    let processedContent = htmlContent.replace(/<h2([^>]*)>(.*?)<\/h2>/gi, (match, attrs, content) => {
-      const headingText = content.replace(/<[^>]*>/g, '');
-      const slug = headingText
-        .toLowerCase()
-        .trim()
-        .replace(/\s+/g, '-')
-        .replace(/[^\u0400-\u04FFa-z0-9-]/g, '')
-        .replace(/-+/g, '-')
-        .replace(/^-|-$/g, '');
+    // 4. Add the generated slug IDs to the H2/H3/H4 elements in the content and promote H4 to H3.
+    let processedContent = contentWithoutOldToc.replace(headingRegex, (originalTag, tagName, attrs, innerText) => {
+        const headingText = innerText.replace(/<[^>]*>/g, '').trim();
+        if (!headingText) return originalTag;
+        
+        const slug = slugify(headingText);
+        
+        // Remove existing ID attribute from attrs
+        const cleanedAttrs = attrs.replace(/\s+id\s*=\s*"[^"]*"/i, '');
+        
+        const finalTagName = tagName === 'h4' ? 'h3' : tagName; // Promote h4 to h3
 
-      return `<h2${attrs} id="${slug}">${content}</h2>`;
+        return `<${finalTagName}${cleanedAttrs} id="${slug}">${innerText}</${finalTagName}>`;
     });
 
-    // Replace <!-- TOC --> marker with generated TOC
-    processedContent = processedContent.replace(/<!--\s*TOC\s*-->/gi, tocHtml);
+    // 5. Insert the new TOC.
+    const tocMarker = /<!--\s*TOC\s*-->/gi;
+    if (tocMarker.test(processedContent)) {
+      processedContent = processedContent.replace(tocMarker, tocHtml);
+    } else {
+      // If no marker, insert it after the first paragraph for graceful fallback.
+      const firstParagraphEnd = processedContent.indexOf('</p>');
+      if (firstParagraphEnd !== -1) {
+        processedContent = 
+          processedContent.slice(0, firstParagraphEnd + 4) + 
+          tocHtml + 
+          processedContent.slice(firstParagraphEnd + 4);
+      } else {
+        processedContent = tocHtml + processedContent; // Fallback to top
+      }
+    }
 
     return { toc: tocHtml, content: processedContent };
   };
@@ -485,7 +532,9 @@ export default async function BlogPostPage({ params }: Props) {
                   __html: processInlineImages(
                     processVrachkaQuotes(
                       processLegacyCTAs(
-                        generateTableOfContents(parseContent(post.content)).content
+                        generateTableOfContents(
+                          removeOldTableOfContents(parseContent(post.content))
+                        ).content
                       )
                     ),
                     post.image_urls || []

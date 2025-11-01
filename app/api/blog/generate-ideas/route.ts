@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { createOpenRouterCompletion } from '@/lib/ai/openrouter';
+import { parseAIJsonResponse } from '@/lib/ai/client';
 import { insertBlogIdeas, type BlogIdeaInsert } from '@/lib/supabase/blog-ideas';
 
 function getIdeasGenerationPrompt(): string {
@@ -158,9 +159,9 @@ export async function POST(req: NextRequest) {
       customPrompt += `Генерирай идеи които са РАЗЛИЧНИ от горните!\n`;
     }
 
-    // Call Claude Haiku (fast and cheap - $0.0002 per request)
-    // Dynamic max_tokens based on batchSize (each idea ~150 tokens)
-    const maxTokens = Math.min(batchSize * 300, 8000);
+    // Call AI model (dynamic max_tokens based on batchSize)
+    // Each idea requires ~500-800 tokens (title, description, keywords, etc.)
+    const maxTokens = Math.min(batchSize * 1000, 16000);
 
     let response;
     try {
@@ -195,33 +196,20 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Parse response
-    let ideas;
-    try {
-      let content = response.choices[0].message.content.trim();
-      
-      // First, try to find a JSON array if there's extra text
-      const jsonMatch = content.match(/\s*(\[[\s\S]*\])\s*/);
-      if (jsonMatch && jsonMatch[1]) {
-        content = jsonMatch[1];
-      }
+    // Parse response using parseAIJsonResponse helper (handles markdown code blocks, truncation, etc.)
+    const aiResponse = response.choices[0].message.content || '';
+    console.log('[Ideas] Parsing AI response, length:', aiResponse.length);
 
-      // Remove markdown code blocks if present
-      const cleanContent = content
-        .replace(/^```json\s*/i, '')
-        .replace(/^```\s*/, '')
-        .replace(/\s*```$/, '');
+    const ideas = parseAIJsonResponse<BlogIdeaInsert[]>(aiResponse);
 
-      console.log('[Ideas] Parsing AI response, length:', cleanContent.length);
-      ideas = JSON.parse(cleanContent);
-    } catch (parseError) {
-      console.error('Failed to parse AI response:', parseError);
-      console.log('Raw response:', response.choices[0]?.message?.content?.substring(0, 1000) || 'No content');
+    if (!ideas) {
+      console.error('Failed to parse AI response');
+      console.log('Raw response:', aiResponse.substring(0, 1000));
       return NextResponse.json(
         {
           error: 'AI response was not valid JSON',
-          details: parseError instanceof Error ? parseError.message : 'Parse error',
-          rawResponse: response.choices[0]?.message?.content || null
+          details: 'Failed to parse AI response - response may be truncated or malformed',
+          rawResponse: aiResponse.substring(0, 500)
         },
         { status: 500 }
       );
