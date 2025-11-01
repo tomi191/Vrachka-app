@@ -131,6 +131,7 @@ export interface ViberPostRequest {
   rich_media?: ViberRichMedia;
   keyboard?: ViberKeyboard;
   tracking_data?: string;
+  alt_text?: string; // Fallback text for rich_media (for unsupported clients)
 }
 
 // ========== Send Message Request (Bot API) ==========
