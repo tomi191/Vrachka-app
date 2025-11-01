@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Fragment } from 'react';
 import { Search, RefreshCw, Filter, ChevronDown, ChevronUp, Sparkles, Check, X } from 'lucide-react';
 import { ScannedPage } from '@/lib/seo/page-scanner';
 
@@ -270,6 +270,7 @@ export default function SEOManagerPage() {
             </thead>
             <tbody>
               {filteredPages.map(page => (
+                <>
                 <tr key={page.path} className="border-b border-zinc-800 hover:bg-zinc-800/30 transition-colors">
                   <td className="px-4 py-3">
                     <div>
