@@ -120,7 +120,8 @@ export async function POST(req: NextRequest) {
         }
 
         // Generate horoscope with AI (Gemini Free)
-        const prompt = getHoroscopePrompt(zodiac, 'daily');
+        // Use Bulgarian zodiac name for better AI understanding
+        const prompt = getHoroscopePrompt(zodiacNames[zodiac], 'daily');
         const response = await createFeatureCompletion(
           'horoscope',
           [

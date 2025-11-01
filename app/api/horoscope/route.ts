@@ -1,13 +1,38 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import { createFeatureCompletion } from "@/lib/ai/openrouter";
 import { HOROSCOPE_SYSTEM_PROMPT, getHoroscopePrompt } from "@/lib/ai/prompts";
 import { checkFeatureAccess } from "@/lib/subscription";
 import { rateLimitAdaptive, RATE_LIMITS, getClientIp, getRateLimitHeaders } from "@/lib/rate-limit";
 import { parseAIJsonResponse } from "@/lib/ai/client";
 
+// Create admin client for database writes (bypasses RLS)
+function getSupabaseAdmin() {
+  return createSupabaseClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  );
+}
+
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
+
+// Zodiac slug to Bulgarian name mapping
+const zodiacNames: Record<string, string> = {
+  'oven': 'Овен',
+  'telec': 'Телец',
+  'bliznaci': 'Близнаци',
+  'rak': 'Рак',
+  'lav': 'Лъв',
+  'deva': 'Дева',
+  'vezni': 'Везни',
+  'skorpion': 'Скорпион',
+  'strelec': 'Стрелец',
+  'kozirog': 'Козирог',
+  'vodolej': 'Водолей',
+  'ribi': 'Риби',
+};
 
 interface HoroscopeResponse {
   general: string;
@@ -46,16 +71,6 @@ export async function GET(req: NextRequest) {
     // AI configuration checked automatically by openrouter
 
     const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    if (!user) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
-    }
 
     // Get query parameters
     const searchParams = req.nextUrl.searchParams;
@@ -69,24 +84,38 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    // Check access for weekly/monthly horoscopes
-    if (period === 'weekly') {
-      const canAccess = await checkFeatureAccess(user.id, 'canAccessWeeklyHoroscope');
-      if (!canAccess) {
+    // Check authentication only for premium features (weekly/monthly)
+    if (period === 'weekly' || period === 'monthly') {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user) {
         return NextResponse.json(
-          { error: "Weekly horoscopes are available for Basic and Ultimate subscribers only", premium: true },
-          { status: 403 }
+          { error: "Authentication required for weekly/monthly horoscopes", premium: true },
+          { status: 401 }
         );
       }
-    }
 
-    if (period === 'monthly') {
-      const canAccess = await checkFeatureAccess(user.id, 'canAccessMonthlyHoroscope');
-      if (!canAccess) {
-        return NextResponse.json(
-          { error: "Monthly horoscopes are available for Basic and Ultimate subscribers only", premium: true },
-          { status: 403 }
-        );
+      // Check access for weekly/monthly horoscopes
+      if (period === 'weekly') {
+        const canAccess = await checkFeatureAccess(user.id, 'canAccessWeeklyHoroscope');
+        if (!canAccess) {
+          return NextResponse.json(
+            { error: "Weekly horoscopes are available for Basic and Ultimate subscribers only", premium: true },
+            { status: 403 }
+          );
+        }
+      }
+
+      if (period === 'monthly') {
+        const canAccess = await checkFeatureAccess(user.id, 'canAccessMonthlyHoroscope');
+        if (!canAccess) {
+          return NextResponse.json(
+            { error: "Monthly horoscopes are available for Basic and Ultimate subscribers only", premium: true },
+            { status: 403 }
+          );
+        }
       }
     }
 
@@ -114,7 +143,9 @@ export async function GET(req: NextRequest) {
 
     // Generate new horoscope with AI
     console.log('[Horoscope API] Generating new horoscope for:', zodiacSign, period);
-    const prompt = getHoroscopePrompt(zodiacSign, period);
+    // Use Bulgarian zodiac name for better AI understanding
+    const zodiacNameBG = zodiacNames[zodiacSign] || zodiacSign;
+    const prompt = getHoroscopePrompt(zodiacNameBG, period);
 
     let aiResponse;
     let horoscope: HoroscopeResponse;
@@ -151,10 +182,11 @@ export async function GET(req: NextRequest) {
       throw new Error(`AI generation failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
 
-    // Save to database for caching
+    // Save to database for caching (use admin client to bypass RLS)
     try {
       console.log('[Horoscope API] Saving to database...');
-      const { error: dbError } = await supabase.from('daily_content').insert({
+      const supabaseAdmin = getSupabaseAdmin();
+      const { error: dbError } = await supabaseAdmin.from('daily_content').insert({
         content_type: contentType,
         target_date: today,
         target_key: zodiacSign,

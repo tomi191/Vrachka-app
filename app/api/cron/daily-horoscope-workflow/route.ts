@@ -30,35 +30,35 @@ interface HoroscopeResponse {
   healthStars: number;
 }
 
-// Zodiac signs in Bulgarian
+// Zodiac signs - Bulgarian slugs (used in URLs like /horoscope/oven)
 const zodiacSigns = [
-  'aries',
-  'taurus',
-  'gemini',
-  'cancer',
-  'leo',
-  'virgo',
-  'libra',
-  'scorpio',
-  'sagittarius',
-  'capricorn',
-  'aquarius',
-  'pisces'
+  'oven',
+  'telec',
+  'bliznaci',
+  'rak',
+  'lav',
+  'deva',
+  'vezni',
+  'skorpion',
+  'strelec',
+  'kozirog',
+  'vodolej',
+  'ribi'
 ];
 
 const zodiacNamesБГ: Record<string, string> = {
-  aries: 'Овен',
-  taurus: 'Телец',
-  gemini: 'Близнаци',
-  cancer: 'Рак',
-  leo: 'Лъв',
-  virgo: 'Дева',
-  libra: 'Везни',
-  scorpio: 'Скорпион',
-  sagittarius: 'Стрелец',
-  capricorn: 'Козирог',
-  aquarius: 'Водолей',
-  pisces: 'Риби'
+  oven: 'Овен',
+  telec: 'Телец',
+  bliznaci: 'Близнаци',
+  rak: 'Рак',
+  lav: 'Лъв',
+  deva: 'Дева',
+  vezni: 'Везни',
+  skorpion: 'Скорпион',
+  strelec: 'Стрелец',
+  kozirog: 'Козирог',
+  vodolej: 'Водолей',
+  ribi: 'Риби'
 };
 
 /**
@@ -113,9 +113,10 @@ export async function GET(req: NextRequest) {
         }
 
         // Generate horoscope with AI
-        console.log(`[Step 1] Generating horoscope for ${zodiac}...`);
+        console.log(`[Step 1] Generating horoscope for ${zodiacNamesБГ[zodiac]} (${zodiac})...`);
 
-        const prompt = getHoroscopePrompt(zodiac, 'daily');
+        // Use Bulgarian zodiac name for better AI understanding
+        const prompt = getHoroscopePrompt(zodiacNamesБГ[zodiac], 'daily');
         const response = await createFeatureCompletion(
           'horoscope',
           [
