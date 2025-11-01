@@ -5,6 +5,9 @@ import { HOROSCOPE_SYSTEM_PROMPT, getHoroscopePrompt } from '@/lib/ai/prompts';
 import { parseAIJsonResponse } from '@/lib/ai/client';
 import { sendBatchEmails, type BatchEmailJob } from '@/lib/email/resend-service';
 import { DailyHoroscopeEmail, GenericDailyHoroscopeEmail } from '@/lib/email/templates';
+import { getViberService } from '@/lib/viber/viber-service';
+import { createDailyHoroscopeBroadcast } from '@/lib/viber/templates/daily-horoscope-broadcast';
+import { logViberBroadcast, wasBroadcastSentToday } from '@/lib/viber/broadcast-logger';
 import React from 'react';
 
 // Lazy initialize Supabase client to avoid build-time errors
@@ -324,6 +327,67 @@ export async function GET(req: NextRequest) {
     console.log(`[Step 2] Complete: ${emailResult.sent} sent, ${emailResult.failed} failed`);
 
     // ========================================
+    // STEP 3: SEND VIBER BROADCAST
+    // ========================================
+    console.log('[Step 3] Sending Viber daily horoscope broadcast...');
+
+    let viberResult: { success: boolean; error?: string } = { success: false };
+
+    try {
+      // Check if Viber is configured
+      const viberService = getViberService();
+
+      if (!viberService) {
+        console.log('[Step 3] Viber not configured (VIBER_AUTH_TOKEN missing), skipping broadcast');
+        viberResult = { success: false, error: 'Not configured' };
+      } else {
+        // Check if already sent today (prevent duplicates)
+        const alreadySent = await wasBroadcastSentToday('daily_horoscope', today);
+
+        if (alreadySent) {
+          console.log('[Step 3] Viber broadcast already sent today, skipping');
+          viberResult = { success: false, error: 'Already sent today' };
+        } else {
+          // Create broadcast message
+          const broadcastMessage = createDailyHoroscopeBroadcast(new Date());
+
+          // Send to Viber channel
+          const sendResult = await viberService.postToChannel(broadcastMessage);
+
+          // Log the broadcast
+          await logViberBroadcast(
+            {
+              broadcast_type: 'daily_horoscope',
+              broadcast_date: today,
+              metadata: {
+                zodiac_count: generatedHoroscopes.size,
+                date_formatted: todayFormatted,
+              },
+            },
+            sendResult
+          );
+
+          if (sendResult.success) {
+            console.log('[Step 3] ✅ Viber broadcast sent successfully');
+            viberResult = { success: true };
+          } else {
+            console.error('[Step 3] Viber broadcast failed:', sendResult.error);
+            viberResult = { success: false, error: sendResult.error };
+          }
+        }
+      }
+    } catch (error) {
+      console.error('[Step 3] Error sending Viber broadcast:', error);
+      viberResult = {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error',
+      };
+      // Continue workflow even if Viber fails (non-blocking)
+    }
+
+    console.log(`[Step 3] Complete: ${viberResult.success ? 'Success' : 'Failed'}`);
+
+    // ========================================
     // WORKFLOW COMPLETE
     // ========================================
     console.log('[Daily Horoscope Workflow] ✅ Workflow complete');
@@ -340,6 +404,10 @@ export async function GET(req: NextRequest) {
         sent: emailResult.sent,
         failed: emailResult.failed,
         total: emailResult.total,
+      },
+      viber: {
+        sent: viberResult.success,
+        error: viberResult.error || null,
       },
     });
 
