@@ -141,18 +141,6 @@ export default async function BlogIndexPage({ searchParams }: BlogIndexPageProps
             </p>
           </div>
 
-          {/* Intro Text */}
-          {!selectedCategory && (
-            <div className="max-w-3xl mx-auto text-left text-zinc-300/90 space-y-4 mb-12 text-sm sm:text-base">
-              <p>
-                Добре дошли в блога на Vrachka – твоят дигитален компас в света на езотериката. Тук събираме знания и мъдрост, за да ти помогнем да навигираш през предизвикателствата на живота с увереност. Независимо дали се интересуваш от подробна <strong>астрологична прогноза</strong>, търсиш съвет от <strong>таро карти</strong> за любов или кариера, или искаш да разкодираш числата в живота си чрез <strong>нумерология</strong>, тук ще намериш задълбочени и практични насоки.
-              </p>
-              <p>
-                Разгледай нашите категории, за да откриеш статии за всичко – от <strong>ретрограден Меркурий</strong> и влиянието на <strong>лунния календар</strong>, до ръководства за <strong>разчитане на натална карта</strong> и значението на всеки <strong>асцендент</strong>. Нашите експерти редовно публикуват анализи за <strong>съвместимост между зодиите</strong>, ритуали за пълнолуние и новолуние, и съвети как да използваш древните знания в модерния свят. Започни своето пътешествие към себепознанието днес.
-              </p>
-            </div>
-          )}
-
           {/* Category Filters */}
           <div className="flex flex-wrap justify-center gap-2 md:gap-4 mb-12">
             <Link href="/blog" className={`text-sm px-4 py-2 rounded-full transition-colors duration-300 ${!selectedCategory ? 'bg-accent-500/80 text-white font-semibold shadow-lg' : 'bg-zinc-800/50 text-zinc-300 hover:bg-zinc-700/70'}`}>
