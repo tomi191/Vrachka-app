@@ -1,8 +1,8 @@
 # 📊 VRACHKA - PROJECT STATUS (Source of Truth)
 
-**Last Updated:** 31 Октомври 2025 (Late Evening)
+**Last Updated:** 1 Ноември 2025
 **Status:** ✅ DEPLOYED to Production (Vercel)
-**Version:** 1.2.1 - Blog Generator Enhanced + Bulgarian Language Improvements
+**Version:** 1.3.0 - SEO Manager + Blog OG Images
 
 ---
 
@@ -23,6 +23,265 @@
 | **Subscription Tiers** | 3 (Free/Basic/Ultimate) |
 | **Stripe Integration** | ✅ Working (Test + Production) |
 | **Build Time** | ~50 seconds |
+
+---
+
+## 🔍 SEO MANAGER SYSTEM (Version 1.3.0 - 1 Nov 2025)
+
+Complete SEO metadata management system with real-time scoring and AI-powered regeneration.
+
+### Features Implemented ✅
+
+#### 1. SEO Keyword Library Parser
+**Purpose:** Parse and organize 690+ SEO keywords from markdown file for optimization.
+
+**Features:**
+- Parses `docs/SEO-KEYWORD-LIBRARY.md` markdown tables
+- Organized categories: Primary, Secondary (Astrology/Tarot/Numerology), Long-tail, Blog, Transactional, Local, Seasonal
+- Keyword priority levels (P0/P1/P2)
+- Search volume and difficulty tracking
+- Page-specific keyword matching
+
+**Files:**
+- `lib/seo/keyword-library.ts` (NEW)
+
+---
+
+#### 2. SEO Score Calculator
+**Purpose:** Calculate 0-100 SEO scores with detailed breakdown and recommendations.
+
+**Scoring Algorithm (100 points total):**
+- **Title** (20 points): Ideal 50-60 chars
+- **Description** (20 points): Ideal 150-160 chars
+- **Keywords** (15 points): Ideal 5-15 keywords
+- **Keywords in Title** (15 points): Keyword relevance check
+- **Keywords in Description** (15 points): Keyword integration
+- **OG Image** (10 points): Social sharing optimization
+- **Keyword Library Match** (5 points): Alignment with SEO strategy
+
+**Output:**
+- Total score (0-100)
+- Individual component scores
+- Issues list (e.g., "Title too short", "Missing OG image")
+- Recommendations list (e.g., "Add 3-8 more keywords", "Shorten description")
+
+**Files:**
+- `lib/seo/score-calculator.ts` (NEW)
+
+---
+
+#### 3. Page Scanner
+**Purpose:** Scan all page.tsx files to extract metadata for SEO analysis.
+
+**Features:**
+- Scans 25+ public pages (services, content, legal, etc.)
+- Extracts title, description, keywords, OG image from metadata
+- Categorizes pages (service/content/legal/other)
+- Real-time file system scanning
+- Supports both static and dynamic metadata
+
+**Pages Scanned:**
+- Homepage, Horoscope, Tarot, Oracle, Natal Chart, Synastry, Personal Horoscope
+- Blog, Pricing, About, Contact, Features
+- Privacy Policy, Cookies Policy, Terms of Service
+- Moon Phase, Newsletter, Unsubscribe
+- All admin pages
+
+**Files:**
+- `lib/seo/page-scanner.ts` (NEW)
+
+---
+
+#### 4. AI Metadata Regenerator
+**Purpose:** Use Google Gemini 2.5 Pro to generate optimized SEO metadata.
+
+**Features:**
+- AI-powered title, description, and keywords generation
+- Integration with keyword library for targeting
+- OG image prompt generation
+- Reasoning explanation for recommendations
+- 60-second timeout for AI generation
+- Temperature 0.7 for creative yet consistent output
+
+**AI Model:** Google Gemini 2.5 Pro Exp 1206
+- **Cost:** $1.25 input / $5 output per 1M tokens
+- **Max Tokens:** 2000
+- **Why Gemini:** Superior Bulgarian language, better keyword integration
+
+**Prompt Structure:**
+- Page path and current metadata
+- Relevant keywords from library
+- All available keywords for context
+- Optional page content for deeper analysis
+- Vrachka brand voice guidelines
+
+**Files:**
+- `lib/seo/ai-regenerator.ts` (NEW)
+
+---
+
+#### 5. API Routes (Admin Only)
+**Three endpoints for SEO management:**
+
+**GET /api/admin/seo/pages**
+- Lists all scanned pages with SEO scores
+- Returns statistics: total pages, score distribution, average score
+- Accessible only to admin users
+
+**POST /api/admin/seo/regenerate**
+- Body: `{ pagePath: string }`
+- Regenerates metadata using AI
+- Returns: new metadata + current metadata + generation duration
+- 60-second max duration
+
+**PUT /api/admin/seo/update**
+- Body: `{ pagePath: string, title?: string, description?: string, keywords?: string[], ogImage?: string }`
+- Updates page metadata in source file
+- Recalculates SEO score
+- Returns: new score + breakdown
+
+**Authentication:** All routes check `is_admin` flag
+
+**Files:**
+- `app/api/admin/seo/pages/route.ts` (NEW)
+- `app/api/admin/seo/regenerate/route.ts` (NEW)
+- `app/api/admin/seo/update/route.ts` (NEW)
+
+---
+
+#### 6. Admin UI - SEO Manager Page
+**Purpose:** Interactive dashboard for managing all page metadata.
+
+**Features:**
+- **Overview Stats:**
+  - Total pages count
+  - Excellent (90+), Good (70-89), Needs Work (<70) breakdown
+  - Average SEO score across all pages
+
+- **Filters:**
+  - By category (All/Service/Content/Legal/Other)
+  - By score range (All/Excellent/Good/Needs Work)
+
+- **Page Table:**
+  - Color-coded score badges (green/yellow/red)
+  - Page path, display name, category
+  - Current title, description, keywords count
+  - Actions: View Details, Regenerate, Edit
+
+- **Expandable Details:**
+  - Full SEO score breakdown (7 components)
+  - Issues list with visual indicators
+  - Recommendations with action items
+  - Current metadata display
+
+- **AI Regeneration:**
+  - One-click regeneration per page
+  - Preview before applying
+  - Shows AI reasoning
+  - Duration tracking
+
+- **Inline Editing:**
+  - Edit title, description, keywords, OG image
+  - Real-time character count
+  - Save updates directly to source files
+
+**Files:**
+- `app/admin/seo/page.tsx` (NEW)
+
+---
+
+#### 7. Admin Navigation Update
+**Added SEO Manager to admin sidebar:**
+
+**Desktop Sidebar:**
+- Icon: Search (lucide-react)
+- Label: "SEO Manager"
+- Route: /admin/seo
+
+**Mobile Bottom Nav:**
+- Icon: Search
+- Label: "SEO"
+- Route: /admin/seo
+
+**Files:**
+- `app/admin/layout.tsx` (UPDATED)
+
+---
+
+### Technical Details
+
+**TypeScript Configuration:**
+- Updated target from ES2017 to ES2018
+- Required for regex dotAll flag (`/s`) support
+- Enables modern JavaScript features
+
+**File:** `tsconfig.json`
+
+**Build Status:**
+- ✅ Build successful (103 pages generated)
+- Warnings only (no errors)
+- All ESLint warnings non-blocking
+
+---
+
+### Impact & Results
+
+| Metric | Value |
+|--------|-------|
+| **Pages Tracked** | 25+ public pages |
+| **Keywords Available** | 690+ from library |
+| **Scoring Factors** | 7 components (100 points) |
+| **AI Model** | Google Gemini 2.5 Pro |
+| **Generation Time** | ~3-5 seconds |
+| **API Routes** | 3 (list/regenerate/update) |
+| **Libraries Created** | 4 new SEO modules |
+
+**SEO Optimization Goals:**
+- Achieve 90+ score on all service pages
+- 80+ score on content pages
+- 70+ score on legal/other pages
+- 100% keyword library alignment
+
+---
+
+## 📝 BLOG OG IMAGE FIX (Version 1.3.0 - 1 Nov 2025)
+
+Fixed blog post social sharing to use hero images for consistent branding.
+
+### Changes Made ✅
+
+**Problem:** Blog posts were trying to use non-existent `og_image_url` field, breaking social sharing.
+
+**Solution:**
+- Use existing `featured_image_url` (hero image) as OG image
+- Added Twitter Card support (`summary_large_image`)
+- Proper fallback to default OG image if no hero image
+
+**Metadata Structure:**
+```typescript
+openGraph: {
+  title: post.meta_title || post.title,
+  description: post.meta_description || post.excerpt || undefined,
+  images: [post.featured_image_url || '/og-image-blog.png'],
+  type: 'article',
+  url: `https://vrachka.eu/blog/${slug}`,
+},
+twitter: {
+  card: 'summary_large_image',
+  title: post.meta_title || post.title,
+  description: post.meta_description || post.excerpt || undefined,
+  images: [post.featured_image_url || '/og-image-blog.png'],
+},
+```
+
+**Impact:**
+- ✅ Consistent branding when sharing blog posts
+- ✅ Better social media previews (Facebook, Twitter, LinkedIn)
+- ✅ Uses high-quality hero images instead of generic placeholders
+- ✅ Proper fallback handling
+
+**Files:**
+- `app/blog/[slug]/page.tsx` (UPDATED)
 
 ---
 
@@ -1386,6 +1645,35 @@ NEXT_PUBLIC_APP_URL=
 ---
 
 ## 🔄 UPDATE LOG
+
+**1 Nov 2025:** 🔍 SEO Manager System + Blog OG Images - Version 1.3.0
+- **SEO Manager System:** Complete metadata management with AI regeneration
+  - ✅ `lib/seo/keyword-library.ts` - Parse 690+ keywords from SEO library
+  - ✅ `lib/seo/score-calculator.ts` - 0-100 scoring with 7 factors
+  - ✅ `lib/seo/page-scanner.ts` - Scan 25+ pages for metadata
+  - ✅ `lib/seo/ai-regenerator.ts` - AI-powered optimization (Gemini 2.5 Pro)
+  - ✅ `app/api/admin/seo/pages/route.ts` - List all pages with scores
+  - ✅ `app/api/admin/seo/regenerate/route.ts` - AI regeneration endpoint
+  - ✅ `app/api/admin/seo/update/route.ts` - Update metadata endpoint
+  - ✅ `app/admin/seo/page.tsx` - Interactive SEO dashboard UI
+  - ✅ `app/admin/layout.tsx` - Added SEO Manager navigation
+
+- **Blog OG Image Fix:** Social sharing now uses hero images
+  - ✅ `app/blog/[slug]/page.tsx` - Use featured_image_url for OG images
+  - ✅ Added Twitter Card support (summary_large_image)
+  - ✅ Proper fallback to default OG image
+
+- **TypeScript Configuration:**
+  - ✅ `tsconfig.json` - Updated target from ES2017 to ES2018
+  - Required for regex dotAll flag support (`/s`)
+
+- **Build Status:** ✅ SUCCESS (103 pages generated)
+- **Git Commits:** 2 commits (fe94aa3, a0b7b57)
+- **Impact:**
+  - SEO tracking for 25+ pages
+  - AI-powered metadata optimization
+  - Better social media sharing for blog posts
+  - Modern JavaScript feature support
 
 **31 Oct 2025 (Late Evening):** 🚀 Blog Generator Enhanced + Bulgarian Language Improvements - Version 1.2.1
 - **Bulgarian Language Cleanup:** Replaced anglicized "разклад" with proper Bulgarian throughout codebase
