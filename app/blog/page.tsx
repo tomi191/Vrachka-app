@@ -134,12 +134,24 @@ export default async function BlogIndexPage({ searchParams }: BlogIndexPageProps
         <div className="container mx-auto px-6 pt-32 pb-16 relative z-10">
           <div className="text-center mb-8">
             <h1 className="text-4xl md:text-5xl font-bold text-zinc-50 mb-4">
-              Vrachka Блог
+              Блог за Астрология, Таро и Нумерология
             </h1>
-            <p className="text-lg text-zinc-400 max-w-2xl mx-auto">
-              {selectedCategory ? `Статии в категория: ${categoryLabels[selectedCategory]}` : 'Разкрий тайните на звездите, таро картите и духовния свят'}
+            <p className="text-lg text-zinc-400 max-w-3xl mx-auto">
+              Търсиш точен дневен хороскоп, искаш да разбереш своята натална карта или да получиш отговори от Таро? В нашия блог ще намериш експертни статии, анализи и съвети.
             </p>
           </div>
+
+          {/* Intro Text */}
+          {!selectedCategory && (
+            <div className="max-w-3xl mx-auto text-left text-zinc-300/90 space-y-4 mb-12 text-sm sm:text-base">
+              <p>
+                Добре дошли в блога на Vrachka – твоят дигитален компас в света на езотериката. Тук събираме знания и мъдрост, за да ти помогнем да навигираш през предизвикателствата на живота с увереност. Независимо дали се интересуваш от подробна <strong>астрологична прогноза</strong>, търсиш съвет от <strong>таро карти</strong> за любов или кариера, или искаш да разкодираш числата в живота си чрез <strong>нумерология</strong>, тук ще намериш задълбочени и практични насоки.
+              </p>
+              <p>
+                Разгледай нашите категории, за да откриеш статии за всичко – от <strong>ретрограден Меркурий</strong> и влиянието на <strong>лунния календар</strong>, до ръководства за <strong>разчитане на натална карта</strong> и значението на всеки <strong>асцендент</strong>. Нашите експерти редовно публикуват анализи за <strong>съвместимост между зодиите</strong>, ритуали за пълнолуние и новолуние, и съвети как да използваш древните знания в модерния свят. Започни своето пътешествие към себепознанието днес.
+              </p>
+            </div>
+          )}
 
           {/* Category Filters */}
           <div className="flex flex-wrap justify-center gap-2 md:gap-4 mb-12">
