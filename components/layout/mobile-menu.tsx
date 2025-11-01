@@ -11,7 +11,9 @@ import {
   Mail,
   Settings,
   LogOut,
-  ChevronRight
+  ChevronRight,
+  Calculator,
+  Sparkles
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
@@ -25,6 +27,8 @@ const menuSections = {
   public: [
     { name: "Блог", href: "/blog", icon: BookOpen },
     { name: "Хороскопи", href: "/horoscope", icon: Stars },
+    { name: "Нумерология", href: "/numerology", icon: Calculator },
+    { name: "Лично число", href: "/life-path-number", icon: Sparkles },
     { name: "За нас", href: "/about", icon: Info },
     { name: "Контакти", href: "/contact", icon: Mail },
   ],

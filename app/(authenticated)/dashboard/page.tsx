@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Sparkles, CreditCard, Star, Heart, TrendingUp } from "lucide-react";
 import { HoroscopeCard } from "@/components/HoroscopeCard";
 import { MoonPhaseWidget } from "@/components/MoonPhaseWidget";
+import LifePathNumberWidget from "@/components/numerology/LifePathNumberWidget";
 import Link from "next/link";
 
 export default async function DashboardPage() {
@@ -58,6 +59,12 @@ export default async function DashboardPage() {
 
       {/* Moon Phase Tracker */}
       <MoonPhaseWidget zodiacSign={profile?.zodiac_sign as ZodiacSign | undefined} />
+
+      {/* Life Path Number Widget */}
+      <LifePathNumberWidget
+        birthDate={profile?.birth_date ? new Date(profile.birth_date) : null}
+        userName={profile?.full_name}
+      />
 
       {/* Ultimate Plan Features */}
       {hasUltimatePlan && (

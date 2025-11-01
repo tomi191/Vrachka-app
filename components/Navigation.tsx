@@ -19,6 +19,7 @@ export function Navigation({ user }: NavigationProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const [astrologyDropdownOpen, setAstrologyDropdownOpen] = useState(false);
+  const [numerologyDropdownOpen, setNumerologyDropdownOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const toggleMobileMenu = () => {
@@ -94,6 +95,45 @@ export function Navigation({ user }: NavigationProps) {
                         onClick={() => setAstrologyDropdownOpen(false)}
                       >
                         Лунна Фаза
+                      </Link>
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+            <div className="relative">
+              <button
+                onClick={() => setNumerologyDropdownOpen(!numerologyDropdownOpen)}
+                className="flex items-center gap-2 text-sm text-zinc-400 hover:text-zinc-50 transition-colors"
+              >
+                <span>Нумерология</span>
+                <ChevronDown className="w-3 h-3" />
+              </button>
+
+              {numerologyDropdownOpen && (
+                <>
+                  {/* Backdrop */}
+                  <div
+                    className="fixed inset-0 z-10"
+                    onClick={() => setNumerologyDropdownOpen(false)}
+                  />
+
+                  {/* Dropdown Menu */}
+                  <div className="absolute right-0 mt-2 w-48 bg-zinc-950/95 backdrop-blur-xl border border-zinc-700 rounded-lg shadow-xl z-20">
+                    <div className="py-2">
+                      <Link
+                        href="/numerology"
+                        className="flex items-center gap-3 px-4 py-2 text-sm text-zinc-400 hover:bg-mystic-900 hover:text-zinc-50 transition-colors"
+                        onClick={() => setNumerologyDropdownOpen(false)}
+                      >
+                        Нумерология
+                      </Link>
+                      <Link
+                        href="/life-path-number"
+                        className="flex items-center gap-3 px-4 py-2 text-sm text-zinc-400 hover:bg-mystic-900 hover:text-zinc-50 transition-colors"
+                        onClick={() => setNumerologyDropdownOpen(false)}
+                      >
+                        Лично число
                       </Link>
                     </div>
                   </div>
@@ -255,6 +295,20 @@ export function Navigation({ user }: NavigationProps) {
             onClick={closeMobileMenu}
           >
             Лунна фаза
+          </Link>
+          <Link
+            href="/numerology"
+            className="text-zinc-400 hover:text-zinc-50 transition-colors py-2"
+            onClick={closeMobileMenu}
+          >
+            Нумерология
+          </Link>
+          <Link
+            href="/life-path-number"
+            className="text-zinc-400 hover:text-zinc-50 transition-colors py-2"
+            onClick={closeMobileMenu}
+          >
+            Лично число
           </Link>
           <Link
             href="/tarot"

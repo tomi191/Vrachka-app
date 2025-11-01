@@ -2,7 +2,7 @@
 
 **Last Updated:** 1 Ноември 2025
 **Status:** ✅ DEPLOYED to Production (Vercel)
-**Version:** 1.3.1 - Horoscope CTA Redesign
+**Version:** 1.4.0 - Numerology Feature (Life Path Number)
 
 ---
 
@@ -11,18 +11,183 @@
 | Metric | Value |
 |--------|-------|
 | **Production Status** | ✅ LIVE on Vercel |
-| **Current Version** | 1.2.0 - Blog System Enhanced |
-| **Core Features** | 14 working (added Moon Phase) |
+| **Current Version** | 1.4.0 - Numerology Feature |
+| **Core Features** | 15 working (added Numerology) |
 | **Advanced Features** | 3 flagship (Natal Chart, Synastry, Personal Horoscope) |
-| **Public Landing Pages** | 3 (Tarot, Natal Chart, Moon Phase) |
+| **Public Landing Pages** | 4 (Tarot, Natal Chart, Moon Phase, Life Path Number) |
 | **Blog Posts** | 4 published with enhanced UX |
-| **Total Routes** | 98 routes |
+| **Total Routes** | 109 routes (added /life-path-number, /numerology) |
 | **API Endpoints** | 40+ |
 | **Database Tables** | 25+ |
 | **AI Models** | 5 (Gemini 2.5 Pro for blogs, Claude, DeepSeek, GPT-4, Gemini Image) |
 | **Subscription Tiers** | 3 (Free/Basic/Ultimate) |
 | **Stripe Integration** | ✅ Working (Test + Production) |
 | **Build Time** | ~50 seconds |
+
+---
+
+## 🔢 NUMEROLOGY FEATURE (Version 1.4.0 - 1 Nov 2025)
+
+Complete Life Path Number calculation and analysis system with dashboard integration.
+
+### Features Implemented ✅
+
+#### 1. Core Numerology Engine
+**Purpose:** Calculate Life Path Numbers from birth dates using traditional numerology methods.
+
+**Features:**
+- Life Path Number calculation (1-9, 11, 22, 33)
+- Master number detection and preservation (11, 22, 33)
+- Digit-summing algorithm with proper reduction rules
+- Comprehensive data for all 12 Life Path Numbers
+
+**Files:**
+- `lib/numerology.ts` (NEW) - Core calculation functions
+- `lib/numerology-data.ts` (NEW) - Static content database with 12 Life Path profiles
+
+**Data Included:**
+- Number, emoji, color, title
+- Detailed descriptions (300+ words each)
+- Strengths and challenges (6 each)
+- Compatibility matrix (12x12 scores with descriptions)
+- Career guidance
+- Keywords for SEO
+
+---
+
+#### 2. Dashboard Widget
+**Purpose:** Display user's Life Path Number on the dashboard.
+
+**Features:**
+- Automatic calculation from profile birth_date
+- Large emoji display with number and title
+- Brief description preview
+- Keywords badges
+- CTA to full analysis page
+- Fallback state for users without birth date
+
+**Location:** `components/numerology/LifePathNumberWidget.tsx` (NEW)
+
+**Integration:** Added to `app/(authenticated)/dashboard/page.tsx` after MoonPhaseWidget
+
+---
+
+#### 3. Public Landing Page (/life-path-number)
+**Purpose:** SEO-optimized public calculator page for non-registered users.
+
+**Sections:**
+1. **Hero** - Main heading with benefits badges
+2. **Calculator** - Interactive date picker with instant results
+3. **What is Life Path Number** - Educational content
+4. **All Numbers Grid** - Display all 12 Life Path Numbers
+5. **How to Calculate** - Step-by-step calculation guide
+6. **FAQ** - Common questions with answers
+7. **CTA** - Registration call-to-action
+
+**Components:**
+- `components/numerology/LifePathCalculator.tsx` (NEW) - Interactive calculator
+- `components/numerology/LifePathCard.tsx` (NEW) - Number display cards
+
+**SEO:**
+- Title: "Калкулатор за Лично Число | Нумерология | Vrachka"
+- Meta description, keywords, OpenGraph tags
+- Canonical URL, Twitter card
+- Structured data ready
+
+**Location:** `app/life-path-number/page.tsx` (NEW)
+
+---
+
+#### 4. Authenticated Analysis Page (/numerology)
+**Purpose:** Full Life Path Number analysis for logged-in users.
+
+**Features:**
+- Automatic calculation from user's birth_date
+- Large hero display with number, emoji, title
+- Tabbed interface with 4 sections:
+  - **Strengths** - Green cards with checkmarks
+  - **Challenges** - Orange cards with warnings
+  - **Compatibility** - Sorted list of all numbers with scores
+  - **Career** - Career guidance and recommendations
+- Keywords display
+- CTA to Natal Chart integration
+
+**Location:** `app/(authenticated)/numerology/page.tsx` (NEW)
+
+**Redirect:** Users without birth_date are prompted to add it in profile
+
+---
+
+### Technical Implementation
+
+**Calculation Algorithm:**
+1. Extract day, month, year from birth date
+2. Sum all digits in each component
+3. Reduce each component to single digit (preserving master numbers)
+4. Sum all reduced components
+5. Reduce final sum to single digit (preserving master numbers)
+
+**Master Numbers:** 11, 22, 33 are not reduced during calculation
+
+**Example:**
+```
+Date: 15/03/1990
+Day: 1+5 = 6
+Month: 0+3 = 3
+Year: 1+9+9+0 = 19 → 1+9 = 10 → 1+0 = 1
+Total: 6+3+1 = 10 → 1+0 = 1
+Life Path Number: 1
+```
+
+**Data Source:** All 12 Life Path Numbers include:
+- Bulgarian language content
+- 300+ word descriptions
+- 6 strengths, 6 challenges
+- 12 compatibility scores (0-10)
+- Career recommendations
+- 6 SEO keywords each
+
+---
+
+### User Journey
+
+1. **Non-registered user:**
+   - Visits `/life-path-number`
+   - Calculates Life Path Number
+   - Sees brief result + CTA to register
+
+2. **Registered user without birth_date:**
+   - Sees widget on dashboard with CTA to add birth_date
+   - Visits `/numerology` → prompted to add birth_date in profile
+
+3. **Registered user with birth_date:**
+   - Sees Life Path Number widget on dashboard
+   - Can click to view full analysis at `/numerology`
+   - Gets personalized compatibility, career guidance
+
+---
+
+### Files Created (9 new files)
+
+1. `lib/numerology.ts` - Core calculation engine
+2. `lib/numerology-data.ts` - Static content database (12 numbers)
+3. `components/numerology/LifePathNumberWidget.tsx` - Dashboard widget
+4. `components/numerology/LifePathCalculator.tsx` - Public calculator
+5. `components/numerology/LifePathCard.tsx` - Number display card
+6. `app/life-path-number/page.tsx` - Public landing page
+7. `app/(authenticated)/numerology/page.tsx` - Full analysis page
+
+### Files Modified (1)
+
+1. `app/(authenticated)/dashboard/page.tsx` - Added LifePathNumberWidget
+
+---
+
+### Build Status
+
+✅ **Build Successful** - 109 routes generated (added 2 new pages)
+- `/life-path-number` - Public calculator page
+- `/(authenticated)/numerology` - Authenticated analysis page
 
 ---
 

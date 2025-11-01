@@ -38,7 +38,9 @@
       "WebFetch(domain:developers.viber.com)",
       "WebFetch(domain:errorwise.com)",
       "WebFetch(domain:creators.viber.com)",
-      "WebFetch(domain:github.com)"
+      "WebFetch(domain:github.com)",
+      "Bash(vercel ls:*)",
+      "Bash(ls:*)"
     ],
     "deny": [],
     "ask": []
