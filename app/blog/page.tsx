@@ -33,10 +33,10 @@ export const metadata: Metadata = {
 };
 
 interface BlogIndexPageProps {
-  searchParams: {
+  searchParams: Promise<{
     category?: string;
     page?: string;
-  };
+  }>;
 }
 
 // Function to generate ItemList schema
@@ -73,8 +73,9 @@ const generateItemListSchema = (posts: any[], category?: string) => {
 
 export default async function BlogIndexPage({ searchParams }: BlogIndexPageProps) {
   const supabase = await createClient();
-  const selectedCategory = searchParams.category;
-  const currentPage = parseInt(searchParams.page || '1', 10);
+  const params = await searchParams;
+  const selectedCategory = params.category;
+  const currentPage = parseInt(params.page || '1', 10);
 
   // Check if user is authenticated
   const { data: { user } } = await supabase.auth.getUser();
@@ -107,7 +108,7 @@ export default async function BlogIndexPage({ searchParams }: BlogIndexPageProps
     general: 'Общо',
   };
 
-  const itemListSchema = generateItemListSchema(blogPosts, selectedCategory ? categoryLabels[selectedCategory] : undefined);
+  const itemListSchema = generateItemListSchema(blogPosts || [], selectedCategory ? categoryLabels[selectedCategory] : undefined);
 
   return (
     <>

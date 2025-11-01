@@ -200,7 +200,23 @@ export async function POST(req: NextRequest) {
     const aiResponse = response.choices[0].message.content || '';
     console.log('[Ideas] Parsing AI response, length:', aiResponse.length);
 
-    const ideas = parseAIJsonResponse<BlogIdeaInsert[]>(aiResponse);
+    // Define the expected AI response format (camelCase as per prompt)
+    interface AIBlogIdea {
+      id?: string; // Added after database save
+      title: string;
+      description: string;
+      contentType: string;
+      category: string;
+      keywords: string[];
+      targetWordCount: number;
+      estimatedPerformance?: {
+        seoScore?: number;
+        viralPotential?: number;
+        conversionPotential?: number;
+      };
+    }
+
+    const ideas = parseAIJsonResponse<AIBlogIdea[]>(aiResponse);
 
     if (!ideas) {
       console.error('Failed to parse AI response');
@@ -246,8 +262,8 @@ export async function POST(req: NextRequest) {
       const ideasToInsert: BlogIdeaInsert[] = ideas.map((idea) => ({
         title: idea.title,
         description: idea.description,
-        content_type: idea.contentType,
-        category: idea.category,
+        content_type: idea.contentType as 'tofu' | 'mofu' | 'bofu' | 'advertorial',
+        category: idea.category as 'general' | 'tarot' | 'spirituality' | 'astrology' | 'numerology',
         keywords: idea.keywords || [],
         target_word_count: idea.targetWordCount || 2000,
         seo_score: idea.estimatedPerformance?.seoScore,
