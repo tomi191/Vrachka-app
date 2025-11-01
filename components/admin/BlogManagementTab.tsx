@@ -6,6 +6,7 @@ import { Eye, Pencil, Trash2, Clock, TrendingUp, Target, ExternalLink } from 'lu
 import { AddImagesButton } from '@/components/admin/AddImagesButton';
 import { BlogPreviewModal } from '@/components/admin/BlogPreviewModal';
 import { DeleteBlogPostButton } from '@/components/admin/DeleteBlogPostButton';
+import { SendToViberButton } from '@/components/admin/SendToViberButton';
 
 interface BlogPost {
   id: string;
@@ -234,6 +235,11 @@ export function BlogManagementTab({ blogPosts: initialPosts }: BlogManagementTab
                         <AddImagesButton
                           slug={post.slug}
                           hasFeaturedImage={!!post.featured_image_url}
+                        />
+                        <SendToViberButton
+                          postId={post.id}
+                          postTitle={post.title}
+                          postStatus={post.status}
                         />
                         <button
                           onClick={() => setPreviewPost(post)}
