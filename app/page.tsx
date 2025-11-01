@@ -21,9 +21,34 @@ import { Navigation } from '@/components/Navigation'
 import { Footer } from '@/components/Footer'
 import { ZODIAC_SIGNS } from '@/lib/constants/zodiac'
 import { HOMEPAGE_FAQS } from '@/lib/constants/faqs'
+import type { Metadata } from 'next';
 
 // Revalidate every hour for fresh blog posts
 export const revalidate = 3600
+
+export const metadata: Metadata = {
+  title: 'Vrachka - AI Астрологична Платформа | Хороскоп, Натална Карта, Таро',
+  description: 'Открий бъдещето с Vrachka - AI-базирана астрологична платформа. Дневен хороскоп, натална карта, таро гадаене, лунен календар и много повече. Персонализирани прогнози и духовни насоки.',
+  keywords: ['астрология', 'хороскоп', 'дневен хороскоп', 'натална карта', 'таро', 'таро гадаене', 'лунен календар', 'зодия', 'астрологична прогноза', 'AI астрология', 'духовност', 'нумерология'],
+  openGraph: {
+    title: 'Vrachka - AI Астрологична Платформа',
+    description: 'Открий бъдещето с персонализирани астрологични прогнози, натална карта и таро гадаене.',
+    url: 'https://vrachka.eu',
+    type: 'website',
+    images: [{
+      url: '/opengraph-image.png',
+      width: 1200,
+      height: 630,
+      alt: 'Vrachka - AI Астрологична Платформа',
+    }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Vrachka - AI Астрологична Платформа',
+    description: 'Открий бъдещето с персонализирани астрологични прогнози, натална карта и таро гадаене.',
+    images: ['/opengraph-image.png'],
+  },
+}
 
 export default function LandingPage() {
 

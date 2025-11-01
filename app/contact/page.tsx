@@ -9,6 +9,19 @@ import { Footer } from "@/components/Footer";
 import { GradientText } from "@/components/ui/gradient-text";
 import { createClient } from "@/lib/supabase/server";
 import { MysticBackground } from "@/components/background/MysticBackground";
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Свържи се с нас | Vrachka',
+  description: 'Имаш въпроси за Vrachka? Свържи се с нашия екип за поддръжка. Ще се радваме да отговорим на всички твои въпроси относно астрология, таро, натална карта и нашите услуги.',
+  keywords: ['контакт', 'поддръжка', 'връзка с нас', 'помощ', 'vrachka', 'астрология помощ', 'таро въпроси'],
+  openGraph: {
+    title: 'Свържи се с нас | Vrachka',
+    description: 'Имаш въпроси? Ще се радваме да ти помогнем!',
+    url: 'https://vrachka.eu/contact',
+    type: 'website',
+  },
+};
 
 export default async function ContactPage() {
   const supabase = await createClient();
