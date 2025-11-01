@@ -88,7 +88,7 @@ export interface ViberButton {
   Columns: number; // 1-6
   Rows: number; // 1-7 (max 2 for URL buttons, max 3 for reply buttons)
   ActionType: ViberButtonActionType;
-  ActionBody: string; // URL for open-url, text for reply
+  ActionBody?: string; // URL for open-url, text for reply (not used for 'none')
   Text?: string; // Button text
   TextSize?: 'small' | 'regular' | 'large';
   TextVAlign?: 'top' | 'middle' | 'bottom';
