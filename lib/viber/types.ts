@@ -5,11 +5,12 @@
 
 // ========== API Response Types ==========
 
-export interface ViberAPIResponse<T = unknown> {
+export interface ViberAPIResponse {
   status: number;
   status_message: string;
   message_token?: string;
-  [key: string]: T;
+  chat_hostname?: string;
+  billing_status?: number;
 }
 
 export interface ViberAccountInfo {

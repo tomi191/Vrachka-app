@@ -28,7 +28,7 @@ export async function logViberNotification(
       blog_post_id: blogPost.id,
       message_token: result.messageToken,
       status: result.success ? 'success' : 'failed',
-      error_message: result.error || null,
+      error_message: result.error,
       metadata: {
         title: blogPost.title,
         excerpt: blogPost.excerpt,
