@@ -83,6 +83,32 @@ export class ViberService {
   }
 
   /**
+   * Get superadmin user ID from account info
+   * This is required for the 'from' parameter in /pa/post API
+   */
+  private async getSuperadminUserId(): Promise<string | null> {
+    try {
+      const accountInfo = await this.getAccountInfo();
+
+      // Find the superadmin member
+      const superadmin = accountInfo.members?.find(
+        (member) => member.role === 'superadmin'
+      );
+
+      if (!superadmin) {
+        console.error('[Viber Service] No superadmin found in account members');
+        return null;
+      }
+
+      console.log('[Viber Service] Superadmin user ID:', superadmin.id);
+      return superadmin.id;
+    } catch (error) {
+      console.error('[Viber Service] Failed to get superadmin user ID:', error);
+      return null;
+    }
+  }
+
+  /**
    * Post a message to the Viber channel feed
    * Requires webhook setup (use setWebhook() first if not configured)
    */
@@ -90,12 +116,19 @@ export class ViberService {
     message: Omit<ViberPostRequest, 'from'>
   ): Promise<SendNotificationResult> {
     try {
-      // Ensure we have the channel ID
-      const channelId = await this.ensureChannelId();
+      // Get superadmin user ID (required for 'from' parameter)
+      const superadminUserId = await this.getSuperadminUserId();
+
+      if (!superadminUserId) {
+        return {
+          success: false,
+          error: 'Failed to get superadmin user ID from account info',
+        };
+      }
 
       // Use /pa/post endpoint to post to channel feed
       const postRequest = {
-        from: channelId,
+        from: superadminUserId, // Use superadmin user ID, NOT channel ID
         type: message.type,
         text: message.text,
         media: message.media,
@@ -114,7 +147,7 @@ export class ViberService {
       if (response.status === 0) {
         console.log('[Viber Service] Post published to channel successfully:', {
           messageToken: response.message_token,
-          channelId,
+          superadminUserId,
         });
 
         return {
